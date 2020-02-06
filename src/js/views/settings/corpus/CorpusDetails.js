@@ -26,19 +26,21 @@ class CorpusDetails extends Component {
         return (
             <React.Fragment>
                 <h2>Edit Corpus</h2>
-                <h3 className="mt-5">Basic Information</h3>
                 <Card className="mt-3">
                     <Card.Body>
+                        <Card.Title>
+                            Basic Information
+                        </Card.Title>
                         <Card.Text>
                             <Form>
                                 <Form.Group controlId="formName">
                                     <Form.Label>Name</Form.Label>
-                                    <Form.Control type="text" placeholder="Name of the Corpus"
+                                    <Form.Control type="text" placeholder="Name of the corpus"
                                                   value="Curriculum Vitaes"/>
                                 </Form.Group>
                                 <Form.Group controlId="formDescription">
                                     <Form.Label>Description</Form.Label>
-                                    <Form.Control as="textarea" placeholder="Name of the Corpus"
+                                    <Form.Control as="textarea" placeholder="Description of the corpus"
                                                   value="Test"/>
                                 </Form.Group>
                             </Form>
