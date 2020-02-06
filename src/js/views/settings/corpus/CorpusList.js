@@ -5,10 +5,12 @@ import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {faPen, faTrash, faPlus} from '@fortawesome/free-solid-svg-icons'
+import {withRouter} from "react-router-dom";
 
-class CorporaList extends Component {
+class CorpusList extends Component {
 
     render() {
+        const { match } = this.props
         return (
             <React.Fragment>
                 <h2>Corpora</h2>
@@ -35,8 +37,10 @@ class CorporaList extends Component {
                                     <td>Curriculum Vitaes</td>
                                     <td>4654</td>
                                     <td>
-                                        <Button size="sm"><FontAwesomeIcon icon={faPen}/></Button>
-                                        <Button size="sm" variant="danger"><FontAwesomeIcon icon={faTrash}/></Button>
+                                        <div className="float-right">
+                                            <Button size="sm" onClick={() => this.props.history.push(`${match.path}/edit/1`)}><FontAwesomeIcon icon={faPen}/></Button>
+                                            <Button size="sm" variant="danger"><FontAwesomeIcon icon={faTrash}/></Button>
+                                        </div>
                                     </td>
                                 </tr>
                                 <tr>
@@ -44,8 +48,10 @@ class CorporaList extends Component {
                                     <td>Jobs</td>
                                     <td>1234</td>
                                     <td>
-                                        <Button size="sm"><FontAwesomeIcon icon={faPen}/></Button>
-                                        <Button size="sm" variant="danger"><FontAwesomeIcon icon={faTrash}/></Button>
+                                        <div className="float-right">
+                                            <Button size="sm" onClick={() => this.props.history.push(`${match.path}/edit/2`)}><FontAwesomeIcon icon={faPen}/></Button>
+                                            <Button size="sm" variant="danger"><FontAwesomeIcon icon={faTrash}/></Button>
+                                        </div>
                                     </td>
                                 </tr>
                                 </tbody>
@@ -58,4 +64,4 @@ class CorporaList extends Component {
     }
 }
 
-export default CorporaList;
+export default withRouter(CorpusList);

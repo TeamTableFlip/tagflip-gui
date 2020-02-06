@@ -12,7 +12,7 @@ import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
 import Dropzone from 'react-dropzone'
 
-class CorpusDetails extends Component {
+class AnnotationSetDetails extends Component {
 
     constructor(props) {
         super(props);
@@ -24,7 +24,7 @@ class CorpusDetails extends Component {
     render() {
         return (
             <React.Fragment>
-                <h2>Edit Corpus</h2>
+                <h2>Edit Annotation Set</h2>
 
                 <Tabs defaultActiveKey={this.state.activeTab} activeKey={this.state.activeTab} onSelect={(k) => this.setState({activeTab: k})}>
                     <Tab eventKey="information" title="Information">
@@ -32,9 +32,9 @@ class CorpusDetails extends Component {
                             <Card.Body>
                                 <Card.Text>
                                     <Form>
-                                        <Form.Group controlId="formBasicEmail">
+                                        <Form.Group controlId="formName">
                                             <Form.Label>Name</Form.Label>
-                                            <Form.Control type="text" placeholder="Name des Korpus" value="Curriculum Vitaes"/>
+                                            <Form.Control type="text" placeholder="Name of the Annotation Set" value="Languages"/>
                                         </Form.Group>
                                     </Form>
                                 </Card.Text>
@@ -161,4 +161,4 @@ class CorpusDetails extends Component {
     }
 }
 
-export default CorpusDetails;
+export default AnnotationSetDetails;

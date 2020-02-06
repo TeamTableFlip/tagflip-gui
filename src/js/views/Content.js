@@ -1,12 +1,12 @@
 import React, {Component} from "react";
-import Configuration from "./configuration/Configuration";
+import Settings from "./settings/Settings";
 
 class Content extends Component {
 
     render() {
         return (
             <main>
-                <Configuration></Configuration>
+                <Settings></Settings>
             </main>
         );
     }
