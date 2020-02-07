@@ -12,6 +12,9 @@ import Pagination from "react-bootstrap/Pagination";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import FileUpload from "../../../components/fileUpload/FileUpload";
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import {ActionCreators} from '../../../../redux/actions/ActionCreators';
 
 class CorpusDetails extends Component {
 
@@ -36,12 +39,12 @@ class CorpusDetails extends Component {
                                 <Form.Group controlId="formName">
                                     <Form.Label>Name</Form.Label>
                                     <Form.Control type="text" placeholder="Name of the corpus"
-                                                  value="Curriculum Vitaes"/>
+                                                  value={this.props.corpus.name}/>
                                 </Form.Group>
                                 <Form.Group controlId="formDescription">
                                     <Form.Label>Description</Form.Label>
                                     <Form.Control as="textarea" placeholder="Description of the corpus"
-                                                  value="Test"/>
+                                                  value={this.props.corpus.description}/>
                                 </Form.Group>
                             </Form>
                         </Card.Text>
@@ -171,4 +174,22 @@ class CorpusDetails extends Component {
     }
 }
 
-export default CorpusDetails;
+/**
+ * Maps redux state to component's props.
+ * @param state The redux state (reducers).
+ */
+function mapStateToProps(state) {
+    return {
+        corpus: state.corpus
+    };
+}
+
+/**
+ * Maps action creator functions to component's props.
+ * @param dispatch
+ */
+function mapDispatchToProps(dispatch) {
+    return bindActionCreators(ActionCreators, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(CorpusDetails);
