@@ -40,14 +40,27 @@ export function setCorpora(corpora) {
 }
 
 /**
- * Action creator for the action ACTION_SET_CORPUS.
+ * Action creator for the action ACTION_SET_ACTIVE_EDIT_CORPUS.
  *
  * @param corpus
  * @returns {{type: string, corpus: *}}
  */
-export function setCorpus(corpus) {
+export function setActiveEditCorpus(corpus) {
     return {
-        type: actions.ACTION_SET_CORPUS,
+        type: actions.ACTION_SET_ACTIVE_EDIT_CORPUS,
+        corpus
+    }
+}
+
+/**
+ * Action creator for the action ACTION_SET_ACTIVE_EDIT_CORPUS.
+ *
+ * @param corpus
+ * @returns {{type: string, corpus: *}}
+ */
+export function setActiveEditCorpus(corpus) {
+    return {
+        type: actions.ACTION_SET_ACTIVE_EDIT_CORPUS,
         corpus
     }
 }

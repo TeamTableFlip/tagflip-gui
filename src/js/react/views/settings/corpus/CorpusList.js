@@ -13,10 +13,16 @@ import {ActionCreators} from '../../../../redux/actions/ActionCreators';
 class CorpusList extends Component {
     constructor(props) {
         super(props);
+        this.addNewCorpus = this.addNewCorpus.bind(this)
     }
 
     componentDidMount() {
         this.props.fetchCorpora();
+    }
+
+    addNewCorpus() {
+        this.props.setActiveEditCorpus(this.props.emptyCorpus);
+        return this.props.history.push(`${this.props.match.path}/edit`)
     }
 
     _renderCorpora() {
@@ -30,8 +36,8 @@ class CorpusList extends Component {
                 <td>
                     <div className="float-right">
                         <Button size="sm" onClick={() => {
-                            this.props.setCorpus(corpus);
-                            return this.props.history.push(`${this.props.match.path}/edit/${corpus.c_id}`)
+                            this.props.setActiveEditCorpus(corpus);
+                            return this.props.history.push(`${this.props.match.path}/edit`)
                         }}><FontAwesomeIcon icon={faPen}/></Button>
                         <Button size="sm" variant="danger"><FontAwesomeIcon icon={faTrash}/></Button>
                     </div>
@@ -48,7 +54,7 @@ class CorpusList extends Component {
                     <Card.Body>
                         <Row>
                             <Col><Card.Title>Available: {this.props.corpora.length}</Card.Title></Col>
-                            <Col><Button className="float-right" size="sm"><FontAwesomeIcon icon={faPlus} /> Add</Button></Col>
+                            <Col><Button className="float-right" size="sm" onClick={this.addNewCorpus}><FontAwesomeIcon icon={faPlus} /> Add</Button></Col>
                         </Row>
 
                         <div className="table-responsive">
@@ -79,7 +85,8 @@ class CorpusList extends Component {
  */
 function mapStateToProps(state) {
     return {
-        corpora: state.corpora
+        corpora: state.corpora,
+        emptyCorpus: state.emptyCorpus
     };
 }
 
