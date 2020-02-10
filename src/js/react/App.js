@@ -1,14 +1,8 @@
 import React, {Component} from "react";
 import Navigation from "./views/Navigation";
-import Content from "./views/Content";
 import Footer from "./views/Footer";
 
-import {
-    BrowserRouter as Router,
-    Switch,
-    Route,
-    Link, Redirect
-} from "react-router-dom";
+import {BrowserRouter as Router, Redirect, Route, Switch} from "react-router-dom";
 import Settings from "./views/settings/Settings";
 import Editor from "./views/editor/Editor";
 

@@ -1,12 +1,13 @@
 import React, {Component} from "react";
+import AnnotationEditor from "../../components/AnnotationEditor";
 
 class Configuration extends Component {
 
     render() {
         return (
-            <div id="CorpusSelection">
-                Corpus Selector
-            </div>
+            <React.Fragment>
+                <AnnotationEditor />
+            </React.Fragment>
         );
     }
 }
