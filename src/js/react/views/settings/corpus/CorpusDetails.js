@@ -39,7 +39,6 @@ class CorpusDetails extends Component {
         const target = event.target;
         const value = target.type === 'checkbox' ? target.checked : target.value;
         const name = target.name;
-        console.log(this.state)
         let partialState = this.state.corpus;
         partialState[name] = value;
 
@@ -54,7 +53,7 @@ class CorpusDetails extends Component {
         if (form.checkValidity() === false) {
             event.stopPropagation();
         } else {
-            alert("valid")
+            // valid
         }
         this.setState({validated: true})
     }
@@ -228,7 +227,7 @@ class CorpusDetails extends Component {
  */
 function mapStateToProps(state) {
     return {
-        corpus: state.activeEditCorpus
+        corpus: state.selectedCorpus
     };
 }
 

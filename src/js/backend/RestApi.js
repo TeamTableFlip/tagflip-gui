@@ -1,3 +1,5 @@
+import config from '../config/config';
+
 export const POST = 'POST';
 export const GET = 'GET';
 export const DELETE = 'DELETE';
@@ -5,16 +7,16 @@ export const DELETE = 'DELETE';
 /**
  * This class is responsible for accessing a RESTful API.
  */
-export default class RESTClient {
+export class RestApi {
 
     /**
-     * Create a new RESTClient to a given host.
+     * Create a new RestApi to a given host.
      *
      * @param host The URL to the host's endpoint.
      */
     constructor(host) {
         this._endpoint = host;
-        if(!this._endpoint.endsWith('/')) {
+        if (!this._endpoint.endsWith('/')) {
             this._endpoint += '/';
         }
     }
@@ -67,22 +69,22 @@ export default class RESTClient {
         let url = this._buildUrl(path);
         let body = (params) ? {body: JSON.stringify(params)} : null;
 
-        let payload = Object.assign({
-                method: method,
-                mode: 'cors',
-                credentials: 'include'
-            },
-            {
-                headers: RESTClient._headers()
-            },
-            body);
+        let payload = {
+            method: method,
+            mode: 'cors',
+            credentials: 'include',
+            headers: RestApi._headers(),
+            redirect: 'follow',
+            referrerPolicy: 'no-referrer',
+            body: body
+        };
 
         return fetch(url, payload)
             .then((response) => {
                 if (response.ok) {
                     return response.json();
                 }
-                throw new Error("RESTClient - [" + method + "] - " + url + " answers -> Response was NOT OK! Getting status: " + response.status + "\nwith content: " + response.text());
+                throw new Error("RestApi - [" + method + "] - " + url + " answers -> Response was NOT OK! Getting status: " + response.status + "\nwith content: " + response.text());
             })
             .catch((err) => {
                 console.log(err);
@@ -98,6 +100,9 @@ export default class RESTClient {
      * @private
      */
     _buildUrl(path) {
+        if (path.startsWith('/')) {
+            path = path.substring(1)
+        }
         return `${this._endpoint}${path}`;
     }
 
@@ -112,3 +117,7 @@ export default class RESTClient {
         };
     }
 }
+
+const client = new RestApi(config.backend.endpoint);
+
+export default client;

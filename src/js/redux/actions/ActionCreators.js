@@ -1,8 +1,14 @@
-import * as CorpusActions from './CorpusActions';
+import {fetchCorpora} from "./CorpusFetchActions";
+import {setSelectedCorpus} from './CorpusEditActions';
+import {fetchServerStatus} from './ServerStatusFetchActions';
 
 /**
  * Grouping up all possible actions.
  */
 export const ActionCreators = Object.assign({},
-    CorpusActions
+    {
+        fetchCorpora,
+        setSelectedCorpus,
+        fetchServerStatus
+    }
 );
