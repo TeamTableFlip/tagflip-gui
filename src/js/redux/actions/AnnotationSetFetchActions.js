@@ -1,4 +1,5 @@
 import client from '../../backend/RestApi';
+import fetchStatusType from "./FetchStatusTypes";
 
 export const REQUEST_ANNOTATION_SETS = "REQUEST_ANNOTATION_SETS";
 export function requestAnnotationSets() {
@@ -15,14 +16,15 @@ export function invalidateAnnotationSets() {
 }
 
 export const RECEIVE_ANNOTATION_SETS = "RECEIVE_ANNOTATION_SETS";
-export function receiveAnnotationSets(annotationSets) {
+export function receiveAnnotationSets(annotationSets, status = fetchStatusType.success, error = null) {
     return {
         type: RECEIVE_ANNOTATION_SETS,
         annotationSets: annotationSets,
-        receivedAt: Date.now()
+        receivedAt: Date.now(),
+        status: status,
+        error: error
     }
 }
-
 
 /**
  * Fetch all corpora from the REST API.
@@ -30,13 +32,13 @@ export function receiveAnnotationSets(annotationSets) {
  */
 export function fetchAnnotationSets() {
     return (dispatch, getState) => {
-        dispatch(requestCorpora())
+        dispatch(requestAnnotationSets())
         client.httpGet('/annotationset')
-            .then(
-                result => result,
-                error => console.log('An error occurred.', error))
             .then(result =>
                 dispatch(receiveAnnotationSets(result))
+            )
+            .catch(error =>
+                dispatch(receiveAnnotationSets([], fetchStatusType.error, error))
             )
     }
 }

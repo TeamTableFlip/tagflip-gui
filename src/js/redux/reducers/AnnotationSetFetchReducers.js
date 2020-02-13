@@ -1,18 +1,14 @@
 import createReducer from './CreateReducer'
 import * as AnnotationSetFetchActions from '../actions/AnnotationSetFetchActions'
-
-export const emptyAnnotationSet = function reducer(state = {}, action) {
-    return {
-        s_id: 0,
-        name: "",
-        description: "",
-    };
-}
+import fetchStatusType from "../actions/FetchStatusTypes";
 
 export const annotationSets = createReducer({
         isFetching: false,
         didInvalidate: false,
-        items: []
+        items: [],
+        lastUpdated: undefined,
+        status: fetchStatusType.success,
+        error: null
     },
     {
         [AnnotationSetFetchActions.REQUEST_ANNOTATION_SETS](state, action) {
