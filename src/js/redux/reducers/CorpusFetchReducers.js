@@ -2,14 +2,6 @@ import createReducer from './CreateReducer'
 import * as CorpusFetchActions from '../actions/CorpusFetchActions'
 import fetchStatusType from "../actions/FetchStatusTypes";
 
-export const emptyCorpus = function reducer(state = {}, action) {
-    return {
-        c_id: 0,
-        description: "",
-        name: ""
-    };
-};
-
 export const corpora = createReducer({
         isFetching: false,
         didInvalidate: false,
