@@ -13,14 +13,58 @@ import FileUpload from "../../../components/fileUpload/FileUpload";
 import Badge from "react-bootstrap/Badge";
 import InputGroup from "react-bootstrap/InputGroup";
 import ColorPickerBadge from "../../../components/colorPickerBadge/ColorPickerBadge";
+import {bindActionCreators} from "redux";
+import {ActionCreators} from "../../../../redux/actions/ActionCreators";
+import connect from "react-redux/es/connect/connect";
 
 class AnnotationSetDetails extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            activeTab: "documents"
-        }
+            activeTab: "documents",
+            annotationSet: this.props.emptyAnnotationSet,
+            annotations: [],
+            validated: false
+        };
+        this._saveAnnotationSet = this._saveAnnotationSet.bind(this);
+        this._resetAnnotationSet = this._resetAnnotationSet.bind(this);
+        this._addNewAnnotation = this._addNewAnnotation.bind(this);
+        this._handleAnnotationSetChange = this._handleAnnotationSetChange.bind(this);
+    }
+
+    componentDidMount() {
+        this.setState({
+            annotationSet: Object.assign({}, this.props.selectedAnnotationSet)
+        });
+    }
+
+    _saveAnnotationSet() {
+        this.props.saveAnnotationSet(this.state.annotationSet)
+            .then(result => {
+                console.log(result)
+            })
+            .catch(err => {
+                console.log(err)
+            })
+    }
+
+    _resetAnnotationSet() {
+        this.setState({
+            annotationSet: Object.assign({}, this.props.emptyAnnotationSet, this.props.selectedAnnotationSet)
+        });
+    }
+
+    _addNewAnnotation() {
+
+    }
+
+    _handleAnnotationSetChange(event) {
+        let annotationSet = this.state.annotationSet;
+        annotationSet[event.target.name] = event.target.value;
+        this.setState({
+            annotationSet: annotationSet
+        });
     }
 
     render() {
@@ -37,15 +81,23 @@ class AnnotationSetDetails extends Component {
                                 <Form.Group controlId="formName">
                                     <Form.Label>Name</Form.Label>
                                     <Form.Control type="text" placeholder="Name of the Annotation Set"
-                                                  value=""/>
+                                                  value={this.state.annotationSet.name}
+                                                  name='name'
+                                                  onChange={this._handleAnnotationSetChange} />
                                 </Form.Group>
                                 <Form.Group controlId="formDescription">
                                     <Form.Label>Description</Form.Label>
                                     <Form.Control as="textarea" placeholder="Description of the Annotation Set"
-                                                  value=""/>
+                                                  name='description'
+                                                  value={this.state.annotationSet.description}
+                                                  onChange={this._handleAnnotationSetChange} />
                                 </Form.Group>
                             </Form>
                         </Card.Text>
+                        <div className="mt-3">
+                            <Button variant="success" className="mr-1" onClick={this._saveAnnotationSet}>Save</Button>
+                            <Button variant="danger" onClick={this._resetAnnotationSet}>Abort</Button>
+                        </div>
                     </Card.Body>
                 </Card>
                 <Card className="mt-3">
@@ -114,14 +166,29 @@ class AnnotationSetDetails extends Component {
                         </Card.Text>
                     </Card.Body>
                 </Card>
-                <div className="mt-3">
-                    <Button variant="success" className="mr-1">Save</Button>
-                    <Button variant="danger">Abort</Button>
-                </div>
-
             </React.Fragment>
         );
     }
 }
 
-export default AnnotationSetDetails;
+
+/**
+ * Maps redux state to component's props.
+ * @param state The redux state (reducers).
+ */
+function mapStateToProps(state) {
+    return {
+        selectedAnnotationSet: state.selectedAnnotationSet,
+        emptyAnnotationSet: state.emptyAnnotationSet
+    };
+}
+
+/**
+ * Maps action creator functions to component's props.
+ * @param dispatch
+ */
+function mapDispatchToProps(dispatch) {
+    return bindActionCreators(ActionCreators, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(AnnotationSetDetails);
