@@ -1,6 +1,7 @@
 import config from '../config/config';
 
 export const POST = 'POST';
+export const PUT = 'PUT';
 export const GET = 'GET';
 export const DELETE = 'DELETE';
 
@@ -43,6 +44,17 @@ export class RestApi {
      */
     httpPost(path, body) {
         return this._httpRequest(path, POST, body);
+    }
+
+    /**
+     * Accesses the REST API using HTTP-PUT.
+     *
+     * @param path The path relative to the given endpoint.
+     * @param body The JSON body to be sent.
+     * @returns {*} a Promise
+     */
+    httpPut(path, body) {
+        return this._httpRequest(path, PUT, body);
     }
 
     /**
