@@ -46,7 +46,7 @@ class CorpusList extends Component {
                     <td>
                         <div className="float-right">
                             <Button size="sm" onClick={() => {
-                                this.props.setSelectedCorpus(corpus);
+                                this.props.setEditableCorpus(corpus);
                                 return this.props.history.push(`${this.props.match.path}/edit`)
                             }}><FontAwesomeIcon icon={faPen}/></Button>
                             <Button size="sm" variant="danger"><FontAwesomeIcon icon={faTrash}/></Button>

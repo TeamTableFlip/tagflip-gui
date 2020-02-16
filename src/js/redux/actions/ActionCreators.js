@@ -1,5 +1,5 @@
 import {fetchCorpora} from "./CorpusFetchActions";
-import {setSelectedCorpus} from './CorpusEditActions';
+import {setEditableCorpus, fetchCorpusAnnotationSets, updateCorpusField} from './CorpusEditActions';
 import {fetchServerStatus} from './ServerStatusFetchActions';
 import {fetchAnnotationSets, saveAnnotationSet} from "./AnnotationSetFetchActions";
 import {setSelectedAnnotationSet} from "./AnnotationSetEditActions";
@@ -10,7 +10,9 @@ import {setSelectedAnnotationSet} from "./AnnotationSetEditActions";
 export const ActionCreators = Object.assign({},
     {
         fetchCorpora,
-        setSelectedCorpus,
+        setEditableCorpus,
+        updateCorpusField,
+        fetchCorpusAnnotationSets,
         fetchServerStatus,
         fetchAnnotationSets,
         setSelectedAnnotationSet,

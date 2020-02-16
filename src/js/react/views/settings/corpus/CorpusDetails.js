@@ -15,38 +15,77 @@ import FileUpload from "../../../components/fileUpload/FileUpload";
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {ActionCreators} from '../../../../redux/actions/ActionCreators';
+import {Spinner} from "react-bootstrap";
+import fetchStatusType from "../../../../redux/actions/FetchStatusTypes";
+import Alert from "react-bootstrap/Alert";
+import {annotationSets} from "../../../../redux/reducers/AnnotationSetFetchReducers";
+
+const initialState = {
+    activeTab: "documents",
+    validated: false,
+    corpus: undefined,
+    annotationSets: [],
+    selectedAnnotationSetIds: new Set()
+};
 
 class CorpusDetails extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {
-            activeTab: "documents",
-            validated: false,
-            corpus: {}
-        };
-        this.handleChangeChange = this.handleChangeChange.bind(this);
+        this.state = initialState;
+        //this.handleChangeChange = this.handleChangeChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     componentDidMount() {
-        this.setState({
-            corpus: this.props.corpus
-        })
+        this.props.fetchAnnotationSets();
+        if (this.props.corpus.data.c_id > 0) {
+            this.props.fetchCorpusAnnotationSets(this.props.corpus.data.c_id);
+        }
     }
+/*
+    static getDerivedStateFromProps(props, state) {
+        let newState = {};
+        console.log(state)
+        if (!state.corpus || state.corpus.c_id !== props.corpus.c_id) {
+            Object.assign(newState, {corpus: props.corpus}, newState)
+            console.log("Assigned corpus", props.corpus)
+        }
+        if (!props.annotationSets.isFetching && props.annotationSets.items.length !== state.annotationSets.length) {
+            Object.assign(newState, {annotationSets: props.annotationSets.items}, newState);
+            console.log("Assigned AnnotationSets", props.annotationSets.items)
+        }
+        if(props.selectedAnnotationSets.didInvalidate) {
+            Object.assign(newState, {selectedAnnotationSetIds: new Set()}, newState);
+            console.log("Unassigned SelectedAnnotationSets")
+        }
+        if (!props.selectedAnnotationSets.isFetching && props.selectedAnnotationSets.items.length !== state.selectedAnnotationSetIds.size) {
+            let selectedInDatabase = new Set(props.selectedAnnotationSets.items.map(annotationSet => annotationSet.s_id);
+            let selectedInState = state.selectedAnnotationSetIds;
+            // update unselected elementes
+            let newSelection = new Set([...selectedInDatabase].filter(x => !selectedInState.has(x)));
 
+            const selectedAnnotationSetIds = new Set(props.selectedAnnotationSets.items.map(annotationSet => annotationSet.s_id)));
+            Object.assign(newState, {selectedAnnotationSetIds: selectedAnnotationSetIds}, newState);
+            console.log("Assigned SelectedAnnotationSets", selectedAnnotationSetIds)
+        }
+        if(Object.entries(newState).length === 0)
+            return null;
+        return newState;
+    }
+*/
+/*
     handleChangeChange(event) {
         const target = event.target;
         const value = target.type === 'checkbox' ? target.checked : target.value;
         const name = target.name;
         let partialState = this.state.corpus;
         partialState[name] = value;
-
         this.setState({
             corpus: partialState
         });
     }
-
+*/
     handleSubmit(event) {
         const form = event.currentTarget;
         event.preventDefault();
@@ -59,12 +98,60 @@ class CorpusDetails extends Component {
     }
 
     isNewCorpus() {
-        return this.props.corpus.c_id <= 0;
+        return this.props.corpus.data.c_id <= 0;
+    }
+
+    renderAnnotationSetSelection() {
+        if (this.props.corpus.annotationSets.isFetching) {
+            return (
+                <div className="d-flex justify-content-center">
+                    <Spinner animation="border" variant="primary"/>
+                </div>
+            )
+        }
+
+        const selectedAnnotationSetIds = new Set(this.props.corpus.annotationSets.items.map(annotationSet => annotationSet.s_id));
+        let renderAnnotationSetList = () => {
+            return this.props.annotationSets.items.map(annotationSet => {
+                return (
+                    <ListGroup.Item key={annotationSet.s_id}>
+                        <Form.Check type="checkbox"
+                                    checked={selectedAnnotationSetIds.has(annotationSet.s_id)}
+                                    value={annotationSet.s_id}
+                                    onChange={(_) => this.setState({selectedAnnotationSetIds: [annotationSet.s_id, ...selectedAnnotationSetIds]})}
+                                    label={annotationSet.name}/>
+                    </ListGroup.Item>
+                )
+            })
+        };
+
+        return (
+            <React.Fragment>
+                {
+                    (this.props.annotationSets.status === fetchStatusType.error) && (
+                        <Alert variant="warning">
+                            <p>Could not fetch data from server.</p>
+                            <Button onClick={() => this.props.fetchAnnotationSets()} variant="primary">Try
+                                again</Button>
+                        </Alert>
+                    )
+                }
+                {
+                    (this.props.annotationSets.status === fetchStatusType.success) && (
+                        <ListGroup>
+                            {renderAnnotationSetList()}
+                        </ListGroup>
+                    )
+
+                }
+
+            </React.Fragment>
+        );
     }
 
     render() {
         return (
-            <React.Fragment>
+            <React.Fragment key={this.props.corpus.data.c_id}>
                 <h2>Edit Corpus</h2>
                 <Form noValidate validated={this.state.validated} onSubmit={this.handleSubmit}>
                     <Card className="mt-3">
@@ -77,8 +164,8 @@ class CorpusDetails extends Component {
                                 <Form.Label>Name</Form.Label>
                                 <Form.Control type="text" placeholder="Name of the corpus"
                                               name="name"
-                                              onChange={this.handleChangeChange}
-                                              value={this.state.corpus.name || ""}
+                                              onChange={(e) => this.props.updateCorpusField('name', e.value)}
+                                              value={this.props.corpus.data.name || ""}
                                               required={true}
                                 />
                                 <Form.Control.Feedback type="invalid">
@@ -89,8 +176,8 @@ class CorpusDetails extends Component {
                                 <Form.Label>Description</Form.Label>
                                 <Form.Control as="textarea" placeholder="Description of the corpus"
                                               name="description"
-                                              onChange={this.handleChangeChange}
-                                              value={this.state.corpus.description || ""}/>
+                                              onChange={(e) => this.props.updateCorpusField('description', e.value)}
+                                              value={this.props.corpus.data.description || ""}/>
                             </Form.Group>
 
                         </Card.Body>
@@ -106,31 +193,7 @@ class CorpusDetails extends Component {
                                 <Col></Col>
                             </Row>
 
-                            <ListGroup>
-                                <ListGroup.Item><Form.Check type="checkbox"
-                                                            key={1}
-                                                            label="CV Annotations"/></ListGroup.Item>
-                                <ListGroup.Item><Form.Check type="checkbox"
-                                                            key={2}
-                                                            label="Linguistic Annotations"/></ListGroup.Item>
-                            </ListGroup>
-                            <Pagination className="mt-1 d-flex justify-content-center">
-                                <Pagination.First/>
-                                <Pagination.Prev/>
-                                <Pagination.Item>{1}</Pagination.Item>
-                                <Pagination.Ellipsis/>
-
-                                <Pagination.Item>{10}</Pagination.Item>
-                                <Pagination.Item>{11}</Pagination.Item>
-                                <Pagination.Item active>{12}</Pagination.Item>
-                                <Pagination.Item>{13}</Pagination.Item>
-                                <Pagination.Item disabled>{14}</Pagination.Item>
-
-                                <Pagination.Ellipsis/>
-                                <Pagination.Item>{20}</Pagination.Item>
-                                <Pagination.Next/>
-                                <Pagination.Last/>
-                            </Pagination>
+                            {this.renderAnnotationSetSelection()}
 
                         </Card.Body>
                     </Card>
@@ -227,7 +290,8 @@ class CorpusDetails extends Component {
  */
 function mapStateToProps(state) {
     return {
-        corpus: state.selectedCorpus
+        corpus: state.editableCorpus,
+        annotationSets: state.annotationSets,
     };
 }
 

@@ -14,7 +14,7 @@ export const corpora = createReducer({
         [CorpusFetchActions.REQUEST_CORPORA](state, action) {
             return Object.assign({}, state, {
                 isFetching: true,
-                didInvalidate: false
+                // didInvalidate: false  // tnte: commented this out though it is used by redux reference. a request does not validate data... valid data is available after response/receive
             })
         },
         [CorpusFetchActions.INVALIDATE_CORPORA](state, action) {
@@ -23,7 +23,7 @@ export const corpora = createReducer({
             })
         },
         [CorpusFetchActions.RECEIVE_CORPORA](state, action) {
-            if(action.status === fetchStatusType.success) {
+            if (action.status === fetchStatusType.success) {
                 return Object.assign({}, state, {
                     isFetching: false,
                     didInvalidate: false,

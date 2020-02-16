@@ -37,7 +37,7 @@ export function receiveServerStatus(status = fetchStatusType.success, error = nu
 export function fetchServerStatus() {
     return (dispatch, getState) => {
         dispatch(requestServerStatus())
-        client.httpGet('/test/test')
+        client.httpGet('/test')
             .then(result =>
                 dispatch(receiveServerStatus())
             )

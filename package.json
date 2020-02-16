@@ -39,6 +39,7 @@
     "@fortawesome/free-solid-svg-icons": "~5.12.0",
     "@fortawesome/react-fontawesome": "~0.1.8",
     "bootstrap": "~4.4.1",
+    "immer": "^5.3.6",
     "react": "~16.12.0",
     "react-ace": "~8.0.0",
     "react-bootstrap": "~1.0.0-beta.16",
@@ -48,6 +49,7 @@
     "react-redux": "7.1.3",
     "react-router-dom": "~5.1.2",
     "redux": "~4.0.5",
+    "redux-immer": "^1.0.4",
     "redux-logger": "~3.0.6",
     "redux-thunk": "~2.3.0"
   }
