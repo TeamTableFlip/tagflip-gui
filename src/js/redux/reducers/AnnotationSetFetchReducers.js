@@ -23,11 +23,22 @@ export const annotationSets = createReducer({
             })
         },
         [AnnotationSetFetchActions.RECEIVE_ANNOTATION_SETS](state, action) {
-            return Object.assign({}, state, {
-                isFetching: false,
-                didInvalidate: false,
-                items: action.annotationSets,
-                lastUpdated: action.receivedAt
-            })
+            if(action.status === fetchStatusType.success) {
+                return Object.assign({}, state, {
+                    isFetching: false,
+                    didInvalidate: false,
+                    items: action.annotationSets,
+                    lastUpdated: action.receivedAt,
+                    status: fetchStatusType.success,
+                    error: null
+                })
+            } else {
+                return Object.assign({}, state, {
+                    isFetching: false,
+                    didInvalidate: false,
+                    status: fetchStatusType.error,
+                    error: action.error
+                })
+            }
         }
     });
