@@ -80,8 +80,7 @@ export class RestApi {
     _httpRequest(path, method, params) {
         let url = this._buildUrl(path);
         console.log("Requesting", url);
-        let body = (params) ? {body: JSON.stringify(params)} : null;
-
+        let body = (params) ? JSON.stringify(params) : null;
         let payload = {
             method: method,
             mode: 'cors',
