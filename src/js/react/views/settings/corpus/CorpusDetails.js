@@ -44,12 +44,13 @@ class CorpusDetails extends Component {
     handleSubmit(event) {
         const form = event.currentTarget;
         event.preventDefault();
+        this.setState({validated: false})
         if (form.checkValidity() === false) {
             event.stopPropagation();
+            this.setState({validated: true})
         } else {
             this.props.saveCorpus()
         }
-        this.setState({validated: true})
     }
 
     isNewCorpus() {
@@ -89,7 +90,7 @@ class CorpusDetails extends Component {
 
     render() {
         return (
-            <React.Fragment key={this.props.corpus.data.c_id}>
+            <React.Fragment>
                 <h2>Edit Corpus</h2>
                 <Form noValidate validated={this.state.validated} onSubmit={this.handleSubmit}>
                     <Card className="mt-3">
@@ -124,102 +125,110 @@ class CorpusDetails extends Component {
                             </FetchPending>
                         </Card.Body>
                     </Card>
-                    <Card className="mt-3">
-                        <Card.Body>
-                            <Row>
-                                <Col>
-                                    <Card.Title>
-                                        Annotation Sets
-                                    </Card.Title>
-                                </Col>
-                                <Col></Col>
-                            </Row>
-
-                            {this.renderAnnotationSetSelection()}
-
-                        </Card.Body>
-                    </Card>
                     <div className="mt-3">
                         <Button variant="success" className="mr-1" type="submit">Save</Button>
                         <Button variant="danger">Abort</Button>
                     </div>
+
                 </Form>
+                {!this.isNewCorpus() && (
+                    <React.Fragment>
+                        <hr className="mt-5"/>
+                        <h3 className="mt-5">Annotation Sets</h3>
+                        <Card className="mt-3">
+                            <Card.Body>
+                                <Row>
+                                    <Col>
+                                        <Card.Title>
+                                            Selection
+                                        </Card.Title>
+                                    </Col>
+                                    <Col></Col>
+                                </Row>
 
-                {!this.isNewCorpus() && (<React.Fragment>
-                    <hr className="mt-5"/>
-                    <h3 className="mt-5">Documents</h3>
-                    <Card className="mt-3">
-                        <Card.Body>
-                            <Card.Title>Upload</Card.Title>
-                            <OverlayTrigger
-                                placement='right'
-                                overlay={
-                                    <Tooltip>
-                                        Tooltip on lol.
-                                    </Tooltip>
-                                }
-                            >
-                                <FileUpload onSelect={(k) => alert(k)} onReject={(k) => alert(k)}
-                                            uploadText="Drop archive or single document here..."/>
-                            </OverlayTrigger>
-                        </Card.Body>
-                        <Card.Body>
-                            <Card.Title>Available: 2 <span className="float-right text-secondary font-weight-light">Updated: 2020-01-01 12:12:23</span></Card.Title>
-                            <div className="table-responsive">
-                                <table className="table">
-                                    <thead>
-                                    <tr>
-                                        <th scope="col">#</th>
-                                        <th scope="col">Name</th>
-                                        <th scope="col"></th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr>
-                                        <th scope="row">1</th>
-                                        <td>Curriculum Vitaes</td>
-                                        <td>
-                                            <div className="float-right">
-                                                <Button size="sm"><FontAwesomeIcon icon={faSearch}/></Button>
-                                                <Button size="sm" variant="danger"><FontAwesomeIcon
-                                                    icon={faTrash}/></Button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">2</th>
-                                        <td>Jobs</td>
-                                        <td>
-                                            <div className="float-right">
-                                                <Button size="sm"><FontAwesomeIcon icon={faSearch}/></Button>
-                                                <Button size="sm" variant="danger"><FontAwesomeIcon
-                                                    icon={faTrash}/></Button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                                <Pagination className="mt-1 d-flex justify-content-center">
-                                    <Pagination.First/>
-                                    <Pagination.Prev/>
-                                    <Pagination.Item>{1}</Pagination.Item>
-                                    <Pagination.Ellipsis/>
+                                {this.renderAnnotationSetSelection()}
 
-                                    <Pagination.Item>{10}</Pagination.Item>
-                                    <Pagination.Item>{11}</Pagination.Item>
-                                    <Pagination.Item active>{12}</Pagination.Item>
-                                    <Pagination.Item>{13}</Pagination.Item>
-                                    <Pagination.Item disabled>{14}</Pagination.Item>
+                            </Card.Body>
+                        </Card>
+                    </React.Fragment>
+                )}
 
-                                    <Pagination.Ellipsis/>
-                                    <Pagination.Item>{20}</Pagination.Item>
-                                    <Pagination.Next/>
-                                    <Pagination.Last/>
-                                </Pagination>
-                            </div>
-                        </Card.Body>
-                    </Card>
-                </React.Fragment>)}
+                {!this.isNewCorpus() && (
+                    <React.Fragment>
+                        <hr className="mt-5"/>
+                        <h3 className="mt-5">Documents</h3>
+                        <Card className="mt-3">
+                            <Card.Body>
+                                <Card.Title>Upload</Card.Title>
+                                <OverlayTrigger
+                                    placement='right'
+                                    overlay={
+                                        <Tooltip>
+                                            Tooltip on lol.
+                                        </Tooltip>
+                                    }
+                                >
+                                    <FileUpload onSelect={(k) => alert(k)} onReject={(k) => alert(k)}
+                                                uploadText="Drop archive or single document here..."/>
+                                </OverlayTrigger>
+                            </Card.Body>
+                            <Card.Body>
+                                <Card.Title>Available: 2 <span className="float-right text-secondary font-weight-light">Updated: 2020-01-01 12:12:23</span></Card.Title>
+                                <div className="table-responsive">
+                                    <table className="table">
+                                        <thead>
+                                        <tr>
+                                            <th scope="col">#</th>
+                                            <th scope="col">Name</th>
+                                            <th scope="col"></th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <th scope="row">1</th>
+                                            <td>Curriculum Vitaes</td>
+                                            <td>
+                                                <div className="float-right">
+                                                    <Button size="sm"><FontAwesomeIcon icon={faSearch}/></Button>
+                                                    <Button size="sm" variant="danger"><FontAwesomeIcon
+                                                        icon={faTrash}/></Button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">2</th>
+                                            <td>Jobs</td>
+                                            <td>
+                                                <div className="float-right">
+                                                    <Button size="sm"><FontAwesomeIcon icon={faSearch}/></Button>
+                                                    <Button size="sm" variant="danger"><FontAwesomeIcon
+                                                        icon={faTrash}/></Button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                    <Pagination className="mt-1 d-flex justify-content-center">
+                                        <Pagination.First/>
+                                        <Pagination.Prev/>
+                                        <Pagination.Item>{1}</Pagination.Item>
+                                        <Pagination.Ellipsis/>
+
+                                        <Pagination.Item>{10}</Pagination.Item>
+                                        <Pagination.Item>{11}</Pagination.Item>
+                                        <Pagination.Item active>{12}</Pagination.Item>
+                                        <Pagination.Item>{13}</Pagination.Item>
+                                        <Pagination.Item disabled>{14}</Pagination.Item>
+
+                                        <Pagination.Ellipsis/>
+                                        <Pagination.Item>{20}</Pagination.Item>
+                                        <Pagination.Next/>
+                                        <Pagination.Last/>
+                                    </Pagination>
+                                </div>
+                            </Card.Body>
+                        </Card>
+                    </React.Fragment>)}
 
             </React.Fragment>
         );

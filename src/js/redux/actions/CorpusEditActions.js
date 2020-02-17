@@ -25,19 +25,9 @@ export function updateCorpusField(field, value) {
     return {
         type: UPDATE_CORPUS_FIELD,
         field,
-        value
+        value: value ? value : null
     }
 }
-
-export const TOGGLE_CORPUS_ANNOTATION_SET = "TOGGLE_CORPUS_ANNOTATION_SET";
-
-export function toggleCorpusAnnotationSet(annotationSet) {
-    return {
-        type: TOGGLE_CORPUS_ANNOTATION_SET,
-        annotationSet
-    }
-}
-
 
 // Actions for getting AnnotationSets while editing a corpus
 
@@ -90,6 +80,43 @@ export function fetchCorpusAnnotationSets(corpusId) {
     }
 }
 
+
+export const ADD_CORPUS_ANNOTATION_SET = "ADD_CORPUS_ANNOTATION_SET";
+export const REMOVE_CORPUS_ANNOTATION_SET = "REMOVE_CORPUS_ANNOTATION_SET";
+
+export function toggleCorpusAnnotationSet(annotationSet) {
+    return (dispatch, getState) => {
+        let corpusId = getState().editableCorpus.data.values.c_id
+        let selectedAnnotationSets = getState().editableCorpus.annotationSets.items;
+        let selectedAnnotationSetIds = new Set(selectedAnnotationSets.map(s => s.s_id));
+
+        if (selectedAnnotationSetIds.has(annotationSet.s_id)) {
+            //delete
+            client.httpDelete(`/corpus/${corpusId}/annotationset/${annotationSet.s_id}`)
+                .then(result =>
+                    dispatch({
+                        type: REMOVE_CORPUS_ANNOTATION_SET,
+                        annotationSet
+                    })
+                )
+                .catch(error => dispatch(receiveCorpusAnnotationSet([], fetchStatusType.error, error)))
+        } else {
+            // add
+            client.httpPut(`/corpus/${corpusId}/annotationset/${annotationSet.s_id}`)
+                .then(result => {
+                        console.log("lol")
+                        dispatch({
+                            type: ADD_CORPUS_ANNOTATION_SET,
+                            annotationSet
+                        })
+                    }
+                )
+                .catch(error => dispatch(receiveCorpusAnnotationSet([], fetchStatusType.error, error)))
+        }
+    }
+}
+
+
 // Actions for saving edited corpus
 
 export const REQUEST_UPDATE_CORPUS = "REQUEST_UPDATE_CORPUS";
@@ -115,7 +142,7 @@ export function receiveUpdateCorpus(corpus, status = fetchStatusType.success, er
 
 export function saveCorpus() {
     return (dispatch, getState) => {
-        let corpus = getState().editableCorpus.data;
+        let corpus = getState().editableCorpus.data.values;
         dispatch(requestUpdateCorpus());
         // Decide whether to PUT for update or POST for create
         // FIXME: Backend responds with 400, Bad request
@@ -138,7 +165,6 @@ export function saveCorpus() {
         }
     }
 }
-
 
 // ActionCreators for reloading editable corpus
 export function reloadCorpus() {
