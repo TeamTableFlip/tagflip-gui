@@ -31,6 +31,9 @@ class AnnotationSetDetails extends Component {
     }
 
     componentDidMount() {
+        if(!this._isNewAnnotationSet()) {
+            this.props.fetchAnnotations(this.props.annotationSet.data.values.s_id);
+        }
     }
 
     _saveAnnotationSet() {
@@ -46,6 +49,14 @@ class AnnotationSetDetails extends Component {
 
     _addNewAnnotation() {
 
+    }
+
+    _renderAnnotations() {
+
+    }
+
+    _isNewAnnotationSet() {
+        return this.props.annotationSet.data.values.s_id <= 0;
     }
 
     render() {
@@ -164,7 +175,8 @@ class AnnotationSetDetails extends Component {
  */
 function mapStateToProps(state) {
     return {
-        annotationSet: state.editableAnnotationSet
+        annotationSet: state.editableAnnotationSet,
+        annotations: state.annotations
     };
 }
 

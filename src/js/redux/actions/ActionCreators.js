@@ -15,6 +15,7 @@ import {
     updateAnnotationSetField,
     reloadAnnotationSet
 } from "./AnnotationSetEditActions";
+import {fetchAnnotations} from "./AnnotationFetchActions";
 
 /**
  * Grouping up all possible actions.
@@ -33,6 +34,7 @@ export const ActionCreators = Object.assign({},
         setEditableAnnotationSet,
         saveAnnotationSet,
         updateAnnotationSetField,
-        reloadAnnotationSet
+        reloadAnnotationSet,
+        fetchAnnotations
     }
 );
