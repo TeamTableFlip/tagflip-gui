@@ -9,6 +9,7 @@ export const emptyCorpus = function (state = {}, action) {
         name: ""
     };
 };
+
 //@see https://www.pluralsight.com/guides/deeply-nested-objectives-redux
 export const editableCorpus = createReducer({
     data: {
@@ -26,43 +27,39 @@ export const editableCorpus = createReducer({
     },
     documents: []
 }, {
-    [CorpusEditActions.SET_EDITABLE_CORPUS](state, action) {
-        state.data = action.corpus;
-        return state;
+    [CorpusEditActions.SET_EDITABLE_CORPUS](draft, action) {
+        draft.data = action.corpus;
     },
-    [CorpusEditActions.UPDATE_CORPUS_FIELD](state, action) {
-        state.data.name = action.value;
-        return state;
+    [CorpusEditActions.UPDATE_CORPUS_FIELD](draft, action) {
+        draft.data[action.field] = action.value;
     },
-    [CorpusEditActions.TOGGLE_CORPUS_ANNOTATION_SET](state, action) {
-        if (state.annotationSets.map(a => a.s_id).includes(action.annotationSet.s_id)) {
-            state.annotationSets.items = state.annotationSets.items.filter(a => a.s_id !== action.annotationSet.s_id)       // set is selected
+    [CorpusEditActions.TOGGLE_CORPUS_ANNOTATION_SET](draft, action) {
+        if (draft.annotationSets.items.map(a => a.s_id).includes(action.annotationSet.s_id)) { // set is selected
+            draft.annotationSets.items = draft.annotationSets.items.filter(a => a.s_id !== action.annotationSet.s_id)        // remove
         }
-        state.annotationSets.items.push(action.annotationSet); // set is not selected
-        return state;
+        else { // set is not selected
+            draft.annotationSets.items.push(action.annotationSet); // add
+        }
     },
-    [CorpusEditActions.REQUEST_CORPUS_ANNOTATION_SETS](state, action) {
-        state.annotationSets.isFetching = true;
-        return state;
+    [CorpusEditActions.REQUEST_CORPUS_ANNOTATION_SETS](draft, action) {
+        draft.annotationSets.isFetching = true;
     },
-    [CorpusEditActions.INVALIDATE_CORPUS_ANNOTATION_SETS](state, action) {
-        state.annotationSets.didInvalidate = true;
-        return state;
+    [CorpusEditActions.INVALIDATE_CORPUS_ANNOTATION_SETS](draft, action) {
+        draft.annotationSets.didInvalidate = true;
     },
-    [CorpusEditActions.RECEIVE_CORPUS_ANNOTATION_SETS](state, action) {
-        state.annotationSets.isFetching = false;
-        state.annotationSets.didInvalidate = false;
+    [CorpusEditActions.RECEIVE_CORPUS_ANNOTATION_SETS](draft, action) {
+        draft.annotationSets.isFetching = false;
+        draft.annotationSets.didInvalidate = false;
         if (action.status === fetchStatusType.success) {
-            state.annotationSets.items = action.annotationSets;
-            state.annotationSets.lastUpdated = action.receivedAt;
-            state.annotationSets.status = fetchStatusType.success;
-            state.annotationSets.error = null;
+            draft.annotationSets.items = action.annotationSets;
+            draft.annotationSets.lastUpdated = action.receivedAt;
+            draft.annotationSets.status = fetchStatusType.success;
+            draft.annotationSets.error = null;
         } else {
-            state.annotationSets.isFetching = false;
-            state.annotationSets.didInvalidate = false;
-            state.annotationSets.status = fetchStatusType.error;
-            state.annotationSets.error = action.error;
+            draft.annotationSets.isFetching = false;
+            draft.annotationSets.didInvalidate = false;
+            draft.annotationSets.status = fetchStatusType.error;
+            draft.annotationSets.error = action.error;
         }
-        return state;
     }
 });

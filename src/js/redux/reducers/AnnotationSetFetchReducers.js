@@ -11,34 +11,23 @@ export const annotationSets = createReducer({
         error: null
     },
     {
-        [AnnotationSetFetchActions.REQUEST_ANNOTATION_SETS](state, action) {
-            return Object.assign({}, state, {
-                isFetching: true,
-                didInvalidate: false
-            })
+        [AnnotationSetFetchActions.REQUEST_ANNOTATION_SETS](draft, action) {
+            draft.isFetching = true;
         },
-        [AnnotationSetFetchActions.INVALIDATE_ANNOTATION_SETS](state, action) {
-            return Object.assign({}, state, {
-                didInvalidate: true
-            })
+        [AnnotationSetFetchActions.INVALIDATE_ANNOTATION_SETS](draft, action) {
+            draft.didInvalidate = true
         },
-        [AnnotationSetFetchActions.RECEIVE_ANNOTATION_SETS](state, action) {
-            if(action.status === fetchStatusType.success) {
-                return Object.assign({}, state, {
-                    isFetching: false,
-                    didInvalidate: false,
-                    items: action.annotationSets,
-                    lastUpdated: action.receivedAt,
-                    status: fetchStatusType.success,
-                    error: null
-                })
+        [AnnotationSetFetchActions.RECEIVE_ANNOTATION_SETS](draft, action) {
+            draft.isFetching = false;
+            draft.didInvalidate = false;
+            if (action.status === fetchStatusType.success) {
+                draft.items = action.annotationSets;
+                draft.lastUpdated = action.receivedAt;
+                draft.status = fetchStatusType.success;
+                draft.error = null;
             } else {
-                return Object.assign({}, state, {
-                    isFetching: false,
-                    didInvalidate: false,
-                    status: fetchStatusType.error,
-                    error: action.error
-                })
+                draft.status = fetchStatusType.error;
+                draft.error = action.error;
             }
         }
     });

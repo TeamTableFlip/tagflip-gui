@@ -43,49 +43,7 @@ class CorpusDetails extends Component {
             this.props.fetchCorpusAnnotationSets(this.props.corpus.data.c_id);
         }
     }
-/*
-    static getDerivedStateFromProps(props, state) {
-        let newState = {};
-        console.log(state)
-        if (!state.corpus || state.corpus.c_id !== props.corpus.c_id) {
-            Object.assign(newState, {corpus: props.corpus}, newState)
-            console.log("Assigned corpus", props.corpus)
-        }
-        if (!props.annotationSets.isFetching && props.annotationSets.items.length !== state.annotationSets.length) {
-            Object.assign(newState, {annotationSets: props.annotationSets.items}, newState);
-            console.log("Assigned AnnotationSets", props.annotationSets.items)
-        }
-        if(props.selectedAnnotationSets.didInvalidate) {
-            Object.assign(newState, {selectedAnnotationSetIds: new Set()}, newState);
-            console.log("Unassigned SelectedAnnotationSets")
-        }
-        if (!props.selectedAnnotationSets.isFetching && props.selectedAnnotationSets.items.length !== state.selectedAnnotationSetIds.size) {
-            let selectedInDatabase = new Set(props.selectedAnnotationSets.items.map(annotationSet => annotationSet.s_id);
-            let selectedInState = state.selectedAnnotationSetIds;
-            // update unselected elementes
-            let newSelection = new Set([...selectedInDatabase].filter(x => !selectedInState.has(x)));
 
-            const selectedAnnotationSetIds = new Set(props.selectedAnnotationSets.items.map(annotationSet => annotationSet.s_id)));
-            Object.assign(newState, {selectedAnnotationSetIds: selectedAnnotationSetIds}, newState);
-            console.log("Assigned SelectedAnnotationSets", selectedAnnotationSetIds)
-        }
-        if(Object.entries(newState).length === 0)
-            return null;
-        return newState;
-    }
-*/
-/*
-    handleChangeChange(event) {
-        const target = event.target;
-        const value = target.type === 'checkbox' ? target.checked : target.value;
-        const name = target.name;
-        let partialState = this.state.corpus;
-        partialState[name] = value;
-        this.setState({
-            corpus: partialState
-        });
-    }
-*/
     handleSubmit(event) {
         const form = event.currentTarget;
         event.preventDefault();
@@ -117,8 +75,7 @@ class CorpusDetails extends Component {
                     <ListGroup.Item key={annotationSet.s_id}>
                         <Form.Check type="checkbox"
                                     checked={selectedAnnotationSetIds.has(annotationSet.s_id)}
-                                    value={annotationSet.s_id}
-                                    onChange={(_) => this.setState({selectedAnnotationSetIds: [annotationSet.s_id, ...selectedAnnotationSetIds]})}
+                                    onChange={() => this.props.toggleCorpusAnnotationSet(annotationSet)}
                                     label={annotationSet.name}/>
                     </ListGroup.Item>
                 )
@@ -164,7 +121,7 @@ class CorpusDetails extends Component {
                                 <Form.Label>Name</Form.Label>
                                 <Form.Control type="text" placeholder="Name of the corpus"
                                               name="name"
-                                              onChange={(e) => this.props.updateCorpusField('name', e.value)}
+                                              onChange={(e) => this.props.updateCorpusField('name', e.target.value)}
                                               value={this.props.corpus.data.name || ""}
                                               required={true}
                                 />
@@ -176,7 +133,7 @@ class CorpusDetails extends Component {
                                 <Form.Label>Description</Form.Label>
                                 <Form.Control as="textarea" placeholder="Description of the corpus"
                                               name="description"
-                                              onChange={(e) => this.props.updateCorpusField('description', e.value)}
+                                              onChange={(e) => this.props.updateCorpusField('description', e.target.value)}
                                               value={this.props.corpus.data.description || ""}/>
                             </Form.Group>
 

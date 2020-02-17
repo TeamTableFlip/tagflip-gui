@@ -24,7 +24,7 @@ class CorpusList extends Component {
     }
 
     addNewCorpus() {
-        this.props.setSelectedCorpus(this.props.emptyCorpus);
+        this.props.setEditableCorpus(this.props.emptyCorpus);
         return this.props.history.push(`${this.props.match.path}/edit`)
     }
 
