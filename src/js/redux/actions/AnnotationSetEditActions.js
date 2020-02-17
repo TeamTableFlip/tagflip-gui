@@ -1,17 +1,16 @@
 import fetchStatusType from "./FetchStatusTypes";
 import client from "../../backend/RestApi";
-import {fetchCorpusAnnotationSets, receiveUpdateCorpus, requestUpdateCorpus} from "./CorpusEditActions";
 
 /**
- * Action creator for the action SET_SELECTED_ANNOTATION_SET.
+ * Action creator for the action SET_EDITABLE_ANNOTATION_SET.
  *
  * @param corpus
  * @returns {{type: string, annotationSet: *}}
  */
-export const SET_SELECTED_ANNOTATION_SET = "SET_SELECTED_ANNOTATION_SET";
+export const SET_EDITABLE_ANNOTATION_SET = "SET_EDITABLE_ANNOTATION_SET";
 export function setEditableAnnotationSet(annotationSet) {
     return {
-        type: SET_SELECTED_ANNOTATION_SET,
+        type: SET_EDITABLE_ANNOTATION_SET,
         annotationSet
     }
 }
@@ -82,7 +81,7 @@ export function reloadAnnotationSet() {
             dispatch(requestEditableAnnotationSet());
             client.httpGet(`/annotationset/${annotationSet.s_id}`)
                 .then(result => {
-                        dispatch(receiveEditableAnnotationSet());
+                        dispatch(receiveEditableAnnotationSet(result));
                     }
                 )
                 .catch(error => {

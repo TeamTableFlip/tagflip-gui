@@ -31,7 +31,6 @@ class AnnotationSetDetails extends Component {
     }
 
     componentDidMount() {
-        this.props.reloadAnnotationSet();
     }
 
     _saveAnnotationSet() {
@@ -172,8 +171,7 @@ class AnnotationSetDetails extends Component {
  */
 function mapStateToProps(state) {
     return {
-        annotationSet: state.editableAnnotationSet,
-        emptyAnnotationSet: state.emptyAnnotationSet
+        annotationSet: state.editableAnnotationSet
     };
 }
 

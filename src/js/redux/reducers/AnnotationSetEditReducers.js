@@ -21,9 +21,9 @@ export const editableAnnotationSet = createReducer({
         lastUpdated: undefined,
         status: fetchStatusType.success,
         error: null,
-    },
+    }
 }, {
-    [AnnotationSetEditActions.SET_SELECTED_ANNOTATION_SET](draft, action) {
+    [AnnotationSetEditActions.SET_EDITABLE_ANNOTATION_SET](draft, action) {
         draft.data.values = action.annotationSet;
     },
     [AnnotationSetEditActions.UPDATE_ANNOTATION_SET_FIELD](draft, action) {
