@@ -16,90 +16,84 @@ import ColorPickerBadge from "../../../components/colorPickerBadge/ColorPickerBa
 import {bindActionCreators} from "redux";
 import {ActionCreators} from "../../../../redux/actions/ActionCreators";
 import connect from "react-redux/es/connect/connect";
+import FetchPending from "../../../components/FetchPending";
+import fetchStatusType from "../../../../redux/actions/FetchStatusTypes";
 
 class AnnotationSetDetails extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            activeTab: "documents",
-            annotationSet: this.props.emptyAnnotationSet,
-            annotations: [],
             validated: false
         };
         this._saveAnnotationSet = this._saveAnnotationSet.bind(this);
-        this._resetAnnotationSet = this._resetAnnotationSet.bind(this);
         this._addNewAnnotation = this._addNewAnnotation.bind(this);
-        this._handleAnnotationSetChange = this._handleAnnotationSetChange.bind(this);
     }
 
     componentDidMount() {
-        this.setState({
-            annotationSet: Object.assign({}, this.props.selectedAnnotationSet)
-        });
+        this.props.reloadAnnotationSet();
     }
 
     _saveAnnotationSet() {
-        this.props.saveAnnotationSet(this.state.annotationSet)
-            .then(result => {
-                console.log(result)
-            })
-            .catch(err => {
-                console.log(err)
-            })
-    }
-
-    _resetAnnotationSet() {
-        this.setState({
-            annotationSet: Object.assign({}, this.props.emptyAnnotationSet, this.props.selectedAnnotationSet)
-        });
+        const form = event.currentTarget;
+        event.preventDefault();
+        if (form.checkValidity() === false) {
+            event.stopPropagation();
+        } else {
+            this.props.saveAnnotationSet();
+        }
+        this.setState({validated: true})
     }
 
     _addNewAnnotation() {
 
     }
 
-    _handleAnnotationSetChange(event) {
-        let annotationSet = this.state.annotationSet;
-        annotationSet[event.target.name] = event.target.value;
-        this.setState({
-            annotationSet: annotationSet
-        });
-    }
-
     render() {
         return (
             <React.Fragment>
                 <h2>Edit Annotation Set</h2>
-                <Card className="mt-3">
-                    <Card.Body>
-                        <Card.Title>
-                            Basic Information
-                        </Card.Title>
-                        <Card.Text>
-                            <Form>
-                                <Form.Group controlId="formName">
-                                    <Form.Label>Name</Form.Label>
-                                    <Form.Control type="text" placeholder="Name of the Annotation Set"
-                                                  value={this.state.annotationSet.name}
-                                                  name='name'
-                                                  onChange={this._handleAnnotationSetChange} />
-                                </Form.Group>
-                                <Form.Group controlId="formDescription">
-                                    <Form.Label>Description</Form.Label>
-                                    <Form.Control as="textarea" placeholder="Description of the Annotation Set"
-                                                  name='description'
-                                                  value={this.state.annotationSet.description}
-                                                  onChange={this._handleAnnotationSetChange} />
-                                </Form.Group>
-                            </Form>
-                        </Card.Text>
-                        <div className="mt-3">
-                            <Button variant="success" className="mr-1" onClick={this._saveAnnotationSet}>Save</Button>
-                            <Button variant="danger" onClick={this._resetAnnotationSet}>Abort</Button>
-                        </div>
-                    </Card.Body>
-                </Card>
+
+                <Form noValidate validated={this.state.validated} onSubmit={this._saveAnnotationSet}>
+                    <Card className="mt-3">
+                        <Card.Body>
+                            <Card.Title>
+                                Basic Information
+                            </Card.Title>
+                            <FetchPending
+                                isPending={this.props.annotationSet.data.isFetching}
+                                success={this.props.annotationSet.data.status === fetchStatusType.success}
+                                retryCallback={this.props.reloadAnnotationSet}
+                            >
+                                <Card.Text>
+                                    <Form>
+                                        <Form.Group controlId="formName">
+                                            <Form.Label>Name</Form.Label>
+                                            <Form.Control type="text" placeholder="Name of the Annotation Set"
+                                                          value={this.props.annotationSet.data.values.name || ''}
+                                                          onChange={e => {this.props.updateAnnotationSetField('name', e.target.value)}}
+                                                          name='name' required={true} />
+                                            <Form.Control.Feedback type="invalid">
+                                                Please choose a name.
+                                            </Form.Control.Feedback>
+                                        </Form.Group>
+                                        <Form.Group controlId="formDescription">
+                                            <Form.Label>Description</Form.Label>
+                                            <Form.Control as="textarea" placeholder="Description of the Annotation Set"
+                                                          name='description'
+                                                          onChange={e => {this.props.updateAnnotationSetField('description', e.target.value)}}
+                                                          value={this.props.annotationSet.data.values.description || ''} />
+                                        </Form.Group>
+                                    </Form>
+                                </Card.Text>
+                                <div className="mt-3">
+                                    <Button variant="success" className="mr-1" type="submit">Save</Button>
+                                    <Button variant="danger">Abort</Button>
+                                </div>
+                            </FetchPending>
+                        </Card.Body>
+                    </Card>
+                </Form>
                 <Card className="mt-3">
                     <Card.Body>
                         <Row>
@@ -178,7 +172,7 @@ class AnnotationSetDetails extends Component {
  */
 function mapStateToProps(state) {
     return {
-        selectedAnnotationSet: state.selectedAnnotationSet,
+        annotationSet: state.editableAnnotationSet,
         emptyAnnotationSet: state.emptyAnnotationSet
     };
 }
