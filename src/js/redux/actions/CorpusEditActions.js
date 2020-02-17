@@ -3,7 +3,6 @@ import client from "../../backend/RestApi";
 import {receiveSaveAnnotationSet, requestSaveAnnotationSet} from "./AnnotationSetFetchActions";
 
 // Actions for editing a corpus
-
 /**
  * Action creator for the action SET_EDITABLE_CORPUS.
  *
@@ -18,6 +17,7 @@ export function setEditableCorpus(corpus) {
         corpus
     }
 }
+
 
 export const UPDATE_CORPUS_FIELD = "UPDATE_CORPUS_FIELD";
 
@@ -145,11 +145,12 @@ export function saveCorpus() {
         let corpus = getState().editableCorpus.data.values;
         dispatch(requestUpdateCorpus());
         // Decide whether to PUT for update or POST for create
-        // FIXME: Backend responds with 400, Bad request
+        console.log(corpus.c_id)
         if (!corpus.c_id || corpus.c_id <= 0) {
             client.httpPost('/corpus', corpus)
                 .then(result => {
                     dispatch(receiveUpdateCorpus(result));
+                    dispatch(reloadCorpus())
                 })
                 .catch(err =>
                     dispatch(receiveUpdateCorpus({}, fetchStatusType.error, err))

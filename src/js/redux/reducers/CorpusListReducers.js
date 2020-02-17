@@ -1,5 +1,5 @@
 import createReducer from './CreateReducer'
-import * as CorpusFetchActions from '../actions/CorpusFetchActions'
+import * as CorpusFetchActions from '../actions/CorpusListActions'
 import fetchStatusType from "../actions/FetchStatusTypes";
 
 export const corpora = createReducer({
@@ -29,5 +29,8 @@ export const corpora = createReducer({
                 draft.status = fetchStatusType.error;
                 draft.error = action.error;
             }
-        }
+        },
+        [CorpusFetchActions.DELETE_CORPUS](draft, action) {
+            draft.items = draft.items.filter(x => x.c_id !== action.corpusId)
+        },
     });

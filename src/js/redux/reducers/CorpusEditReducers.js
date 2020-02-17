@@ -75,7 +75,7 @@ export const editableCorpus = createReducer({
     [CorpusEditActions.RECEIVE_UPDATE_CORPUS](draft, action) {
         draft.data.isFetching = false;
         if (action.status === fetchStatusType.success) {
-            draft.data.value = action.corpus;
+            draft.data.values = action.corpus;
             draft.data.lastUpdated = action.receivedAt;
             draft.data.status = fetchStatusType.success;
             draft.data.error = null;

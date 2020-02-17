@@ -54,7 +54,7 @@ class CorpusDetails extends Component {
     }
 
     isNewCorpus() {
-        return this.props.corpus.data.c_id <= 0;
+        return this.props.corpus.data.values.c_id <= 0;
     }
 
     renderAnnotationSetSelection() {
@@ -91,7 +91,7 @@ class CorpusDetails extends Component {
     render() {
         return (
             <React.Fragment>
-                <h2>Edit Corpus</h2>
+                <h2>Edit Corpus ({!this.isNewCorpus() ? ("ID: " + this.props.corpus.data.values.c_id) : "New"})</h2>
                 <Form noValidate validated={this.state.validated} onSubmit={this.handleSubmit}>
                     <Card className="mt-3">
                         <Card.Body>
@@ -107,7 +107,7 @@ class CorpusDetails extends Component {
                                     <Form.Label>Name</Form.Label>
                                     <Form.Control type="text" placeholder="Name of the corpus"
                                                   name="name"
-                                                  onChange={(e) => this.props.updateCorpusField('name', e.target.value)}
+                                                  onChange={(e) => this.props.updateCorpusField('name', e.target.value.trim())}
                                                   value={this.props.corpus.data.values.name || ""}
                                                   required={true}
                                     />
@@ -119,7 +119,7 @@ class CorpusDetails extends Component {
                                     <Form.Label>Description</Form.Label>
                                     <Form.Control as="textarea" placeholder="Description of the corpus"
                                                   name="description"
-                                                  onChange={(e) => this.props.updateCorpusField('description', e.target.value)}
+                                                  onChange={(e) => this.props.updateCorpusField('description', e.target.value.trim())}
                                                   value={this.props.corpus.data.values.description || ""}/>
                                 </Form.Group>
                             </FetchPending>
@@ -127,7 +127,6 @@ class CorpusDetails extends Component {
                     </Card>
                     <div className="mt-3">
                         <Button variant="success" className="mr-1" type="submit">Save</Button>
-                        <Button variant="danger">Abort</Button>
                     </div>
 
                 </Form>
