@@ -12,6 +12,7 @@ import {ActionCreators} from '../../../../redux/actions/ActionCreators';
 import {Spinner} from "react-bootstrap";
 import Alert from "react-bootstrap/Alert";
 import fetchStatusType from "../../../../redux/actions/FetchStatusTypes";
+import FetchPending from "../../../components/FetchPending";
 
 class CorpusList extends Component {
     constructor(props) {
@@ -28,15 +29,7 @@ class CorpusList extends Component {
         return this.props.history.push(`${this.props.match.path}/edit`)
     }
 
-
     _renderCorpora() {
-        if (this.props.corpora.isFetching) {
-            return (
-                <div className="d-flex justify-content-center">
-                    <Spinner animation="border" variant="primary"/>
-                </div>
-            )
-        }
         let renderCorpusTableData = () => {
             return this.props.corpora.items.map(corpus => {
                 return <tr key={corpus.c_id}>
@@ -58,16 +51,10 @@ class CorpusList extends Component {
 
         return (
             <div className="table-responsive">
-                {
-                    (this.props.corpora.status === fetchStatusType.error) && (
-                        <Alert variant="warning">
-                            <p>Could not fetch data from server.</p>
-                            <Button onClick={() => this.props.fetchCorpora()} variant="primary">Try again</Button>
-                        </Alert>
-                    )
-                }
-                {
-                    (this.props.corpora.status === fetchStatusType.success) && (
+                <FetchPending isPending={this.props.corpora.isFetching}
+                              success={this.props.corpora.status === fetchStatusType.success}
+                              retryCallback={this.props.fetchCorpora}
+                >
                         <table className="table">
                             <thead>
                             <tr>
@@ -81,8 +68,7 @@ class CorpusList extends Component {
                             {renderCorpusTableData()}
                             </tbody>
                         </table>
-                    )
-                }
+                </FetchPending>
             </div>
         )
     }

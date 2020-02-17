@@ -18,7 +18,7 @@ import {ActionCreators} from '../../../../redux/actions/ActionCreators';
 import {Spinner} from "react-bootstrap";
 import fetchStatusType from "../../../../redux/actions/FetchStatusTypes";
 import Alert from "react-bootstrap/Alert";
-import {annotationSets} from "../../../../redux/reducers/AnnotationSetFetchReducers";
+import FetchPending from "../../../components/FetchPending";
 
 const initialState = {
     activeTab: "documents",
@@ -33,15 +33,12 @@ class CorpusDetails extends Component {
     constructor(props) {
         super(props);
         this.state = initialState;
-        //this.handleChangeChange = this.handleChangeChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     componentDidMount() {
         this.props.fetchAnnotationSets();
-        if (this.props.corpus.data.c_id > 0) {
-            this.props.fetchCorpusAnnotationSets(this.props.corpus.data.c_id);
-        }
+        this.props.reloadCorpus();
     }
 
     handleSubmit(event) {
@@ -50,7 +47,7 @@ class CorpusDetails extends Component {
         if (form.checkValidity() === false) {
             event.stopPropagation();
         } else {
-            // valid
+            this.props.saveCorpus()
         }
         this.setState({validated: true})
     }
@@ -60,14 +57,6 @@ class CorpusDetails extends Component {
     }
 
     renderAnnotationSetSelection() {
-        if (this.props.corpus.annotationSets.isFetching) {
-            return (
-                <div className="d-flex justify-content-center">
-                    <Spinner animation="border" variant="primary"/>
-                </div>
-            )
-        }
-
         const selectedAnnotationSetIds = new Set(this.props.corpus.annotationSets.items.map(annotationSet => annotationSet.s_id));
         let renderAnnotationSetList = () => {
             return this.props.annotationSets.items.map(annotationSet => {
@@ -83,27 +72,19 @@ class CorpusDetails extends Component {
         };
 
         return (
-            <React.Fragment>
-                {
-                    (this.props.annotationSets.status === fetchStatusType.error) && (
-                        <Alert variant="warning">
-                            <p>Could not fetch data from server.</p>
-                            <Button onClick={() => this.props.fetchAnnotationSets()} variant="primary">Try
-                                again</Button>
-                        </Alert>
-                    )
-                }
-                {
-                    (this.props.annotationSets.status === fetchStatusType.success) && (
-                        <ListGroup>
-                            {renderAnnotationSetList()}
-                        </ListGroup>
-                    )
-
-                }
-
-            </React.Fragment>
-        );
+            <FetchPending
+                isPending={this.props.annotationSets.isFetching || this.props.corpus.annotationSets.isFetching}
+                success={this.props.annotationSets.status === fetchStatusType.success && this.props.corpus.annotationSets.status === fetchStatusType.success}
+                retryCallback={() => {
+                    this.props.fetchAnnotationSets();
+                    this.props.fetchCorpusAnnotationSets(this.props.corpus.data.c_id);
+                }}
+            >
+                <ListGroup>
+                    {renderAnnotationSetList()}
+                </ListGroup>
+            </FetchPending>
+        )
     }
 
     render() {
@@ -116,27 +97,31 @@ class CorpusDetails extends Component {
                             <Card.Title>
                                 Basic Information
                             </Card.Title>
-
-                            <Form.Group controlId="formName">
-                                <Form.Label>Name</Form.Label>
-                                <Form.Control type="text" placeholder="Name of the corpus"
-                                              name="name"
-                                              onChange={(e) => this.props.updateCorpusField('name', e.target.value)}
-                                              value={this.props.corpus.data.name || ""}
-                                              required={true}
-                                />
-                                <Form.Control.Feedback type="invalid">
-                                    Please choose a name.
-                                </Form.Control.Feedback>
-                            </Form.Group>
-                            <Form.Group controlId="formDescription">
-                                <Form.Label>Description</Form.Label>
-                                <Form.Control as="textarea" placeholder="Description of the corpus"
-                                              name="description"
-                                              onChange={(e) => this.props.updateCorpusField('description', e.target.value)}
-                                              value={this.props.corpus.data.description || ""}/>
-                            </Form.Group>
-
+                            <FetchPending
+                                isPending={this.props.corpus.data.isFetching}
+                                success={this.props.corpus.data.status === fetchStatusType.success}
+                                retryCallback={this.props.reloadCorpus}
+                            >
+                                <Form.Group controlId="formName">
+                                    <Form.Label>Name</Form.Label>
+                                    <Form.Control type="text" placeholder="Name of the corpus"
+                                                  name="name"
+                                                  onChange={(e) => this.props.updateCorpusField('name', e.target.value)}
+                                                  value={this.props.corpus.data.values.name || ""}
+                                                  required={true}
+                                    />
+                                    <Form.Control.Feedback type="invalid">
+                                        Please choose a name.
+                                    </Form.Control.Feedback>
+                                </Form.Group>
+                                < Form.Group controlId="formDescription">
+                                    <Form.Label>Description</Form.Label>
+                                    <Form.Control as="textarea" placeholder="Description of the corpus"
+                                                  name="description"
+                                                  onChange={(e) => this.props.updateCorpusField('description', e.target.value)}
+                                                  value={this.props.corpus.data.values.description || ""}/>
+                                </Form.Group>
+                            </FetchPending>
                         </Card.Body>
                     </Card>
                     <Card className="mt-3">

@@ -13,9 +13,15 @@ export const emptyCorpus = function (state = {}, action) {
 //@see https://www.pluralsight.com/guides/deeply-nested-objectives-redux
 export const editableCorpus = createReducer({
     data: {
-        c_id: 0,
-        name: "",
-        description: ""
+        values: {
+            c_id: 0,
+            name: "",
+            description: "",
+        },
+        isFetching: false,
+        lastUpdated: undefined,
+        status: fetchStatusType.success,
+        error: null,
     },
     annotationSets: {
         isFetching: false,
@@ -28,10 +34,10 @@ export const editableCorpus = createReducer({
     documents: []
 }, {
     [CorpusEditActions.SET_EDITABLE_CORPUS](draft, action) {
-        draft.data = action.corpus;
+        draft.data.values = action.corpus;
     },
     [CorpusEditActions.UPDATE_CORPUS_FIELD](draft, action) {
-        draft.data[action.field] = action.value;
+        draft.data.values[action.field] = action.value;
     },
     [CorpusEditActions.TOGGLE_CORPUS_ANNOTATION_SET](draft, action) {
         if (draft.annotationSets.items.map(a => a.s_id).includes(action.annotationSet.s_id)) { // set is selected
@@ -60,6 +66,23 @@ export const editableCorpus = createReducer({
             draft.annotationSets.didInvalidate = false;
             draft.annotationSets.status = fetchStatusType.error;
             draft.annotationSets.error = action.error;
+        }
+    },
+
+    [CorpusEditActions.REQUEST_UPDATE_CORPUS](draft, action) {
+        draft.data.isFetching = true;
+    },
+    [CorpusEditActions.RECEIVE_UPDATE_CORPUS](draft, action) {
+        draft.data.isFetching = false;
+        if (action.status === fetchStatusType.success) {
+            draft.data.value = action.corpus;
+            draft.data.lastUpdated = action.receivedAt;
+            draft.data.status = fetchStatusType.success;
+            draft.data.error = null;
+        } else {
+            draft.data.isFetching = false;
+            draft.data.status = fetchStatusType.error;
+            draft.data.error = action.error;
         }
     }
 });

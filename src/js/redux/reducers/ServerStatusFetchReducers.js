@@ -2,7 +2,7 @@ import createReducer from './CreateReducer'
 import * as ServerStatusFetchActions from '../actions/ServerStatusFetchActions'
 import fetchStatusType from "../actions/FetchStatusTypes";
 
-export const emptyCorpus = function reducer(state = {}, action) {
+export const emptyCorpus = function reducer(draft = {}, action) {
     return {
         c_id: 0,
         description: "",
@@ -19,25 +19,18 @@ export const serverStatus = createReducer({
         error: null
     },
     {
-        [ServerStatusFetchActions.REQUEST_SERVER_STATUS](state, action) {
-            return Object.assign({}, state, {
-                isFetching: true,
-                didInvalidate: false
-            })
+        [ServerStatusFetchActions.REQUEST_SERVER_STATUS](draft, action) {
+            draft.isFetching = true;
         },
-        [ServerStatusFetchActions.INVALIDATE_SERVER_STATUS](state, action) {
-            return Object.assign({}, state, {
-                didInvalidate: true
-            })
+        [ServerStatusFetchActions.INVALIDATE_SERVER_STATUS](draft, action) {
+            draft.didInvalidate = true;
         },
-        [ServerStatusFetchActions.RECEIVE_SERVER_STATUS](state, action) {
-            return Object.assign({}, state, {
-                isFetching: false,
-                didInvalidate: false,
-                available: action.available,
-                lastUpdated: action.receivedAt,
-                status: action.status,
-                error: action.error
-            })
+        [ServerStatusFetchActions.RECEIVE_SERVER_STATUS](draft, action) {
+            draft.isFetching = false;
+            draft.didInvalidate = false;
+            draft.available = action.available;
+            draft.lastUpdated = action.receivedAt;
+            draft.status = action.status;
+            draft.error = action.error;
         }
     });
