@@ -1,5 +1,5 @@
 import createReducer from './CreateReducer'
-import * as AnnotationSetFetchActions from '../actions/AnnotationSetFetchActions'
+import * as AnnotationSetFetchActions from '../actions/AnnotationSetListActions'
 import fetchStatusType from "../actions/FetchStatusTypes";
 
 export const annotationSets = createReducer({

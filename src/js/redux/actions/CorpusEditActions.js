@@ -1,6 +1,6 @@
 import fetchStatusType from "./FetchStatusTypes";
 import client from "../../backend/RestApi";
-import {receiveSaveAnnotationSet, requestSaveAnnotationSet} from "./AnnotationSetFetchActions";
+import {receiveSaveAnnotationSet, requestSaveAnnotationSet} from "./AnnotationSetListActions";
 
 // Actions for editing a corpus
 /**

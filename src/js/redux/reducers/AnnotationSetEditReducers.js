@@ -21,6 +21,14 @@ export const editableAnnotationSet = createReducer({
         lastUpdated: undefined,
         status: fetchStatusType.success,
         error: null,
+    },
+    annotations: {
+        isFetching: false,
+        didInvalidate: false,
+        items: [],
+        lastUpdated: undefined,
+        status: fetchStatusType.success,
+        error: null
     }
 }, {
     [AnnotationSetEditActions.SET_EDITABLE_ANNOTATION_SET](draft, action) {
@@ -43,6 +51,25 @@ export const editableAnnotationSet = createReducer({
         else {
             draft.data.status = fetchStatusType.error;
             draft.data.error = action.error;
+        }
+    },
+    [AnnotationSetEditActions.REQUEST_ANNOTATIONS](draft, action) {
+        draft.annotations.isFetching = true;
+    },
+    [AnnotationSetEditActions.INVALIDATE_ANNOTATIONS](draft, action) {
+        draft.annotations.didInvalidate = true;
+    },
+    [AnnotationSetEditActions.RECEIVE_ANNOTATIONS](draft, action) {
+        draft.annotations.isFetching = false;
+        draft.annotations.didInvalidate = false;
+        if (action.status === fetchStatusType.success) {
+            draft.annotations.items = action.annotations;
+            draft.annotations.lastUpdated = action.receivedAt;
+            draft.annotations.status = fetchStatusType.success;
+            draft.annotations.error = null;
+        } else {
+            draft.annotations.status = fetchStatusType.error;
+            draft.annotations.error = action.error;
         }
     }
 });
