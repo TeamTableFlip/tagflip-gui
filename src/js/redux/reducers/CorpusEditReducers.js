@@ -39,12 +39,12 @@ export const editableCorpus = createReducer({
     [CorpusEditActions.UPDATE_CORPUS_FIELD](draft, action) {
         draft.data.values[action.field] = action.value;
     },
-    [CorpusEditActions.TOGGLE_CORPUS_ANNOTATION_SET](draft, action) {
+    [CorpusEditActions.ADD_CORPUS_ANNOTATION_SET](draft, action) {
+        draft.annotationSets.items.push(action.annotationSet); // add
+    },
+    [CorpusEditActions.REMOVE_CORPUS_ANNOTATION_SET](draft, action) {
         if (draft.annotationSets.items.map(a => a.s_id).includes(action.annotationSet.s_id)) { // set is selected
             draft.annotationSets.items = draft.annotationSets.items.filter(a => a.s_id !== action.annotationSet.s_id)        // remove
-        }
-        else { // set is not selected
-            draft.annotationSets.items.push(action.annotationSet); // add
         }
     },
     [CorpusEditActions.REQUEST_CORPUS_ANNOTATION_SETS](draft, action) {
@@ -75,7 +75,7 @@ export const editableCorpus = createReducer({
     [CorpusEditActions.RECEIVE_UPDATE_CORPUS](draft, action) {
         draft.data.isFetching = false;
         if (action.status === fetchStatusType.success) {
-            draft.data.value = action.corpus;
+            draft.data.values = action.corpus;
             draft.data.lastUpdated = action.receivedAt;
             draft.data.status = fetchStatusType.success;
             draft.data.error = null;

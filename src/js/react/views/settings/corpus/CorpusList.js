@@ -42,7 +42,11 @@ class CorpusList extends Component {
                                 this.props.setEditableCorpus(corpus);
                                 return this.props.history.push(`${this.props.match.path}/edit`)
                             }}><FontAwesomeIcon icon={faPen}/></Button>
-                            <Button size="sm" variant="danger"><FontAwesomeIcon icon={faTrash}/></Button>
+                            <Button size="sm" variant="danger"
+                                    onClick={() => {
+                                        this.props.deleteCorpus(corpus.c_id);
+                                    }}
+                            ><FontAwesomeIcon icon={faTrash}/></Button>
                         </div>
                     </td>
                 </tr>

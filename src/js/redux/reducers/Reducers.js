@@ -1,4 +1,4 @@
-import * as corpusFetchReducers from './CorpusFetchReducers';
+import * as corpusFetchReducers from './CorpusListReducers';
 import * as corpusEditReducers from './CorpusEditReducers';
 import * as serverStatusFetchReducers from './ServerStatusFetchReducers';
 import * as annotationSetFetchReducers from './AnnotationSetFetchReducers';
