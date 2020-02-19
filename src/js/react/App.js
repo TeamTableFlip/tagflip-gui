@@ -9,10 +9,8 @@ import {ActionCreators} from "../redux/actions/ActionCreators";
 import {connect} from "react-redux";
 import {bindActionCreators} from "redux";
 
-import config from '../config/config'
-import Modal from "react-bootstrap/Modal";
-import Button from "react-bootstrap/Button";
-import ServerNotAvailableInfo from "./components/ServerNotAvailableInfo";
+import config from '../config/config';
+import ServerNotAvailableInfo from "./components/dialogs/ServerNotAvailableInfo";
 
 class App extends Component {
 
