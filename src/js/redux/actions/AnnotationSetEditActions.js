@@ -52,21 +52,23 @@ export function saveAnnotationSet() {
         // Decide whether to PUT for update or POST for create
         if(!annotationSet.s_id || annotationSet.s_id <= 0) {
             client.httpPost('/annotationset', annotationSet)
-                .then(result =>
-                    dispatch(receiveEditableAnnotationSet(result))
-                )
-                .catch(err =>
+                .then(result => {
+                    dispatch(receiveEditableAnnotationSet(result));
+                    dispatch(reloadAnnotationSet());
+                })
+                .catch(err => {
                     dispatch(receiveEditableAnnotationSet({}, fetchStatusType.error, err))
-                );
+                });
         }
         else {
             client.httpPut(`/annotationset/${annotationSet.s_id}`, annotationSet)
-                .then(result =>
-                    dispatch(receiveEditableAnnotationSet(result))
-                )
-                .catch(err =>
+                .then(result => {
+                    dispatch(receiveEditableAnnotationSet(result));
+                    dispatch(reloadAnnotationSet());
+                })
+                .catch(err => {
                     dispatch(receiveEditableAnnotationSet({}, fetchStatusType.error, err))
-                );
+                });
         }
     }
 }
@@ -87,6 +89,9 @@ export function reloadAnnotationSet() {
                 .catch(error => {
                     dispatch(receiveEditableAnnotationSet({}, fetchStatusType.error, error))
                 });
+        }
+        else {
+            dispatch(receiveEditableAnnotationSet(getState().emptyAnnotationSet));
         }
     }
 }
@@ -122,15 +127,21 @@ export function receiveAnnotations(annotations, status = fetchStatusType.success
  * Fetch all Annotations from the REST API.
  * @returns {Function}
  */
-export function fetchAnnotations(annotationSetId) {
+export function fetchAnnotations() {
     return (dispatch, getState) => {
         dispatch(requestAnnotations());
-        client.httpGet(`/annotationset/${annotationSetId}/annotation`)
-            .then(result =>
-                dispatch(receiveAnnotations(result))
-            )
-            .catch(error =>
-                dispatch(receiveAnnotations([], fetchStatusType.error, error))
-            );
+        let annotationSet = getState().editableAnnotationSet.data.values;
+        if(annotationSet.s_id > 0) {
+            client.httpGet(`/annotationset/${annotationSet.s_id}/annotation`)
+                .then(result =>
+                    dispatch(receiveAnnotations(result))
+                )
+                .catch(error =>
+                    dispatch(receiveAnnotations([], fetchStatusType.error, error))
+                );
+        }
+        else {
+            dispatch(receiveAnnotations([]));
+        }
     }
 }

@@ -18,6 +18,7 @@ import {ActionCreators} from "../../../../redux/actions/ActionCreators";
 import connect from "react-redux/es/connect/connect";
 import FetchPending from "../../../components/FetchPending";
 import fetchStatusType from "../../../../redux/actions/FetchStatusTypes";
+import ConfirmationDialog from "../../../components/dialogs/ConfirmationDialog";
 
 class AnnotationSetDetails extends Component {
 
@@ -26,7 +27,9 @@ class AnnotationSetDetails extends Component {
         this.state = {
             validated: false,
             createNewAnnotation: false,
-            editAnnotation: false
+            editAnnotation: false,
+            deleteEntry: false,
+            annotationIdToBeDeleted: undefined
         };
         this._saveAnnotationSet = this._saveAnnotationSet.bind(this);
         this._addNewAnnotation = this._addNewAnnotation.bind(this);
@@ -34,9 +37,9 @@ class AnnotationSetDetails extends Component {
     }
 
     componentDidMount() {
-        if(!this._isNewAnnotationSet()) {
-            this.props.fetchAnnotations(this.props.annotationSet.data.values.s_id);
-        }
+        // if(!this._isNewAnnotationSet()) {
+            this.props.fetchAnnotations();
+        // }
     }
 
     _saveAnnotationSet() {
@@ -66,7 +69,7 @@ class AnnotationSetDetails extends Component {
             createNewAnnotation: false,
             editAnnotation: false
         });
-        this.props.fetchAnnotations(this.props.annotationSet.data.values.s_id);
+        this.props.fetchAnnotations();
     }
 
     _renderAnnotationsTable() {
@@ -75,11 +78,35 @@ class AnnotationSetDetails extends Component {
                 return <tr key={annotation.a_id}>
                     <th scope="row">{annotation.a_id}</th>
                     <td>{annotation.name}</td>
-                    <td><Badge variant="info" style={{backgroundColor: annotation.color}}>{annotation.color}</Badge></td>
+                    <td><Badge className="text-monospace" variant="info" style={{backgroundColor: annotation.color}}>{annotation.color}</Badge></td>
                     <td>
                         <div className="float-right">
                             <Button size="sm" onClick={() => this.props.history.push(`${this.props.match.path}/edit/${annotation.a_id}`)}><FontAwesomeIcon icon={faPen}/></Button>
-                            <Button size="sm" variant="danger"><FontAwesomeIcon icon={faTrash}/></Button>
+                            <Button size="sm" variant="danger" onClick={() => {
+                                this.setState({
+                                    deleteEntry: true,
+                                    annotationIdToBeDeleted: annotation.a_id
+                                });
+                            }}>
+                                <FontAwesomeIcon icon={faTrash}/>
+                            </Button>
+                            <ConfirmationDialog
+                                show={this.state.deleteEntry && this.state.annotationIdToBeDeleted === annotation.a_id}
+                                message={"Are you sure you want to delete the Annotation '" + annotation.name + "'?"}
+                                onAccept={() => {
+                                    this.props.deleteAnnotation(annotation.a_id);
+                                    this.setState({
+                                        deleteEntry: false,
+                                        annotationIdToBeDeleted: undefined
+                                    });
+                                }}
+                                onCancel={() => {
+                                    this.setState({
+                                        deleteEntry: false,
+                                        annotationIdToBeDeleted: undefined
+                                    });
+                                }}
+                                acceptText="Delete" />
                         </div>
                     </td>
                 </tr>
@@ -99,7 +126,7 @@ class AnnotationSetDetails extends Component {
                                       value={this.props.editableAnnotation.data.values.name || ""}/>
                     </InputGroup>
                 </td>
-                <td><ColorPickerBadge /></td>
+                <td><ColorPickerBadge updateColorCallback={color => {this.props.updateAnnotationField('color', color)}} /></td>
                 <td>
                     <div className="float-right">
                         <Button size="sm" variant="success" onClick={() => {
@@ -116,7 +143,7 @@ class AnnotationSetDetails extends Component {
             isPending={this.props.annotationSet.annotations.isFetching}
             success={this.props.annotationSet.annotations.status === fetchStatusType.success}
             retryCallback={() => {
-                this.props.fetchAnnotations(this.props.annotationSet.data.values.s_id);
+                this.props.fetchAnnotations();
             }}
         >
             <div className="table-responsive">
@@ -141,6 +168,8 @@ class AnnotationSetDetails extends Component {
     _isNewAnnotationSet() {
         return this.props.annotationSet.data.values.s_id <= 0;
     }
+
+    // TODO: reset validate on success
 
     render() {
         return (
@@ -182,21 +211,23 @@ class AnnotationSetDetails extends Component {
                         </Card.Body>
                     </Card>
                 </Form>
-                <Card className="mt-3">
-                    <Card.Body>
-                        <Row>
-                            <Col>
-                                <Card.Title>
-                                    Annotations
-                                </Card.Title>
-                            </Col>
-                            <Col><Button size="sm" className="float-right" onClick={this._addNewAnnotation}>
-                                <FontAwesomeIcon icon={faPlus} /> Add</Button>
-                            </Col>
-                        </Row>
-                        {this._renderAnnotationsTable()}
-                    </Card.Body>
-                </Card>
+                {/*{ !this._isNewAnnotationSet() &&*/}
+                    <Card className="mt-3">
+                        <Card.Body>
+                            <Row>
+                                <Col>
+                                    <Card.Title>
+                                        Annotations
+                                    </Card.Title>
+                                </Col>
+                                <Col><Button size="sm" className="float-right" onClick={this._addNewAnnotation}>
+                                    <FontAwesomeIcon icon={faPlus}/> Add</Button>
+                                </Col>
+                            </Row>
+                            {this._renderAnnotationsTable()}
+                        </Card.Body>
+                    </Card>
+                {/*}*/}
             </React.Fragment>
         );
     }

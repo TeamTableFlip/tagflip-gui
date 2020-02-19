@@ -64,5 +64,46 @@ export function saveAnnotation() {
                     dispatch(receiveEditableAnnotation({}, fetchStatusType.error, err))
                 );
         }
+        // dispatch(reloadAnnotation());
+    }
+}
+
+// Actions for reloading an Annotation
+
+export function reloadAnnotation() {
+    return (dispatch, getState) => {
+        let annotation = getState().editableAnnotation.data.values;
+        if (annotation.a_id > 0) {
+            dispatch(requestEditableAnnotation());
+            client.httpGet(`/corpus/${annotation.c_id}`)
+                .then(result => {
+                    dispatch(receiveEditableAnnotation(result));
+                })
+                .catch(error => dispatch(receiveEditableAnnotation({}, fetchStatusType.error, error)));
+        }
+        else {
+            dispatch(receiveEditableAnnotation(getState().emptyAnnotation));
+        }
+    }
+}
+
+// Actions for deleting an Annotation() {
+
+
+// Actions for deleting Annotation Sets
+export const DELETE_ANNOTATION = "DELETE_ANNOTATION";
+
+export function deleteAnnotation(annotationId) {
+    return (dispatch, getState) => {
+        client.httpDelete(`/annotation/${annotationId}`)
+            .then(result => {
+                return dispatch({
+                    type: DELETE_ANNOTATION,
+                    annotationId: annotationId
+                });
+            })
+            .catch(err => {
+                dispatch(receiveEditableAnnotation({}, fetchStatusType.error, err))
+            });
     }
 }

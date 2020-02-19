@@ -12,11 +12,19 @@ import connect from "react-redux/es/connect/connect";
 import {Spinner} from "react-bootstrap";
 import fetchStatusType from "../../../../redux/actions/FetchStatusTypes";
 import Alert from "react-bootstrap/Alert";
+import ConfirmationDialog from "../../../components/dialogs/ConfirmationDialog";
+import FetchPending from "../../../components/FetchPending";
 
 class AnnotationSetList extends Component {
     constructor(props) {
         super(props);
         this._addNewAnnotationSet = this._addNewAnnotationSet.bind(this);
+        this._renderAnnotationSets = this._renderAnnotationSets.bind(this);
+        this.render = this.render.bind(this);
+        this.state = {
+            deleteEntry: false,
+            annotationSetIdToBeDeleted: undefined
+        };
     }
 
     componentDidMount() {
@@ -29,14 +37,6 @@ class AnnotationSetList extends Component {
     }
 
     _renderAnnotationSets() {
-        if (this.props.annotationSets.isFetching) {
-            return (
-                <div className="d-flex justify-content-center">
-                    <Spinner animation="border" variant="primary"/>
-                </div>
-            )
-        }
-
         let renderAnnotationSetTableData = () => {
             return this.props.annotationSets.items.map(annotationSet => {
                 return <tr key={annotationSet.s_id}>
@@ -50,7 +50,31 @@ class AnnotationSetList extends Component {
                                         return this.props.history.push(`${this.props.match.path}/edit`)
                                     }}><FontAwesomeIcon
                                 icon={faPen}/></Button>
-                            <Button size="sm" variant="danger"><FontAwesomeIcon icon={faTrash}/></Button>
+                            <Button size="sm" variant="danger" onClick={() => {
+                                this.setState({
+                                    deleteEntry: true,
+                                    annotationSetIdToBeDeleted: annotationSet.s_id
+                                });
+                            }}>
+                                <FontAwesomeIcon icon={faTrash}/>
+                            </Button>
+                            <ConfirmationDialog
+                                show={this.state.deleteEntry && this.state.annotationSetIdToBeDeleted === annotationSet.s_id}
+                                message={"Are you sure you want to delete the Annotation Set '" + annotationSet.name + "'?"}
+                                onAccept={() => {
+                                    this.props.deleteAnnotationSet(annotationSet.s_id);
+                                    this.setState({
+                                        deleteEntry: false,
+                                        annotationSetIdToBeDeleted: undefined
+                                    });
+                                }}
+                                onCancel={() => {
+                                    this.setState({
+                                        deleteEntry: false,
+                                        annotationSetIdToBeDeleted: undefined
+                                    });
+                                }}
+                                acceptText="Delete" />
                         </div>
                     </td>
                 </tr>
@@ -59,15 +83,13 @@ class AnnotationSetList extends Component {
 
         return (
             <div className="table-responsive">
-                {
-                    (this.props.annotationSets.status === fetchStatusType.error) &&
-                    <Alert variant="warning">
-                        <p>Could not fetch data from server.</p>
-                        <Button onClick={() => this.props.fetchAnnotationSets()} variant="primary">Try again</Button>
-                    </Alert>
-                }
-                {
-                    (this.props.annotationSets.status === fetchStatusType.success) &&
+                <FetchPending
+                    isPending={this.props.annotationSets.isFetching}
+                    success={this.props.annotationSets.status === fetchStatusType.success}
+                    retryCallback={() => {
+                        this.props.fetchAnnotationSets();
+                    }}
+                >
                     <table className="table">
                         <thead>
                         <tr>
@@ -80,7 +102,7 @@ class AnnotationSetList extends Component {
                         {renderAnnotationSetTableData()}
                         </tbody>
                     </table>
-                }
+                </FetchPending>
             </div>
 
         )

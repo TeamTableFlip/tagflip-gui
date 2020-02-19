@@ -46,5 +46,8 @@ export const editableAnnotation = createReducer({
             draft.data.status = fetchStatusType.error;
             draft.data.error = action.error;
         }
+    },
+    [AnnotationEditActions.DELETE_ANNOTATION](draft, action) {
+        draft.data.values = emptyAnnotation();
     }
 });

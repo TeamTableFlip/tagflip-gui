@@ -29,5 +29,8 @@ export const annotationSets = createReducer({
                 draft.status = fetchStatusType.error;
                 draft.error = action.error;
             }
+        },
+        [AnnotationSetFetchActions.DELETE_ANNOTATION_SET](draft, action) {
+            draft.items = draft.items.filter(annotationSet => annotationSet.s_id !== action.annotationSetId);
         }
     });
