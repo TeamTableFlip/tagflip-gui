@@ -1,6 +1,7 @@
 import createReducer from "./CreateReducer";
 import * as AnnotationSetEditActions from "../actions/AnnotationSetEditActions";
 import fetchStatusType from "../actions/FetchStatusTypes";
+import * as AnnotationSetFetchActions from "../actions/AnnotationSetListActions";
 
 export const emptyAnnotationSet = function(state = {}, action) {
     return {
@@ -71,5 +72,10 @@ export const editableAnnotationSet = createReducer({
             draft.annotations.status = fetchStatusType.error;
             draft.annotations.error = action.error;
         }
+    },
+    [AnnotationSetEditActions.DELETE_ANNOTATION](draft, action) {
+        draft.annotations.items = draft.annotations.items.filter(annotation =>
+            annotation.a_id !== action.annotationId
+        )
     }
 });

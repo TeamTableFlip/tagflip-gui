@@ -14,13 +14,13 @@ import {
     saveAnnotationSet,
     updateAnnotationSetField,
     reloadAnnotationSet,
-    fetchAnnotations
+    fetchAnnotations,
+    deleteAnnotation
 } from "./AnnotationSetEditActions";
 import {
     updateAnnotationField,
     saveAnnotation,
-    setEditableAnnotation,
-    deleteAnnotation
+    setEditableAnnotation
 } from "./AnnotationEditActions";
 
 /**

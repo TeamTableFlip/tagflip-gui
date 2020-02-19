@@ -1,5 +1,6 @@
 import fetchStatusType from "./FetchStatusTypes";
 import client from "../../backend/RestApi";
+import {receiveEditableAnnotation} from "./AnnotationEditActions";
 
 /**
  * Action creator for the action SET_EDITABLE_ANNOTATION_SET.
@@ -143,5 +144,24 @@ export function fetchAnnotations() {
         else {
             dispatch(receiveAnnotations([]));
         }
+    }
+}
+
+// Actions for deleting an Annotation
+
+export const DELETE_ANNOTATION = "DELETE_ANNOTATION";
+
+export function deleteAnnotation(annotationId) {
+    return (dispatch, getState) => {
+        client.httpDelete(`/annotation/${annotationId}`)
+            .then(result => {
+                return dispatch({
+                    type: DELETE_ANNOTATION,
+                    annotationId: annotationId
+                });
+            })
+            .catch(err => {
+                dispatch(receiveEditableAnnotation({}, fetchStatusType.error, err))
+            });
     }
 }
