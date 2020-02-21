@@ -33,9 +33,7 @@ class AnnotationSetDetails extends Component {
     }
 
     componentDidMount() {
-        // if(!this._isNewAnnotationSet()) {
-            this.props.fetchAnnotations();
-        // }
+        this.props.fetchAnnotations();
     }
 
     _saveAnnotationSet() {
@@ -232,7 +230,7 @@ class AnnotationSetDetails extends Component {
                         </Card.Body>
                     </Card>
                 </Form>
-                {/*{ !this._isNewAnnotationSet() &&*/}
+                { !this._isNewAnnotationSet() &&
                     <Card className="mt-3">
                         <Card.Body>
                             <Row>
@@ -248,7 +246,7 @@ class AnnotationSetDetails extends Component {
                             {this._renderAnnotationsTable()}
                         </Card.Body>
                     </Card>
-                {/*}*/}
+                }
             </React.Fragment>
         );
     }
