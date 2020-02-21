@@ -55,7 +55,7 @@ export function saveAnnotationSet() {
             client.httpPost('/annotationset', annotationSet)
                 .then(result => {
                     dispatch(receiveEditableAnnotationSet(result));
-                    dispatch(reloadAnnotationSet());
+                    dispatch(setEditableAnnotationSet(result));
                 })
                 .catch(err => {
                     dispatch(receiveEditableAnnotationSet({}, fetchStatusType.error, err))
@@ -65,7 +65,7 @@ export function saveAnnotationSet() {
             client.httpPut(`/annotationset/${annotationSet.s_id}`, annotationSet)
                 .then(result => {
                     dispatch(receiveEditableAnnotationSet(result));
-                    dispatch(reloadAnnotationSet());
+                    dispatch(setEditableAnnotationSet(result));
                 })
                 .catch(err => {
                     dispatch(receiveEditableAnnotationSet({}, fetchStatusType.error, err))
@@ -85,6 +85,7 @@ export function reloadAnnotationSet() {
             client.httpGet(`/annotationset/${annotationSet.s_id}`)
                 .then(result => {
                         dispatch(receiveEditableAnnotationSet(result));
+                        dispatch(setEditableAnnotationSet(result));
                     }
                 )
                 .catch(error => {
@@ -93,6 +94,7 @@ export function reloadAnnotationSet() {
         }
         else {
             dispatch(receiveEditableAnnotationSet(getState().emptyAnnotationSet));
+            dispatch(setEditableAnnotationSet(getState().emptyAnnotationSet));
         }
     }
 }
