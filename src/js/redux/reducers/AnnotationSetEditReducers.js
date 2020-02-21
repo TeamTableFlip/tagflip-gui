@@ -1,7 +1,6 @@
 import createReducer from "./CreateReducer";
 import * as AnnotationSetEditActions from "../actions/AnnotationSetEditActions";
 import fetchStatusType from "../actions/FetchStatusTypes";
-import * as AnnotationSetFetchActions from "../actions/AnnotationSetListActions";
 
 export const emptyAnnotationSet = function(state = {}, action) {
     return {

@@ -15,7 +15,14 @@ class ColorPickerBadge extends Component {
     }
 
     componentDidMount() {
-        this.props.updateColorCallback(this.state.color);
+        if(this.props.color) {
+            this.setState({
+                color: this.props.color
+            });
+        }
+        else {
+            this.props.updateColorCallback(this.state.color);
+        }
     }
 
     handleChangeComplete (color) {
@@ -37,7 +44,8 @@ class ColorPickerBadge extends Component {
 }
 
 ColorPickerBadge.propTypes = {
-    updateColorCallback: PropTypes.func.isRequired
+    updateColorCallback: PropTypes.func.isRequired,
+    color: PropTypes.string
 };
 
 export default ColorPickerBadge
