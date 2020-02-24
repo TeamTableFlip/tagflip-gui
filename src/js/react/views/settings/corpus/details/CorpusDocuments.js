@@ -71,7 +71,9 @@ class CorpusDocuments extends Component {
                         <Card.Title>Upload</Card.Title>
 
                         <FileUpload onSelect={(k) => alert(k)} onReject={(k) => alert(k)}
-                                    uploadText="Drop archive or single document here..."/>
+                                    uploadText="Drop archive or single document here..."
+                                    acceptMimeTypes='text/plain, application/zip,application/x-zip-compressed,multipart/x-zip"'
+                        />
 
                     </Card.Body>
                     <Card.Body>

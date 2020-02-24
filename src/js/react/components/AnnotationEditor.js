@@ -4,9 +4,6 @@ import AceEditor from "react-ace";
 import "ace-builds/src-noconflict/mode-text";
 import "ace-builds/src-noconflict/theme-github";
 import PropTypes from "prop-types";
-import FetchPending from "./FetchPending";
-import ServerNotAvailableInfo from "./ServerNotAvailableInfo";
-import {BrowserRouter as Router} from "react-router-dom";
 import AnnotationPicker from "./AnnotationPicker";
 
 import "./temp-maker.css"

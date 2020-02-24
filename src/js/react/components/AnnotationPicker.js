@@ -1,8 +1,8 @@
 import React, {Component} from "react";
 import Modal from "react-bootstrap/Modal";
 import PropTypes from "prop-types";
-import ServerNotAvailableInfo from "./ServerNotAvailableInfo";
 import ListGroup from "react-bootstrap/ListGroup";
+
 class AnnotationPicker extends Component {
 
     constructor(props) {
@@ -36,7 +36,7 @@ class AnnotationPicker extends Component {
     };
 }
 
-ServerNotAvailableInfo.propTypes = {
+AnnotationPicker.propTypes = {
     textSelected: PropTypes.bool,
     annotations: PropTypes.array,
     onPicked: PropTypes.func

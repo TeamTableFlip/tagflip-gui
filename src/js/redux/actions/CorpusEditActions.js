@@ -267,7 +267,7 @@ export function uploadCorpusDocuments(corpusId, file) {
     return (dispatch, getState) => {
         if (corpusId > 0) {
             dispatch(requestCorpusUploadDocuments())
-            client.httpPost(`/document/${corpusId}/document`, file)
+            client.httpPost(`/corpus/${corpusId}/import`, file)
                 .then(result =>
                     dispatch(receiveCorpusUploadDocuments(result))
                 )
