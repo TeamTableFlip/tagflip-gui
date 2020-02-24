@@ -1,19 +1,12 @@
 import React, {Component} from "react";
-import Badge from "react-bootstrap/Badge";
 import PropTypes from 'prop-types';
 import Modal from "react-bootstrap/Modal";
-import Button from "react-bootstrap/Button";
-import {BrowserRouter as Router} from "react-router-dom";
 import {Spinner} from "react-bootstrap";
 
 class ServerNotAvailableInfo extends Component {
-
     constructor(props) {
         super(props);
-
     }
-
-
 
     render() {
         return (
@@ -27,7 +20,6 @@ class ServerNotAvailableInfo extends Component {
                         <Spinner animation="border" variant="primary"/>
                     </div>
                 </Modal.Body>
-
             </Modal>
         );
     }
