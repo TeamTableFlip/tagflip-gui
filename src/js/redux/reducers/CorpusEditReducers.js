@@ -31,7 +31,14 @@ export const editableCorpus = createReducer({
         status: fetchStatusType.success,
         error: null
     },
-    documents: []
+    documents: {
+        isFetching: false,
+        didInvalidate: false,
+        items: [],
+        lastUpdated: undefined,
+        status: fetchStatusType.success,
+        error: null
+    },
 }, {
     [CorpusEditActions.SET_EDITABLE_CORPUS](draft, action) {
         draft.data.values = action.corpus;
@@ -84,5 +91,36 @@ export const editableCorpus = createReducer({
             draft.data.status = fetchStatusType.error;
             draft.data.error = action.error;
         }
-    }
+    },
+
+    [CorpusEditActions.REQUEST_CORPUS_DOCUMENTS](draft, action) {
+        draft.documents.isFetching = true;
+    },
+    [CorpusEditActions.INVALIDATE_CORPUS_DOCUMENTS](draft, action) {
+        draft.documents.didInvalidate = true;
+    },
+    [CorpusEditActions.RECEIVE_CORPUS_DOCUMENTS](draft, action) {
+        draft.documents.isFetching = false;
+        draft.documents.didInvalidate = false;
+        if (action.status === fetchStatusType.success) {
+            draft.documents.items = action.documents;
+            draft.documents.lastUpdated = action.receivedAt;
+            draft.documents.status = fetchStatusType.success;
+            draft.documents.error = null;
+        } else {
+            draft.documents.isFetching = false;
+            draft.documents.didInvalidate = false;
+            draft.documents.status = fetchStatusType.error;
+            draft.documents.error = action.error;
+        }
+    },
+
+    [CorpusEditActions.REQUEST_CORPUS_UPLOAD_DOCUMENTS](draft, action) {
+        draft.documents.isFetching = true;
+    },
+
+    [CorpusEditActions.RECEIVE_CORPUS_UPLOAD_DOCUMENTS](draft, action) {
+        draft.documents.isFetching = false;
+        draft.documents.didInvalidate = false;
+    },
 });

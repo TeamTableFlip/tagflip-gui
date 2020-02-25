@@ -40,7 +40,13 @@
     -webkit-animation-duration: 300ms; /* Safari 4.0 - 8.0 */
     animation-name: fadeActive;
     animation-duration: 300ms;
-    background-color: #f1f1f1;
+    background: repeating-linear-gradient(
+            45deg,
+            #93ec73,
+            #93ec73 10px,
+            #70ad6b 10px,
+            #70ad6b 20px
+    );
 }
 
 .dropZoneRejectDrag {

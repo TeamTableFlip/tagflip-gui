@@ -181,6 +181,103 @@ export function reloadCorpus() {
                 )
                 .catch(error => dispatch(receiveUpdateCorpus({}, fetchStatusType.error, error)))
             dispatch(fetchCorpusAnnotationSets(corpus.c_id));
+            dispatch(fetchCorpusDocuments(corpus.c_id));
+        }
+    }
+}
+
+// Actions for getting Documents while editing a corpus
+
+export const REQUEST_CORPUS_DOCUMENTS = "REQUEST_CORPUS_DOCUMENTS";
+
+export function requestCorpusDocuments() {
+    return {
+        type: REQUEST_CORPUS_DOCUMENTS,
+    }
+}
+
+
+export const INVALIDATE_CORPUS_DOCUMENTS = "INVALIDATE_CORPUS_DOCUMENTS";
+
+export function invalidateCorpusDocuments() {
+    return {
+        type: INVALIDATE_CORPUS_DOCUMENTS,
+    }
+}
+
+
+export const RECEIVE_CORPUS_DOCUMENTS = "RECEIVE_CORPUS_DOCUMENTS";
+
+export function receiveCorpusDocuments(documents, status = fetchStatusType.success, error = null) {
+    return {
+        type: RECEIVE_CORPUS_DOCUMENTS,
+        documents: documents,
+        receivedAt: Date.now(),
+        status: status,
+        error: error
+    }
+}
+
+
+/**
+ * Fetch all corpora from the REST API.
+ * @returns {Function}
+ */
+export function fetchCorpusDocuments(corpusId) {
+    return (dispatch, getState) => {
+        if (corpusId > 0) {
+            dispatch(invalidateCorpusDocuments())
+            dispatch(requestCorpusDocuments())
+            client.httpGet(`/corpus/${corpusId}/document`)
+                .then(result =>
+                    dispatch(receiveCorpusDocuments(result))
+                )
+                .catch(error => dispatch(receiveCorpusDocuments([], fetchStatusType.error, error)))
+        }
+    }
+}
+
+// Actions for uploading Documents while editing a corpus
+
+export const REQUEST_CORPUS_UPLOAD_DOCUMENTS = "REQUEST_CORPUS_UPLOAD_DOCUMENTS";
+
+export function requestCorpusUploadDocuments() {
+    return {
+        type: REQUEST_CORPUS_UPLOAD_DOCUMENTS,
+    }
+}
+
+export const RECEIVE_CORPUS_UPLOAD_DOCUMENTS = "RECEIVE_CORPUS_UPLOAD_DOCUMENTS";
+
+export function receiveCorpusUploadDocuments(documents, status = fetchStatusType.success, error = null) {
+    return {
+        type: RECEIVE_CORPUS_UPLOAD_DOCUMENTS,
+        documents: documents,
+        receivedAt: Date.now(),
+        status: status,
+        error: error
+    }
+}
+
+/**
+ * Fetch all corpora from the REST API.
+ * @returns {Function}
+ */
+export function uploadCorpusDocuments(corpusId, files) {
+    return (dispatch, getState) => {
+        if (corpusId > 0) {
+            dispatch(requestCorpusUploadDocuments())
+
+            let formData = new FormData()
+            for (let file of files) {
+                formData.append("file", file, file.name)
+            }
+
+            client.httpPost(`/corpus/${corpusId}/import`, formData, {}, false)
+                .then(result =>
+                    dispatch(receiveCorpusUploadDocuments(result))
+                )
+                .catch(error => dispatch(receiveCorpusDocuments([], fetchStatusType.error, error)))
         }
     }
 }
