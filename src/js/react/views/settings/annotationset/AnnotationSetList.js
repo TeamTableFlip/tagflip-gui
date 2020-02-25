@@ -9,9 +9,7 @@ import {withRouter} from "react-router-dom";
 import {bindActionCreators} from "redux";
 import {ActionCreators} from "../../../../redux/actions/ActionCreators";
 import connect from "react-redux/es/connect/connect";
-import {Spinner} from "react-bootstrap";
 import fetchStatusType from "../../../../redux/actions/FetchStatusTypes";
-import Alert from "react-bootstrap/Alert";
 import ConfirmationDialog from "../../../components/dialogs/ConfirmationDialog";
 import FetchPending from "../../../components/FetchPending";
 
@@ -22,7 +20,6 @@ class AnnotationSetList extends Component {
         this._renderAnnotationSets = this._renderAnnotationSets.bind(this);
         this.render = this.render.bind(this);
         this.state = {
-            deleteEntry: false,
             annotationSetIdToBeDeleted: undefined
         };
     }
@@ -52,29 +49,27 @@ class AnnotationSetList extends Component {
                                 icon={faPen}/></Button>
                             <Button size="sm" variant="danger" onClick={() => {
                                 this.setState({
-                                    deleteEntry: true,
                                     annotationSetIdToBeDeleted: annotationSet.s_id
                                 });
                             }}>
                                 <FontAwesomeIcon icon={faTrash}/>
                             </Button>
                             <ConfirmationDialog
-                                show={this.state.deleteEntry && this.state.annotationSetIdToBeDeleted === annotationSet.s_id}
+                                show={this.state.annotationSetIdToBeDeleted === annotationSet.s_id}
                                 message={"Are you sure you want to delete the Annotation Set '" + annotationSet.name + "'?"}
                                 onAccept={() => {
                                     this.props.deleteAnnotationSet(annotationSet.s_id);
                                     this.setState({
-                                        deleteEntry: false,
                                         annotationSetIdToBeDeleted: undefined
                                     });
                                 }}
                                 onCancel={() => {
                                     this.setState({
-                                        deleteEntry: false,
                                         annotationSetIdToBeDeleted: undefined
                                     });
                                 }}
-                                acceptText="Delete" />
+                                acceptText="Delete"
+                                acceptVariant="danger" />
                         </div>
                     </td>
                 </tr>
