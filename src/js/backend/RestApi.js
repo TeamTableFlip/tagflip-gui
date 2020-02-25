@@ -87,7 +87,7 @@ export class RestApi {
         console.log("Requesting", url);
 
         let body = (params) ? params : null;
-        if(typeof body === 'object' && body !== null) {
+        if(typeof body === 'object' && !(body instanceof FormData) && body !== null) {
             body = JSON.stringify(body)
         }
 
