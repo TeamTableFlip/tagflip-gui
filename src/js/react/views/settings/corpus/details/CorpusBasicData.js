@@ -78,6 +78,7 @@ class CorpusBasicData extends Component {
                                 </Form.Group>
                             </FetchPending>
                             <Button variant="success" className="mr-1" type="submit">Save</Button>
+                            {!this.isNewCorpus() && <Button variant="danger" className="mr-1" onClick={()=> this.props.reloadCorpus()}>Abort</Button> }
                         </Card.Body>
                     </Card>
                 </Form>

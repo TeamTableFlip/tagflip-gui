@@ -13,11 +13,15 @@ import {Spinner} from "react-bootstrap";
 import Alert from "react-bootstrap/Alert";
 import fetchStatusType from "../../../../redux/actions/FetchStatusTypes";
 import FetchPending from "../../../components/FetchPending";
+import ConfirmationDialog from "../../../components/dialogs/ConfirmationDialog";
 
 class CorpusList extends Component {
     constructor(props) {
         super(props);
         this.addNewCorpus = this.addNewCorpus.bind(this)
+        this.state = {
+            corpusIdToBeDeleted: undefined
+        };
     }
 
     componentDidMount() {
@@ -44,9 +48,21 @@ class CorpusList extends Component {
                             }}><FontAwesomeIcon icon={faPen}/></Button>
                             <Button size="sm" variant="danger"
                                     onClick={() => {
-                                        this.props.deleteCorpus(corpus.c_id);
+                                        this.setState({ corpusIdToBeDeleted: corpus.c_id });
                                     }}
                             ><FontAwesomeIcon icon={faTrash}/></Button>
+                            <ConfirmationDialog
+                                acceptVariant="danger"
+                                show={this.state.corpusIdToBeDeleted === corpus.c_id}
+                                message={"Are you sure you want to delete the Corpus '" + corpus.name + "'?"}
+                                onAccept={() => {
+                                    this.props.deleteCorpus(corpus.c_id);
+                                    this.setState({ corpusIdToBeDeleted: undefined });
+                                }}
+                                onCancel={() => {
+                                    this.setState({ corpusIdToBeDeleted: undefined });
+                                }}
+                                acceptText="Delete" />
                         </div>
                     </td>
                 </tr>
@@ -84,7 +100,7 @@ class CorpusList extends Component {
                 <Card>
                     <Card.Body>
                         <Row>
-                            <Col><Card.Title>Available: {this.props.corpora.length}</Card.Title></Col>
+                            <Col><Card.Title>Available: {this.props.corpora.items.length}</Card.Title></Col>
                             <Col><Button className="float-right" size="sm" onClick={this.addNewCorpus}><FontAwesomeIcon
                                 icon={faPlus}/> Add</Button></Col>
                         </Row>

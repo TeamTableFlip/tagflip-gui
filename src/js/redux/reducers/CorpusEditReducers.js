@@ -122,5 +122,17 @@ export const editableCorpus = createReducer({
     [CorpusEditActions.RECEIVE_CORPUS_UPLOAD_DOCUMENTS](draft, action) {
         draft.documents.isFetching = false;
         draft.documents.didInvalidate = false;
+        draft.documents.items.push(...action.documents);
+        if(action.skippedDocuments.length !== 0) {
+            draft.documents.status = fetchStatusType.warning;
+            draft.documents.error = "Could not process all documents."
+            for(let doc of action.skippedDocuments) {
+                draft.documents.error = draft.documents.error.concat("\n");
+                draft.documents.error =draft.documents.error.concat(doc.item.filename).concat(": ").concat(doc.reason)
+            }
+        } else {
+            draft.documents.status = fetchStatusType.success;
+            draft.documents.error = null;
+        }
     },
 });

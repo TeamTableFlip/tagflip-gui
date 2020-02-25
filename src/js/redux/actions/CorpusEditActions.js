@@ -249,10 +249,11 @@ export function requestCorpusUploadDocuments() {
 
 export const RECEIVE_CORPUS_UPLOAD_DOCUMENTS = "RECEIVE_CORPUS_UPLOAD_DOCUMENTS";
 
-export function receiveCorpusUploadDocuments(documents, status = fetchStatusType.success, error = null) {
+export function receiveCorpusUploadDocuments(result, status = fetchStatusType.success, error = null) {
     return {
         type: RECEIVE_CORPUS_UPLOAD_DOCUMENTS,
-        documents: documents,
+        documents: result.items,
+        skippedDocuments: result.skippedItems,
         receivedAt: Date.now(),
         status: status,
         error: error
@@ -274,8 +275,8 @@ export function uploadCorpusDocuments(corpusId, files) {
             }
 
             client.httpPost(`/corpus/${corpusId}/import`, formData, {}, false)
-                .then(result =>
-                    dispatch(receiveCorpusUploadDocuments(result))
+                .then(result => {
+                    dispatch(receiveCorpusUploadDocuments(result))}
                 )
                 .catch(error => dispatch(receiveCorpusDocuments([], fetchStatusType.error, error)))
         }
