@@ -115,7 +115,7 @@ class AnnotationSetList extends Component {
                 <Card>
                     <Card.Body>
                         <Row>
-                            <Col><Card.Title>Available: {this.props.annotationSets.length}</Card.Title></Col>
+                            <Col><Card.Title>Available: {this.props.annotationSets.items.length}</Card.Title></Col>
                             <Col><Button className="float-right" size="sm" onClick={this._addNewAnnotationSet}>
                                 <FontAwesomeIcon icon={faPlus} /> Add
                             </Button></Col>
