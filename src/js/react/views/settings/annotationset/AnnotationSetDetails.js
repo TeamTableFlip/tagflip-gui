@@ -16,6 +16,23 @@ import FetchPending from "../../../components/FetchPending";
 import fetchStatusType from "../../../../redux/actions/FetchStatusTypes";
 import ConfirmationDialog from "../../../components/dialogs/ConfirmationDialog";
 
+const style = {
+    annotation: {
+        firstCol: {
+            width: "10%"
+        },
+        secondCol: {
+            width: "40%"
+        },
+        thirdCol: {
+            width: "30%"
+        },
+        fourthCol: {
+            width: "20%"
+        }
+    }
+};
+
 class AnnotationSetDetails extends Component {
 
     constructor(props) {
@@ -89,8 +106,8 @@ class AnnotationSetDetails extends Component {
     _renderAnnotationsTable() {
         let renderEditAnnotation = () => {
             return <tr key={this.props.editableAnnotation.data.values.a_id || 0}>
-                <th scope="row">{this.props.editableAnnotation.data.values.a_id || ""}</th>
-                <td>
+                <th scope="row" style={style.annotation.firstCol}>{this.props.editableAnnotation.data.values.a_id || ""}</th>
+                <td style={style.annotation.secondCol}>
                     <InputGroup className="mb-3">
                         <Form.Control type="text" placeholder="Name of the Annotation" required={true}
                                       onChange={e => {this.props.updateAnnotationField('name', e.target.value)}}
@@ -100,13 +117,13 @@ class AnnotationSetDetails extends Component {
                         </Form.Control.Feedback>
                     </InputGroup>
                 </td>
-                <td>
+                <td style={style.annotation.thirdCol}>
                     <ColorPickerBadge
                         updateColorCallback={color => {this.props.updateAnnotationField('color', color)}}
                         color={!this._isNewAnnotation() ? this.props.editableAnnotation.data.values.color : undefined}
                     />
                 </td>
-                <td>
+                <td style={style.annotation.fourthCol}>
                     <div className="float-right">
                         <Button size="sm" variant="success" onClick={e => this._saveAnnotation()}>
                             <FontAwesomeIcon icon={faCheck}/>
@@ -131,10 +148,10 @@ class AnnotationSetDetails extends Component {
                 }
 
                 return <tr key={annotation.a_id}>
-                        <th scope="row">{annotation.a_id}</th>
-                        <td>{annotation.name}</td>
-                        <td><Badge className="text-monospace" variant="info" style={{backgroundColor: annotation.color}}>{annotation.color}</Badge></td>
-                        <td>
+                        <th scope="row" style={style.annotation.firstCol}>{annotation.a_id}</th>
+                        <td style={style.annotation.secondCol}>{annotation.name}</td>
+                        <td style={style.annotation.thirdCol}><Badge className="text-monospace" variant="info" style={{backgroundColor: annotation.color}}>{annotation.color}</Badge></td>
+                        <td style={style.annotation.fourthCol}>
                         <div className="float-right">
                             <Button size="sm" onClick={e => this._onClickEditAnnotation(annotation)}>
                                 <FontAwesomeIcon icon={faPen}/>
