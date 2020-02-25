@@ -248,7 +248,10 @@ class AnnotationSetDetails extends Component {
                                 </Form.Group>
                                 <div className="mt-3">
                                     <Button variant="success" className="mr-1" type="submit">Save</Button>
-                                    <Button variant="danger" onClick={e => this._abortEditAnnotationSet()}>Abort</Button>
+                                    { !this._isNewAnnotationSet() &&
+                                        <Button variant="danger"
+                                                onClick={e => this._abortEditAnnotationSet()}>Abort</Button>
+                                    }
                                 </div>
                             </FetchPending>
                         </Card.Body>
