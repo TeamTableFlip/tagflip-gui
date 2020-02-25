@@ -71,5 +71,10 @@ export const editableAnnotationSet = createReducer({
             draft.annotations.status = fetchStatusType.error;
             draft.annotations.error = action.error;
         }
+    },
+    [AnnotationSetEditActions.DELETE_ANNOTATION](draft, action) {
+        draft.annotations.items = draft.annotations.items.filter(annotation =>
+            annotation.a_id !== action.annotationId
+        )
     }
 });

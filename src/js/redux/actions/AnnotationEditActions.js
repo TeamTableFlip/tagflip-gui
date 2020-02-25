@@ -1,5 +1,6 @@
 import fetchStatusType from "./FetchStatusTypes";
 import client from "../../backend/RestApi";
+import {fetchAnnotations} from "./AnnotationSetEditActions";
 
 // Actions for setting the current Annotation
 
@@ -48,21 +49,43 @@ export function saveAnnotation() {
         // Decide whether to PUT for update or POST for create
         if(!annotation.a_id || annotation.a_id <= 0) {
             client.httpPost('/annotation', annotation)
-                .then(result =>
-                    dispatch(receiveEditableAnnotation(result))
-                )
-                .catch(err =>
+                .then(result => {
+                    dispatch(receiveEditableAnnotation(result));
+                    dispatch(fetchAnnotations());
+                })
+                .catch(err => {
                     dispatch(receiveEditableAnnotation({}, fetchStatusType.error, err))
-                );
+                });
         }
         else {
+            console.log("Updating", annotation);
             client.httpPut(`/annotation/${annotation.a_id}`, annotation)
-                .then(result =>
-                    dispatch(receiveEditableAnnotation(result))
-                )
-                .catch(err =>
+                .then(result => {
+                    dispatch(receiveEditableAnnotation(result));
+                    dispatch(fetchAnnotations());
+                })
+                .catch(err => {
                     dispatch(receiveEditableAnnotation({}, fetchStatusType.error, err))
-                );
+                });
+        }
+    }
+}
+
+// Actions for reloading an Annotation
+
+export function reloadAnnotation() {
+    return (dispatch, getState) => {
+        let annotation = getState().editableAnnotation.data.values;
+        if (annotation.a_id > 0) {
+            dispatch(requestEditableAnnotation());
+            client.httpGet(`/corpus/${annotation.c_id}`)
+                .then(result => {
+                    dispatch(receiveEditableAnnotation(result));
+                })
+                .catch(error => dispatch(receiveEditableAnnotation({}, fetchStatusType.error, error)));
+        }
+        else {
+            dispatch(receiveEditableAnnotation(getState().emptyAnnotation));
         }
     }
 }

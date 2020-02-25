@@ -8,13 +8,14 @@ import {
     reloadCorpus,
 } from './CorpusEditActions';
 import {fetchServerStatus} from './ServerStatusFetchActions';
-import {fetchAnnotationSets} from "./AnnotationSetListActions";
+import {fetchAnnotationSets, deleteAnnotationSet} from "./AnnotationSetListActions";
 import {
     setEditableAnnotationSet,
     saveAnnotationSet,
     updateAnnotationSetField,
     reloadAnnotationSet,
-    fetchAnnotations
+    fetchAnnotations,
+    deleteAnnotation
 } from "./AnnotationSetEditActions";
 import {
     updateAnnotationField,
@@ -37,6 +38,7 @@ export const ActionCreators = Object.assign({},
         reloadCorpus,
         fetchServerStatus,
         fetchAnnotationSets,
+        deleteAnnotationSet,
         setEditableAnnotationSet,
         saveAnnotationSet,
         updateAnnotationSetField,
@@ -44,6 +46,7 @@ export const ActionCreators = Object.assign({},
         fetchAnnotations,
         saveAnnotation,
         updateAnnotationField,
-        setEditableAnnotation
+        setEditableAnnotation,
+        deleteAnnotation
     }
 );

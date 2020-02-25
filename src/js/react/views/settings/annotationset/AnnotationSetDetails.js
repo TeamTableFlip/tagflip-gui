@@ -5,11 +5,7 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faPen, faPlus, faSearch, faTrash, faCheck, faBan} from "@fortawesome/free-solid-svg-icons";
-import Pagination from "react-bootstrap/Pagination";
-import OverlayTrigger from "react-bootstrap/OverlayTrigger";
-import Tooltip from "react-bootstrap/Tooltip";
-import FileUpload from "../../../components/fileUpload/FileUpload";
+import {faPen, faPlus, faTrash, faCheck, faBan} from "@fortawesome/free-solid-svg-icons";
 import Badge from "react-bootstrap/Badge";
 import InputGroup from "react-bootstrap/InputGroup";
 import ColorPickerBadge from "../../../components/colorPickerBadge/ColorPickerBadge";
@@ -18,25 +14,45 @@ import {ActionCreators} from "../../../../redux/actions/ActionCreators";
 import connect from "react-redux/es/connect/connect";
 import FetchPending from "../../../components/FetchPending";
 import fetchStatusType from "../../../../redux/actions/FetchStatusTypes";
+import ConfirmationDialog from "../../../components/dialogs/ConfirmationDialog";
+
+const style = {
+    annotation: {
+        firstCol: {
+            width: "10%"
+        },
+        secondCol: {
+            width: "40%"
+        },
+        thirdCol: {
+            width: "30%"
+        },
+        fourthCol: {
+            width: "20%"
+        }
+    }
+};
 
 class AnnotationSetDetails extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            validated: false,
+            validatedBasicInfo: false,
+            validatedAnnotation: false,
             createNewAnnotation: false,
-            editAnnotation: false
+            editAnnotation: false,
+            annotationIdToBeDeleted: undefined
         };
         this._saveAnnotationSet = this._saveAnnotationSet.bind(this);
         this._addNewAnnotation = this._addNewAnnotation.bind(this);
         this._renderAnnotationsTable = this._renderAnnotationsTable.bind(this);
+        this._saveAnnotation = this._saveAnnotation.bind(this);
+        this._abortEditAnnotationSet = this._abortEditAnnotationSet.bind(this);
     }
 
     componentDidMount() {
-        if(!this._isNewAnnotationSet()) {
-            this.props.fetchAnnotations(this.props.annotationSet.data.values.s_id);
-        }
+        this.props.fetchAnnotations();
     }
 
     _saveAnnotationSet() {
@@ -44,10 +60,12 @@ class AnnotationSetDetails extends Component {
         event.preventDefault();
         if (form.checkValidity() === false) {
             event.stopPropagation();
+            this.setState({validatedBasicInfo: true});
         } else {
-            this.props.saveAnnotationSet();
+            this.props.saveAnnotationSet().then(() =>
+                this.setState({validatedBasicInfo: false})
+            );
         }
-        this.setState({validated: true})
     }
 
     _addNewAnnotation() {
@@ -61,80 +79,137 @@ class AnnotationSetDetails extends Component {
     }
 
     _saveAnnotation() {
-        this.props.saveAnnotation();
+        let annotation = this.props.editableAnnotation.data.values;
+        if(annotation.name && annotation.name.length > 0) {
+            this.setState({
+                validatedAnnotation: false,
+                createNewAnnotation: false,
+                editAnnotation: false
+            });
+            this.props.saveAnnotation();
+        }
+        else {
+            this.setState({
+                validatedAnnotation: true
+            });
+        }
+    }
+
+    _onClickEditAnnotation(annotation) {
+        this.props.setEditableAnnotation(annotation);
         this.setState({
-            createNewAnnotation: false,
-            editAnnotation: false
+            editAnnotation: true,
+            createNewAnnotation: false
         });
-        this.props.fetchAnnotations(this.props.annotationSet.data.values.s_id);
     }
 
     _renderAnnotationsTable() {
+        let renderEditAnnotation = () => {
+            return <tr key={this.props.editableAnnotation.data.values.a_id || 0}>
+                <th scope="row" style={style.annotation.firstCol}>{this.props.editableAnnotation.data.values.a_id || ""}</th>
+                <td style={style.annotation.secondCol}>
+                    <InputGroup className="mb-3">
+                        <Form.Control type="text" placeholder="Name of the Annotation" required={true}
+                                      onChange={e => {this.props.updateAnnotationField('name', e.target.value)}}
+                                      value={this.props.editableAnnotation.data.values.name || ""}/>
+                        <Form.Control.Feedback type="invalid">
+                            Please choose a name.
+                        </Form.Control.Feedback>
+                    </InputGroup>
+                </td>
+                <td style={style.annotation.thirdCol}>
+                    <ColorPickerBadge
+                        updateColorCallback={color => {this.props.updateAnnotationField('color', color)}}
+                        color={!this._isNewAnnotation() ? this.props.editableAnnotation.data.values.color : undefined}
+                    />
+                </td>
+                <td style={style.annotation.fourthCol}>
+                    <div className="float-right">
+                        <Button size="sm" variant="success" onClick={e => this._saveAnnotation()}>
+                            <FontAwesomeIcon icon={faCheck}/>
+                        </Button>
+                        <Button size="sm" variant="warning" onClick={e => {
+                            this.setState({
+                                createNewAnnotation: false,
+                                editAnnotation: false
+                            })
+                        }}>
+                            <FontAwesomeIcon icon={faBan}/>
+                        </Button>
+                    </div>
+                </td>
+            </tr>
+        };
+
         let renderTableData = () => {
             return this.props.annotationSet.annotations.items.map(annotation => {
+                if(this.state.editAnnotation && annotation.a_id === this.props.editableAnnotation.data.values.a_id) {
+                    return renderEditAnnotation();
+                }
+
                 return <tr key={annotation.a_id}>
-                    <th scope="row">{annotation.a_id}</th>
-                    <td>{annotation.name}</td>
-                    <td><Badge variant="info" style={{backgroundColor: annotation.color}}>{annotation.color}</Badge></td>
-                    <td>
+                        <th scope="row" style={style.annotation.firstCol}>{annotation.a_id}</th>
+                        <td style={style.annotation.secondCol}>{annotation.name}</td>
+                        <td style={style.annotation.thirdCol}><Badge className="text-monospace" variant="info" style={{backgroundColor: annotation.color}}>{annotation.color}</Badge></td>
+                        <td style={style.annotation.fourthCol}>
                         <div className="float-right">
-                            <Button size="sm" onClick={() => this.props.history.push(`${this.props.match.path}/edit/${annotation.a_id}`)}><FontAwesomeIcon icon={faPen}/></Button>
-                            <Button size="sm" variant="danger"><FontAwesomeIcon icon={faTrash}/></Button>
+                            <Button size="sm" onClick={e => this._onClickEditAnnotation(annotation)}>
+                                <FontAwesomeIcon icon={faPen}/>
+                            </Button>
+                            <Button size="sm" variant="danger" onClick={e => {
+                                this.setState({
+                                    annotationIdToBeDeleted: annotation.a_id
+                                });
+                            }}>
+                                <FontAwesomeIcon icon={faTrash}/>
+                            </Button>
+                            <ConfirmationDialog
+                                show={this.state.annotationIdToBeDeleted === annotation.a_id}
+                                message={"Are you sure you want to delete the Annotation '" + annotation.name + "'?"}
+                                onAccept={() => {
+                                    this.props.deleteAnnotation(annotation.a_id);
+                                    this.setState({
+                                        annotationIdToBeDeleted: undefined
+                                    });
+                                }}
+                                onCancel={() => {
+                                    this.setState({
+                                        annotationIdToBeDeleted: undefined
+                                    });
+                                }}
+                                acceptText="Delete"
+                                acceptVariant="danger" />
                         </div>
                     </td>
                 </tr>
             })
         };
 
-        let renderEditAnnotation = () => {
-            if(!this.state.createNewAnnotation && !this.state.editAnnotation)
-                return;
-
-            return <tr>
-                <th scope="row">{this.props.editableAnnotation.data.values.a_id || ""}</th>
-                <td>
-                    <InputGroup className="mb-3">
-                        <Form.Control type="text" placeholder="Name of the Annotation"
-                                      onChange={e => {this.props.updateAnnotationField('name', e.target.value)}}
-                                      value={this.props.editableAnnotation.data.values.name || ""}/>
-                    </InputGroup>
-                </td>
-                <td><ColorPickerBadge /></td>
-                <td>
-                    <div className="float-right">
-                        <Button size="sm" variant="success" onClick={() => {
-                            this._saveAnnotation()
-                            // this.props.history.push(`${this.props.match.path}/edit/2`)
-                        }}><FontAwesomeIcon icon={faCheck}/></Button>
-                        <Button size="sm" variant="warning"><FontAwesomeIcon icon={faBan}/></Button>
-                    </div>
-                </td>
-            </tr>
-        };
-
         return <FetchPending
             isPending={this.props.annotationSet.annotations.isFetching}
             success={this.props.annotationSet.annotations.status === fetchStatusType.success}
             retryCallback={() => {
-                this.props.fetchAnnotations(this.props.annotationSet.data.values.s_id);
+                this.props.fetchAnnotations();
             }}
         >
-            <div className="table-responsive">
-                <table className="table">
-                    <thead>
-                    <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Name</th>
-                        <th scope="col">Color</th>
-                        <th scope="col"></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {renderTableData()}
-                    {renderEditAnnotation()}
-                    </tbody>
-                </table>
-            </div>
+            <Form noValidate validated={this.state.validatedAnnotation}>
+                <div className="table-responsive">
+                    <table className="table">
+                        <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Color</th>
+                            <th scope="col"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {renderTableData()}
+                        {this.state.createNewAnnotation && renderEditAnnotation()}
+                        </tbody>
+                    </table>
+                </div>
+            </Form>
         </FetchPending>
     }
 
@@ -142,11 +217,22 @@ class AnnotationSetDetails extends Component {
         return this.props.annotationSet.data.values.s_id <= 0;
     }
 
+    _isNewAnnotation() {
+        return this.props.editableAnnotation.data.values.a_id <= 0;
+    }
+
+    _abortEditAnnotationSet() {
+        this.setState({
+            validatedBasicInfo: false
+        });
+        this.props.reloadAnnotationSet();
+    }
+
     render() {
         return (
             <React.Fragment>
                 <h2>Edit Annotation Set</h2>
-                <Form noValidate validated={this.state.validated} onSubmit={this._saveAnnotationSet}>
+                <Form noValidate validated={this.state.validatedBasicInfo} onSubmit={this._saveAnnotationSet}>
                     <Card className="mt-3">
                         <Card.Body>
                             <Card.Title>
@@ -176,27 +262,32 @@ class AnnotationSetDetails extends Component {
                                 </Form.Group>
                                 <div className="mt-3">
                                     <Button variant="success" className="mr-1" type="submit">Save</Button>
-                                    <Button variant="danger">Abort</Button>
+                                    { !this._isNewAnnotationSet() &&
+                                        <Button variant="danger"
+                                                onClick={e => this._abortEditAnnotationSet()}>Abort</Button>
+                                    }
                                 </div>
                             </FetchPending>
                         </Card.Body>
                     </Card>
                 </Form>
-                <Card className="mt-3">
-                    <Card.Body>
-                        <Row>
-                            <Col>
-                                <Card.Title>
-                                    Annotations
-                                </Card.Title>
-                            </Col>
-                            <Col><Button size="sm" className="float-right" onClick={this._addNewAnnotation}>
-                                <FontAwesomeIcon icon={faPlus} /> Add</Button>
-                            </Col>
-                        </Row>
-                        {this._renderAnnotationsTable()}
-                    </Card.Body>
-                </Card>
+                { !this._isNewAnnotationSet() &&
+                    <Card className="mt-3">
+                        <Card.Body>
+                            <Row>
+                                <Col>
+                                    <Card.Title>
+                                        Annotations
+                                    </Card.Title>
+                                </Col>
+                                <Col><Button size="sm" className="float-right" onClick={this._addNewAnnotation}>
+                                    <FontAwesomeIcon icon={faPlus}/> Add</Button>
+                                </Col>
+                            </Row>
+                            {this._renderAnnotationsTable()}
+                        </Card.Body>
+                    </Card>
+                }
             </React.Fragment>
         );
     }

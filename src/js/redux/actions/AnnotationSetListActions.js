@@ -2,6 +2,7 @@ import client from '../../backend/RestApi';
 import fetchStatusType from "./FetchStatusTypes";
 
 export const REQUEST_ANNOTATION_SETS = "REQUEST_ANNOTATION_SETS";
+
 export function requestAnnotationSets() {
     return {
         type: REQUEST_ANNOTATION_SETS,
@@ -9,6 +10,7 @@ export function requestAnnotationSets() {
 }
 
 export const INVALIDATE_ANNOTATION_SETS = "INVALIDATE_ANNOTATION_SETS";
+
 export function invalidateAnnotationSets() {
     return {
         type: INVALIDATE_ANNOTATION_SETS,
@@ -16,6 +18,7 @@ export function invalidateAnnotationSets() {
 }
 
 export const RECEIVE_ANNOTATION_SETS = "RECEIVE_ANNOTATION_SETS";
+
 export function receiveAnnotationSets(annotationSets, status = fetchStatusType.success, error = null) {
     return {
         type: RECEIVE_ANNOTATION_SETS,
@@ -40,5 +43,23 @@ export function fetchAnnotationSets() {
             .catch(error =>
                 dispatch(receiveAnnotationSets([], fetchStatusType.error, error))
             );
+    }
+}
+
+// Actions for deleting Annotation Sets
+export const DELETE_ANNOTATION_SET = "DELETE_ANNOTATION_SET";
+
+export function deleteAnnotationSet(annotationSetId) {
+    return (dispatch, getState) => {
+        client.httpDelete(`/annotationset/${annotationSetId}`)
+            .then(result => {
+                return dispatch({
+                    type: DELETE_ANNOTATION_SET,
+                    annotationSetId
+                });
+            })
+            .catch(err => {
+                dispatch(receiveAnnotationSets([], fetchStatusType.error, err))
+            });
     }
 }

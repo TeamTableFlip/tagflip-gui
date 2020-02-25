@@ -1,5 +1,6 @@
 import fetchStatusType from "./FetchStatusTypes";
 import client from "../../backend/RestApi";
+import {receiveEditableAnnotation} from "./AnnotationEditActions";
 
 /**
  * Action creator for the action SET_EDITABLE_ANNOTATION_SET.
@@ -52,21 +53,23 @@ export function saveAnnotationSet() {
         // Decide whether to PUT for update or POST for create
         if(!annotationSet.s_id || annotationSet.s_id <= 0) {
             client.httpPost('/annotationset', annotationSet)
-                .then(result =>
-                    dispatch(receiveEditableAnnotationSet(result))
-                )
-                .catch(err =>
+                .then(result => {
+                    dispatch(receiveEditableAnnotationSet(result));
+                    dispatch(setEditableAnnotationSet(result));
+                })
+                .catch(err => {
                     dispatch(receiveEditableAnnotationSet({}, fetchStatusType.error, err))
-                );
+                });
         }
         else {
             client.httpPut(`/annotationset/${annotationSet.s_id}`, annotationSet)
-                .then(result =>
-                    dispatch(receiveEditableAnnotationSet(result))
-                )
-                .catch(err =>
+                .then(result => {
+                    dispatch(receiveEditableAnnotationSet(result));
+                    dispatch(setEditableAnnotationSet(result));
+                })
+                .catch(err => {
                     dispatch(receiveEditableAnnotationSet({}, fetchStatusType.error, err))
-                );
+                });
         }
     }
 }
@@ -82,11 +85,16 @@ export function reloadAnnotationSet() {
             client.httpGet(`/annotationset/${annotationSet.s_id}`)
                 .then(result => {
                         dispatch(receiveEditableAnnotationSet(result));
+                        dispatch(setEditableAnnotationSet(result));
                     }
                 )
                 .catch(error => {
                     dispatch(receiveEditableAnnotationSet({}, fetchStatusType.error, error))
                 });
+        }
+        else {
+            dispatch(receiveEditableAnnotationSet(getState().emptyAnnotationSet));
+            dispatch(setEditableAnnotationSet(getState().emptyAnnotationSet));
         }
     }
 }
@@ -122,15 +130,40 @@ export function receiveAnnotations(annotations, status = fetchStatusType.success
  * Fetch all Annotations from the REST API.
  * @returns {Function}
  */
-export function fetchAnnotations(annotationSetId) {
+export function fetchAnnotations() {
     return (dispatch, getState) => {
         dispatch(requestAnnotations());
-        client.httpGet(`/annotationset/${annotationSetId}/annotation`)
-            .then(result =>
-                dispatch(receiveAnnotations(result))
-            )
-            .catch(error =>
-                dispatch(receiveAnnotations([], fetchStatusType.error, error))
-            );
+        let annotationSet = getState().editableAnnotationSet.data.values;
+        if(annotationSet.s_id > 0) {
+            client.httpGet(`/annotationset/${annotationSet.s_id}/annotation`)
+                .then(result =>
+                    dispatch(receiveAnnotations(result))
+                )
+                .catch(error =>
+                    dispatch(receiveAnnotations([], fetchStatusType.error, error))
+                );
+        }
+        else {
+            dispatch(receiveAnnotations([]));
+        }
+    }
+}
+
+// Actions for deleting an Annotation
+
+export const DELETE_ANNOTATION = "DELETE_ANNOTATION";
+
+export function deleteAnnotation(annotationId) {
+    return (dispatch, getState) => {
+        client.httpDelete(`/annotation/${annotationId}`)
+            .then(result => {
+                return dispatch({
+                    type: DELETE_ANNOTATION,
+                    annotationId: annotationId
+                });
+            })
+            .catch(err => {
+                dispatch(receiveEditableAnnotation({}, fetchStatusType.error, err))
+            });
     }
 }
