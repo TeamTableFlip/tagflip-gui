@@ -32,6 +32,7 @@ class AnnotationSetDetails extends Component {
         this._addNewAnnotation = this._addNewAnnotation.bind(this);
         this._renderAnnotationsTable = this._renderAnnotationsTable.bind(this);
         this._saveAnnotation = this._saveAnnotation.bind(this);
+        this._abortEditAnnotationSet = this._abortEditAnnotationSet.bind(this);
     }
 
     componentDidMount() {
@@ -206,6 +207,13 @@ class AnnotationSetDetails extends Component {
         return this.props.editableAnnotation.data.values.a_id <= 0;
     }
 
+    _abortEditAnnotationSet() {
+        this.setState({
+            validatedBasicInfo: false
+        });
+        this.props.reloadAnnotationSet();
+    }
+
     render() {
         return (
             <React.Fragment>
@@ -240,7 +248,7 @@ class AnnotationSetDetails extends Component {
                                 </Form.Group>
                                 <div className="mt-3">
                                     <Button variant="success" className="mr-1" type="submit">Save</Button>
-                                    <Button variant="danger">Abort</Button>
+                                    <Button variant="danger" onClick={e => this._abortEditAnnotationSet()}>Abort</Button>
                                 </div>
                             </FetchPending>
                         </Card.Body>
