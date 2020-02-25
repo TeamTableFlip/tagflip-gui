@@ -22,6 +22,7 @@ class AnnotationSetDetails extends Component {
         super(props);
         this.state = {
             validatedBasicInfo: false,
+            validatedAnnotation: false,
             createNewAnnotation: false,
             editAnnotation: false,
             deleteEntry: false,
@@ -30,6 +31,7 @@ class AnnotationSetDetails extends Component {
         this._saveAnnotationSet = this._saveAnnotationSet.bind(this);
         this._addNewAnnotation = this._addNewAnnotation.bind(this);
         this._renderAnnotationsTable = this._renderAnnotationsTable.bind(this);
+        this._saveAnnotation = this._saveAnnotation.bind(this);
     }
 
     componentDidMount() {
@@ -60,11 +62,20 @@ class AnnotationSetDetails extends Component {
     }
 
     _saveAnnotation() {
-        this.setState({
-            createNewAnnotation: false,
-            editAnnotation: false
-        });
-        this.props.saveAnnotation();
+        let annotation = this.props.editableAnnotation.data.values;
+        if(annotation.name && annotation.name.length > 0) {
+            this.setState({
+                validatedAnnotation: false,
+                createNewAnnotation: false,
+                editAnnotation: false
+            });
+            this.props.saveAnnotation();
+        }
+        else {
+            this.setState({
+                validatedAnnotation: true
+            });
+        }
     }
 
     _onClickEditAnnotation(annotation) {
@@ -81,9 +92,12 @@ class AnnotationSetDetails extends Component {
                 <th scope="row">{this.props.editableAnnotation.data.values.a_id || ""}</th>
                 <td>
                     <InputGroup className="mb-3">
-                        <Form.Control type="text" placeholder="Name of the Annotation"
+                        <Form.Control type="text" placeholder="Name of the Annotation" required={true}
                                       onChange={e => {this.props.updateAnnotationField('name', e.target.value)}}
                                       value={this.props.editableAnnotation.data.values.name || ""}/>
+                        <Form.Control.Feedback type="invalid">
+                            Please choose a name.
+                        </Form.Control.Feedback>
                     </InputGroup>
                 </td>
                 <td>
@@ -94,7 +108,9 @@ class AnnotationSetDetails extends Component {
                 </td>
                 <td>
                     <div className="float-right">
-                        <Button size="sm" variant="success" onClick={e => this._saveAnnotation()}><FontAwesomeIcon icon={faCheck}/></Button>
+                        <Button size="sm" variant="success" onClick={e => this._saveAnnotation()}>
+                            <FontAwesomeIcon icon={faCheck}/>
+                        </Button>
                         <Button size="sm" variant="warning" onClick={e => {
                             this.setState({
                                 createNewAnnotation: false,
@@ -115,10 +131,10 @@ class AnnotationSetDetails extends Component {
                 }
 
                 return <tr key={annotation.a_id}>
-                    <th scope="row">{annotation.a_id}</th>
-                    <td>{annotation.name}</td>
-                    <td><Badge className="text-monospace" variant="info" style={{backgroundColor: annotation.color}}>{annotation.color}</Badge></td>
-                    <td>
+                        <th scope="row">{annotation.a_id}</th>
+                        <td>{annotation.name}</td>
+                        <td><Badge className="text-monospace" variant="info" style={{backgroundColor: annotation.color}}>{annotation.color}</Badge></td>
+                        <td>
                         <div className="float-right">
                             <Button size="sm" onClick={e => this._onClickEditAnnotation(annotation)}>
                                 <FontAwesomeIcon icon={faPen}/>
@@ -161,22 +177,24 @@ class AnnotationSetDetails extends Component {
                 this.props.fetchAnnotations();
             }}
         >
-            <div className="table-responsive">
-                <table className="table">
-                    <thead>
-                    <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Name</th>
-                        <th scope="col">Color</th>
-                        <th scope="col"></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {renderTableData()}
-                    {this.state.createNewAnnotation && renderEditAnnotation()}
-                    </tbody>
-                </table>
-            </div>
+            <Form noValidate validated={this.state.validatedAnnotation}>
+                <div className="table-responsive">
+                    <table className="table">
+                        <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Color</th>
+                            <th scope="col"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {renderTableData()}
+                        {this.state.createNewAnnotation && renderEditAnnotation()}
+                        </tbody>
+                    </table>
+                </div>
+            </Form>
         </FetchPending>
     }
 
@@ -187,8 +205,6 @@ class AnnotationSetDetails extends Component {
     _isNewAnnotation() {
         return this.props.editableAnnotation.data.values.a_id <= 0;
     }
-
-    // TODO: reset validate on success
 
     render() {
         return (
