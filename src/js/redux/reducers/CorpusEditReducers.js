@@ -114,4 +114,13 @@ export const editableCorpus = createReducer({
             draft.documents.error = action.error;
         }
     },
+
+    [CorpusEditActions.REQUEST_CORPUS_UPLOAD_DOCUMENTS](draft, action) {
+        draft.documents.isFetching = true;
+    },
+
+    [CorpusEditActions.RECEIVE_CORPUS_UPLOAD_DOCUMENTS](draft, action) {
+        draft.documents.isFetching = false;
+        draft.documents.didInvalidate = false;
+    },
 });

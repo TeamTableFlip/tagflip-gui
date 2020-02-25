@@ -27,12 +27,13 @@ export class RestApi {
      *
      * @param path The path relative to the specified endpoint.
      * @param urlParams URL param array like ['paramname1=paramvalue1', 'paramname2=paramvalue2', ...]
+     * @param headers
      * @returns {*} a Promise
      */
-    httpGet(path, urlParams) {
+    httpGet(path, urlParams, headers=RestApi._headers()) {
         if (!urlParams)
             return this._httpRequest(path, GET, null);
-        return this._httpRequest(`${path}?${urlParams.join('&')}`, GET, null);
+        return this._httpRequest(`${path}?${urlParams.join('&')}`, GET, null, headers);
     }
 
     /**
@@ -40,10 +41,11 @@ export class RestApi {
      *
      * @param path The path relative to the given endpoint.
      * @param body The JSON body to be sent.
+     * @param headers Custom headers.
      * @returns {*} a Promise
      */
-    httpPost(path, body) {
-        return this._httpRequest(path, POST, body);
+    httpPost(path, body, headers=RestApi._headers()) {
+        return this._httpRequest(path, POST, body, headers);
     }
 
     /**
@@ -51,10 +53,11 @@ export class RestApi {
      *
      * @param path The path relative to the given endpoint.
      * @param body The JSON body to be sent.
+     * @param headers Custom headers.
      * @returns {*} a Promise
      */
-    httpPut(path, body) {
-        return this._httpRequest(path, PUT, body);
+    httpPut(path, body, headers=RestApi._headers()) {
+        return this._httpRequest(path, PUT, body, headers);
     }
 
     /**
@@ -62,10 +65,11 @@ export class RestApi {
      *
      * @param path The path relative to the given endpoint.
      * @param body The JSON body to be sent.
+     * @param headers Custom headers.
      * @returns {*} a Promise
      */
-    httpDelete(path, body) {
-        return this._httpRequest(path, DELETE, body);
+    httpDelete(path, body, headers=RestApi._headers()) {
+        return this._httpRequest(path, DELETE, body, headers);
     }
 
     /**
@@ -74,18 +78,24 @@ export class RestApi {
      * @param path The path relative to specified endpoint.
      * @param method The HTTP-method to be used.
      * @param params The JSON body to be sent.
+     * @param headers Additional headers.
      * @returns {Promise<Response | never>}
      * @private
      */
-    _httpRequest(path, method, params) {
+    _httpRequest(path, method, params, headers= RestApi._headers()) {
         let url = this._buildUrl(path);
         console.log("Requesting", url);
-        let body = (params) ? JSON.stringify(params) : null;
+
+        let body = (params) ? params : null;
+        if(typeof body === 'object' && body !== null) {
+            body = JSON.stringify(body)
+        }
+
         let payload = {
             method: method,
             mode: 'cors',
             credentials: 'include',
-            headers: RestApi._headers(),
+            headers: headers,
             redirect: 'follow',
             referrerPolicy: 'no-referrer',
             body: body

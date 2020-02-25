@@ -263,11 +263,17 @@ export function receiveCorpusUploadDocuments(documents, status = fetchStatusType
  * Fetch all corpora from the REST API.
  * @returns {Function}
  */
-export function uploadCorpusDocuments(corpusId, file) {
+export function uploadCorpusDocuments(corpusId, files) {
     return (dispatch, getState) => {
         if (corpusId > 0) {
             dispatch(requestCorpusUploadDocuments())
-            client.httpPost(`/corpus/${corpusId}/import`, file)
+
+            let formData = new FormData()
+            for (let file of files) {
+                formData.append("file[]", file, file.name)
+            }
+
+            client.httpPost(`/corpus/${corpusId}/import`, formData, {}, false)
                 .then(result =>
                     dispatch(receiveCorpusUploadDocuments(result))
                 )

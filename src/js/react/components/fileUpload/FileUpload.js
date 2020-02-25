@@ -2,11 +2,11 @@ import React, {Component} from 'react';
 import PropTypes from "prop-types";
 import Dropzone from 'react-dropzone'
 import './FileUpload.css';
-import ListGroup from "react-bootstrap/ListGroup";
 import Card from "react-bootstrap/Card";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
-import ProgressBar from "react-bootstrap/ProgressBar";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faTrash} from "@fortawesome/free-solid-svg-icons";
 
 
 class FileUpload extends Component {
@@ -50,6 +50,33 @@ class FileUpload extends Component {
         })
     }
 
+    _renderFileList() {
+        return (<table className="table">
+                <thead>
+                <tr>
+                    <th scope="col">File</th>
+                    <th scope="col"></th>
+                </tr>
+                </thead>
+                <tbody>
+                {this.state.files.map(file => (
+                    <tr key={file.name}>
+                        <td>{file.name}</td>
+                        <td>
+                            <Button size="sm" variant="danger"
+                                    className="float-right"
+                                    onClick={() => {
+                                        this.setState({files: this.state.files.filter(f => f !== file)})
+                                    }}
+                            ><FontAwesomeIcon icon={faTrash}/></Button>
+                        </td>
+                    </tr>
+                ))}
+                </tbody>
+            </table>
+        );
+    }
+
     render() {
         return (
             <div>
@@ -61,6 +88,19 @@ class FileUpload extends Component {
                         <Modal.Body>
                             <p>File type does not match one of the following:</p>
                             <p>{this.props.acceptMimeTypes}</p>
+                        </Modal.Body>
+                        <Modal.Footer>
+                            <Button variant="primary" className="mr-1" onClick={() => this._reset()}>
+                                Close
+                            </Button>
+                        </Modal.Footer>
+                    </Modal>
+                    <Modal show={this.state.files.length > this.props.maxCount} onHide={() => this._reset()}>
+                        <Modal.Header>
+                            <Modal.Title>Too many files</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                            <p>Please do not add more than {this.props.maxCount} files at once.</p>
                         </Modal.Body>
                         <Modal.Footer>
                             <Button variant="primary" className="mr-1" onClick={() => this._reset()}>
@@ -85,7 +125,7 @@ class FileUpload extends Component {
                                       onDropRejected={(k) => {
                                           this.setState({rejected: true})
                                       }}
-                                      multiple={false}
+                                      multiple={this.props.maxCount !== 1}
                                       accept={this.props.acceptMimeTypes}
                             >
                                 {({getRootProps, getInputProps}) => (
@@ -99,15 +139,15 @@ class FileUpload extends Component {
                                     </section>
                                 )}
                             </Dropzone>
-                            {this.state.files.length > 0 && (
+                            {(this.state.files.length > 0 && this.state.files.length <= this.props.maxCount) && (
                                 <React.Fragment>
                                     <Card.Title className="mt-3">
                                         Selected File
                                     </Card.Title>
-
-                                    {this.state.files[0].name}
-                                    <ProgressBar animated now={45} />
-                                    <Button variant="success" className="mt-3" type="submit" disabled={this.props.isUploading}>Upload</Button>
+                                    {this._renderFileList()}
+                                    <Button variant="success" className="mt-3"
+                                            onClick={() => this.props.onUpload(this.state.files)}
+                                            disabled={this.props.isUploading}>Upload</Button>
                                 </React.Fragment>
 
                             )}
@@ -125,6 +165,7 @@ FileUpload.propTypes = {
     acceptMimeTypes: PropTypes.string.isRequired,
     uploadText: PropTypes.string.isRequired,
     isUploading: PropTypes.bool.isRequired,
+    maxCount: PropTypes.number.isRequired,
 };
 
 export default FileUpload;

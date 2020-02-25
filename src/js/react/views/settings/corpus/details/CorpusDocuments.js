@@ -9,6 +9,7 @@ import {bindActionCreators} from 'redux';
 import {ActionCreators} from '../../../../../redux/actions/ActionCreators';
 import fetchStatusType from "../../../../../redux/actions/FetchStatusTypes";
 import FetchPending from "../../../../components/FetchPending";
+import {uploadCorpusDocuments} from "../../../../../redux/actions/CorpusEditActions";
 
 class CorpusDocuments extends Component {
 
@@ -69,12 +70,17 @@ class CorpusDocuments extends Component {
                 <Card className="mt-3">
                     <Card.Body>
                         <Card.Title>Upload</Card.Title>
-
-                        <FileUpload onSelect={(k) => alert(k)} onReject={(k) => alert(k)}
-                                    uploadText="Drop archive or single document here..."
-                                    acceptMimeTypes='text/plain, application/zip,application/x-zip-compressed,multipart/x-zip"'
-                        />
-
+                        <FetchPending isPending={this.props.corpus.documents.isFetching}
+                                      success={this.props.corpus.documents.status === fetchStatusType.success}
+                        >
+                            <FileUpload
+                                onUpload={(files) => this.props.uploadCorpusDocuments(this.props.corpus.data.values.c_id, files)}
+                                maxCount={50}
+                                multiple={true}
+                                uploadText="Drop archive or single document here..."
+                                acceptMimeTypes='text/plain, application/zip,application/x-zip-compressed,multipart/x-zip"'
+                            />
+                        </FetchPending>
                     </Card.Body>
                     <Card.Body>
                         <Card.Title>Available: 2 <span
