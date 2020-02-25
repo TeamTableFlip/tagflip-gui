@@ -18,10 +18,10 @@ class ConfirmationDialog extends Component {
                     <p>{this.props.message}</p>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="light" onClick={this.props.onCancel}>Abort</Button>
-                    <Button variant="primary" className="mr-1" onClick={this.props.onAccept}>
+                    <Button variant={this.props.acceptVariant || 'primary'} className="mr-1" onClick={this.props.onAccept}>
                         {this.props.acceptText}
                     </Button>
+                    <Button variant="light" onClick={this.props.onCancel}>Abort</Button>
                 </Modal.Footer>
             </Modal>
         );
@@ -33,6 +33,7 @@ ConfirmationDialog.propTypes = {
     show: PropTypes.bool.isRequired,
     message: PropTypes.string.isRequired,
     acceptText: PropTypes.string.isRequired,
+    acceptVariant: PropTypes.string,
     onAccept: PropTypes.func.isRequired,
     onCancel: PropTypes.func.isRequired
 };

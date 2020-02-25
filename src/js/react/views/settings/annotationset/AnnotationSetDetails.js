@@ -25,7 +25,6 @@ class AnnotationSetDetails extends Component {
             validatedAnnotation: false,
             createNewAnnotation: false,
             editAnnotation: false,
-            deleteEntry: false,
             annotationIdToBeDeleted: undefined
         };
         this._saveAnnotationSet = this._saveAnnotationSet.bind(this);
@@ -142,29 +141,27 @@ class AnnotationSetDetails extends Component {
                             </Button>
                             <Button size="sm" variant="danger" onClick={e => {
                                 this.setState({
-                                    deleteEntry: true,
                                     annotationIdToBeDeleted: annotation.a_id
                                 });
                             }}>
                                 <FontAwesomeIcon icon={faTrash}/>
                             </Button>
                             <ConfirmationDialog
-                                show={this.state.deleteEntry && this.state.annotationIdToBeDeleted === annotation.a_id}
+                                show={this.state.annotationIdToBeDeleted === annotation.a_id}
                                 message={"Are you sure you want to delete the Annotation '" + annotation.name + "'?"}
                                 onAccept={() => {
                                     this.props.deleteAnnotation(annotation.a_id);
                                     this.setState({
-                                        deleteEntry: false,
                                         annotationIdToBeDeleted: undefined
                                     });
                                 }}
                                 onCancel={() => {
                                     this.setState({
-                                        deleteEntry: false,
                                         annotationIdToBeDeleted: undefined
                                     });
                                 }}
-                                acceptText="Delete" />
+                                acceptText="Delete"
+                                acceptVariant="danger" />
                         </div>
                     </td>
                 </tr>
