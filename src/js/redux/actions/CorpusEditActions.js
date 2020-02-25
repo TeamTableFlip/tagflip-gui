@@ -270,7 +270,7 @@ export function uploadCorpusDocuments(corpusId, files) {
 
             let formData = new FormData()
             for (let file of files) {
-                formData.append("file[]", file, file.name)
+                formData.append("file", file, file.name)
             }
 
             client.httpPost(`/corpus/${corpusId}/import`, formData, {}, false)
