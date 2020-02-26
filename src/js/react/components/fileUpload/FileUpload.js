@@ -37,8 +37,9 @@ class FileUpload extends Component {
     }
 
     acceptDrop(files) {
+        let filtered_files = files.filter(x => this.state.files.filter(y => x.name === y.name ).length === 0);
         this.setState({
-            files: files
+            files: [...this.state.files, ...filtered_files]
         })
     }
 
@@ -90,7 +91,7 @@ class FileUpload extends Component {
                             <p>{this.props.acceptMimeTypes}</p>
                         </Modal.Body>
                         <Modal.Footer>
-                            <Button variant="primary" className="mr-1" onClick={() => this._reset()}>
+                            <Button variant="primary" className="mr-1" onClick={() => this.setState({rejected: false})}>
                                 Close
                             </Button>
                         </Modal.Footer>
@@ -113,7 +114,6 @@ class FileUpload extends Component {
                             <Dropzone disabled={this.props.isUploading}
                                       onDragLeave={() => this.setState({dragOver: false})}
                                       onDragEnter={(k) => {
-                                          console.log(k)
                                           this.setState({dragOver: true})
                                       }}
                                       onDrop={() => {
@@ -132,9 +132,7 @@ class FileUpload extends Component {
                                     <section>
                                         <div {...getRootProps()} className={this._activeClasses()}>
                                             <input {...getInputProps()} />
-                                            <p className="d-flex align-items-center justify-content-center">Select
-                                                single
-                                                text file or ZIP-Archive containing text files.</p>
+                                            <p className="d-flex align-items-center justify-content-center">{this.props.uploadText}</p>
                                         </div>
                                     </section>
                                 )}
@@ -142,7 +140,7 @@ class FileUpload extends Component {
                             {(this.state.files.length > 0 && this.state.files.length <= this.props.maxCount) && (
                                 <React.Fragment>
                                     <Card.Title className="mt-3">
-                                        Selected File
+                                        Selected Files
                                     </Card.Title>
                                     {this._renderFileList()}
                                     <Button variant="success" className="mt-3"

@@ -2,20 +2,24 @@ import React, {Component} from "react";
 import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faChevronLeft, faSearch, faTrash} from "@fortawesome/free-solid-svg-icons";
+import {faSearch, faTrash} from "@fortawesome/free-solid-svg-icons";
 import FileUpload from "../../../../components/fileUpload/FileUpload";
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {ActionCreators} from '../../../../../redux/actions/ActionCreators';
 import fetchStatusType from "../../../../../redux/actions/FetchStatusTypes";
 import FetchPending from "../../../../components/FetchPending";
-import {uploadCorpusDocuments} from "../../../../../redux/actions/CorpusEditActions";
+import {Alert} from "react-bootstrap";
+import ShowMoreText from 'react-show-more-text';
+
 
 class CorpusDocuments extends Component {
 
     constructor(props) {
         super(props);
-        this.annotationSetCardRef = React.createRef();
+        this.state = {
+            uploadWarningShowMore: false
+        }
     }
 
     componentDidMount() {
@@ -43,8 +47,8 @@ class CorpusDocuments extends Component {
         return (
             <div className="table-responsive">
                 <FetchPending isPending={this.props.corpus.documents.isFetching}
-                              success={this.props.corpus.documents.status === fetchStatusType.success}
-                              retryCallback={this.props.fetchCorpusDocuments}
+                              success={this.props.corpus.documents.status !== fetchStatusType.error}
+                              retryCallback={() => this.props.fetchCorpusDocuments(this.props.corpus.data.values.c_id)}
                 >
                     <table className="table">
                         <thead>
@@ -71,13 +75,28 @@ class CorpusDocuments extends Component {
                     <Card.Body>
                         <Card.Title>Upload</Card.Title>
                         <FetchPending isPending={this.props.corpus.documents.isFetching}
-                                      success={this.props.corpus.documents.status === fetchStatusType.success}
+                                      success={this.props.corpus.documents.status !== fetchStatusType.error}
                         >
+                            {
+                                this.props.corpus.documents.status === fetchStatusType.warning &&
+                                <Alert variant="warning" style={{whiteSpace: "pre-wrap"}}>
+                                    <ShowMoreText
+                                        lines={5}
+                                        more={<span className="ml-3">More ...</span>}
+                                        less={<span className="ml-3">Less ...</span>}
+                                        anchorClass=''
+                                        onClick={() => this.setState({uploadWarningShowMore: !this.state.uploadWarningShowMore})}
+                                        expanded={false}
+                                    >
+                                        {this.props.corpus.documents.error}
+                                    </ShowMoreText>
+                                </Alert>
+                            }
                             <FileUpload
+                                isUploading={this.props.corpus.documents.isFetching}
                                 onUpload={(files) => this.props.uploadCorpusDocuments(this.props.corpus.data.values.c_id, files)}
                                 maxCount={50}
-                                multiple={true}
-                                uploadText="Drop archive or single document here..."
+                                uploadText="Drop Text-Files or ZIP-Archive here... or just click..."
                                 acceptMimeTypes='text/plain, application/zip,application/x-zip-compressed,multipart/x-zip"'
                             />
                         </FetchPending>
