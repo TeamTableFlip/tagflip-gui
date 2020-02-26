@@ -24,6 +24,7 @@ import {
     saveAnnotation,
     setEditableAnnotation
 } from "./AnnotationEditActions";
+import {setTagableDocument} from "./DocumentTaggingActions";
 
 /**
  * Grouping up all possible actions.
@@ -51,6 +52,7 @@ export const ActionCreators = Object.assign({},
         updateAnnotationField,
         setEditableAnnotation,
         deleteAnnotation,
-        uploadCorpusDocuments
+        uploadCorpusDocuments,
+        setTagableDocument
     }
 );
