@@ -33,7 +33,7 @@ class CorpusList extends Component {
         let renderCorpusTableData = () => {
             return this.props.corpora.items.map(corpus => {
                 return <tr key={corpus.c_id}>
-                    <th scope="row">{corpus.c_id}</th>
+                    <td scope="row">{corpus.c_id}</td>
                     <td>{corpus.name}</td>
                     <td>TODO</td>
                     <td>
