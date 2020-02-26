@@ -11,6 +11,8 @@ import fetchStatusType from "../../../../../redux/actions/FetchStatusTypes";
 import FetchPending from "../../../../components/FetchPending";
 import {Alert} from "react-bootstrap";
 import ShowMoreText from 'react-show-more-text';
+import ConfirmationDialog from "../../../../components/dialogs/ConfirmationDialog";
+import ShowDocument from "../../../../components/ShowDocument";
 
 
 class CorpusDocuments extends Component {
@@ -18,7 +20,9 @@ class CorpusDocuments extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            uploadWarningShowMore: false
+            uploadWarningShowMore: false,
+            documentIdToBeDeleted: undefined,
+            documentToBeShown: undefined,
         }
     }
 
@@ -34,10 +38,36 @@ class CorpusDocuments extends Component {
                     <td>{document.filename}</td>
                     <td>
                         <div className="float-right">
-                            <Button size="sm"><FontAwesomeIcon
+                            <Button size="sm"
+                                onClick={() => {
+                                    this.props.fetchCorpusDocument(document.d_id)
+                                    this.setState({documentToBeShown: document.d_id})
+                                }}><FontAwesomeIcon
                                 icon={faSearch}/></Button>
-                            <Button size="sm" variant="danger"><FontAwesomeIcon
+                            <Button size="sm" variant="danger"
+                                    onClick={() => this.setState({documentIdToBeDeleted: document.d_id})}
+                            ><FontAwesomeIcon
                                 icon={faTrash}/></Button>
+                            <ConfirmationDialog
+                                acceptVariant="danger"
+                                show={this.state.documentIdToBeDeleted === document.d_id}
+                                message={"Are you sure you want to delete the Corpus '" + document.filename + "'?"}
+                                onAccept={() => {
+                                    this.props.deleteCorpusDocument(document.d_id);
+                                    this.setState({ documentIdToBeDeleted: undefined });
+                                }}
+                                onCancel={() => {
+                                    this.setState({ documentIdToBeDeleted: undefined });
+                                }}
+                                acceptText="Delete" />
+                                <ShowDocument
+                                    show={this.state.documentToBeShown > 0}
+                                    onHide={() => this.setState({documentToBeShown: undefined})}
+                                    isLoading={this.props.corpus.activeDocument.isFetching}
+                                    success={this.props.corpus.activeDocument.status === fetchStatusType.success}
+                                    title={this.props.corpus.activeDocument.item ? this.props.corpus.activeDocument.item.filename : ""}
+                                    text={this.props.corpus.activeDocument.item ? this.props.corpus.activeDocument.item.text : ""}
+                                />
                         </div>
                     </td>
                 </tr>
@@ -59,7 +89,7 @@ class CorpusDocuments extends Component {
                         </tr>
                         </thead>
                         <tbody>
-                        {renderDocumentTableData()}
+                            {renderDocumentTableData()}
                         </tbody>
                     </table>
                 </FetchPending>
@@ -102,8 +132,7 @@ class CorpusDocuments extends Component {
                         </FetchPending>
                     </Card.Body>
                     <Card.Body>
-                        <Card.Title>Available: 2 <span
-                            className="float-right text-secondary font-weight-light">Updated: 2020-01-01 12:12:23</span></Card.Title>
+                        <Card.Title>Available: {this.props.corpus.documents.items.length}</Card.Title>
                         {this._renderDocuments()}
                     </Card.Body>
                 </Card>

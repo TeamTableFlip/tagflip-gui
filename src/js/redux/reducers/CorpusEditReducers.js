@@ -1,6 +1,7 @@
 import createReducer from './CreateReducer'
 import * as CorpusEditActions from '../actions/CorpusEditActions'
 import fetchStatusType from "../actions/FetchStatusTypes";
+import * as CorpusFetchActions from "../actions/CorpusListActions";
 
 export const emptyCorpus = function (state = {}, action) {
     return {
@@ -39,6 +40,13 @@ export const editableCorpus = createReducer({
         status: fetchStatusType.success,
         error: null
     },
+    activeDocument: {
+        isFetching: false,
+        item: null,
+        lastUpdated: undefined,
+        status: fetchStatusType.success,
+        error: null
+    }
 }, {
     [CorpusEditActions.SET_EDITABLE_CORPUS](draft, action) {
         draft.data.values = action.corpus;
@@ -133,6 +141,28 @@ export const editableCorpus = createReducer({
         } else {
             draft.documents.status = fetchStatusType.success;
             draft.documents.error = null;
+        }
+    },
+
+    [CorpusEditActions.CORPUS_DELETE_DOCUMENT](draft, action) {
+        draft.documents.items = draft.documents.items.filter(x => x.d_id !== action.documentId)
+    },
+
+    [CorpusEditActions.REQUEST_CORPUS_DOCUMENT](draft, action) {
+        draft.activeDocument.isFetching = true;
+        draft.activeDocument.item = null;
+    },
+    [CorpusEditActions.RECEIVE_CORPUS_DOCUMENT](draft, action) {
+        draft.activeDocument.isFetching = false;
+        if (action.status === fetchStatusType.success) {
+            draft.activeDocument.item = action.document;
+            draft.activeDocument.lastUpdated = action.receivedAt;
+            draft.activeDocument.status = fetchStatusType.success;
+            draft.activeDocument.error = null;
+        } else {
+            draft.activeDocument.lastUpdated = action.receivedAt;
+            draft.activeDocument.status = fetchStatusType.error;
+            draft.activeDocument.error = action.error;
         }
     },
 });

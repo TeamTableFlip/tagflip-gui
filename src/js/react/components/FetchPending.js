@@ -19,7 +19,7 @@ class FetchPending extends Component {
         if (this.props.isPending) {
             return (
                 <div className="d-flex justify-content-center p-3">
-                    <Spinner animation="border" variant="primary"/>
+                    <Spinner animation="border" variant="dark"/>
                 </div>
             )
         }
