@@ -1,24 +1,26 @@
 import React, {Component} from "react";
-import Badge from "react-bootstrap/Badge";
+import ReactDOM from "react-dom";
 import PropTypes from 'prop-types';
-import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
-import {BrowserRouter as Router} from "react-router-dom";
 import {Spinner} from "react-bootstrap";
-import fetchStatusType from "../../redux/actions/FetchStatusTypes";
 import Alert from "react-bootstrap/Alert";
-import ListGroup from "react-bootstrap/ListGroup";
 
 class FetchPending extends Component {
 
     constructor(props) {
         super(props);
+        this.childNode = React.createRef();
+        this.state = {
+            childrensHeight: undefined
+        }
     }
 
     render() {
-        if (this.props.isPending) {
+        if (this.props.isPending && !this.props.silent) {
             return (
-                <div className="d-flex justify-content-center p-3">
+                <div className="d-flex justify-content-center align-items-center p-3" style={{
+                    height: (this.childNode.current && this.childNode.current.clientHeight) ? this.childNode.current.clientHeight : "inherit"
+                }}>
                     <Spinner animation="border" variant="dark"/>
                 </div>
             )
@@ -42,15 +44,23 @@ class FetchPending extends Component {
 
                 </Alert>
             );
-
-        return this.props.children;
+        return (
+            <div ref={this.childNode}>
+                {this.props.children}
+            </div>
+        );
     }
 }
 
 FetchPending.propTypes = {
     isPending: PropTypes.bool.isRequired,
+    silent: PropTypes.bool,
     success: PropTypes.bool.isRequired,
     retryCallback: PropTypes.func
 };
+
+FetchPending.defaultProps = {
+    silent: false
+}
 
 export default FetchPending;
