@@ -8,13 +8,15 @@ import fetchStatusType from "../../../redux/actions/FetchStatusTypes";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faSearch} from "@fortawesome/free-solid-svg-icons";
+import {faSearch, faTimes} from "@fortawesome/free-solid-svg-icons";
 import InputGroup from "react-bootstrap/InputGroup";
 import ListGroup from "react-bootstrap/ListGroup";
 import Pagination from 'react-bootstrap/Pagination'
+import {Typeahead, Menu, MenuItem} from "react-bootstrap-typeahead";
 import {bindActionCreators} from "redux";
 import {ActionCreators} from "../../../redux/actions/ActionCreators";
 import connect from "react-redux/es/connect/connect";
+import SearchableDropdown from "../../components/searchableDropdown/SearchableDropdown";
 
 class Editor extends Component {
 
@@ -49,10 +51,12 @@ class Editor extends Component {
         return this.props.selectedCorpus.documents.items
             .filter(document => document.filename.toLowerCase().includes(this.state.searchDocumentSubstring.toLowerCase()))
             .map(document => {
+                let filenamePath = document.filename.split('/');
+                let documentName = document.d_id + ': ' + filenamePath[filenamePath.length-1];
                 return <ListGroup.Item action key={document.d_id}
                                        active={this.props.selectedDocument.data.values.d_id === document.d_id}
                                        onClick={() => this.props.setTagableDocument(document)}>
-                    {document.filename}
+                    {documentName}
                 </ListGroup.Item>
             });
     }
@@ -63,17 +67,30 @@ class Editor extends Component {
                 <div className="editorNav">
                     <div style={{minWidth: "300px"}} />
 
-                    <div>Select Corpus</div>
-                    <Form>
-                        <InputGroup className="mb-3">
-                            <Form.Control type="text" placeholder="Search Corpus..."
-                                          onChange={e => this.setState({searchCorpusSubstring: e.target.value})}
-                                          value={this.state.searchCorpusSubstring}/>
-                        </InputGroup>
-                    </Form>
-                    <ListGroup>
-                        {this._renderCorpora()}
-                    </ListGroup>
+                    {/*<div>Select Corpus</div>*/}
+                    <SearchableDropdown buttonText="Select Corpus"
+                                        onChange={(corpus) => {
+                                            this.props.fetchCorpusDocuments(corpus.c_id);
+                                            this.props.setEditableCorpus(corpus);
+                                        }}
+                                        optionKey="c_id"
+                                        // filter={(corpus, searchSubstring) => {
+                                        //     return corpus.name.toLowerCase().includes(searchSubstring.toLowerCase())
+                                        // }}
+                                        options={this.props.corpora.items}
+                                        label="name"
+                                        searchPlaceholder={"Filter corpora..."}
+                    />
+                    {/*<Form>*/}
+                        {/*<InputGroup className="mb-3">*/}
+                            {/*<Form.Control type="text" placeholder="Search Corpus..."*/}
+                                          {/*onChange={e => this.setState({searchCorpusSubstring: e.target.value})}*/}
+                                          {/*value={this.state.searchCorpusSubstring}/>*/}
+                        {/*</InputGroup>*/}
+                    {/*</Form>*/}
+                    {/*<ListGroup>*/}
+                        {/*{this._renderCorpora()}*/}
+                    {/*</ListGroup>*/}
 
                     <hr/>
 
@@ -103,8 +120,10 @@ class Editor extends Component {
 function mapStateToProps(state) {
     return {
         corpora: state.corpora,
+        emptyCorpus: state.emptyCorpus,
         selectedCorpus: state.editableCorpus,
-        selectedDocument: state.tagableDocument
+        selectedDocument: state.tagableDocument,
+        emptyDocument: state.emptyDocument
     };
 }
 
