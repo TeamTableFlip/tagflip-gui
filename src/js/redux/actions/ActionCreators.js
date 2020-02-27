@@ -19,14 +19,13 @@ import {
     updateAnnotationSetField,
     reloadAnnotationSet,
     fetchAnnotations,
-    deleteAnnotation
-} from "./AnnotationSetEditActions";
-import {
+    deleteAnnotation,
     updateAnnotationField,
     saveAnnotation,
     setEditableAnnotation
-} from "./AnnotationEditActions";
+} from "./AnnotationSetEditActions";
 import {setTagableDocument} from "./DocumentTaggingActions";
+
 
 /**
  * Grouping up all possible actions.

@@ -42,7 +42,7 @@ class AnnotationSetDetails extends Component {
             validatedAnnotation: false,
             createNewAnnotation: false,
             editAnnotation: false,
-            annotationIdToBeDeleted: undefined
+            annotationIdToBeDeleted: undefined,
         };
         this._saveAnnotationSet = this._saveAnnotationSet.bind(this);
         this._addNewAnnotation = this._addNewAnnotation.bind(this);
@@ -55,16 +55,15 @@ class AnnotationSetDetails extends Component {
         this.props.fetchAnnotations();
     }
 
-    _saveAnnotationSet() {
+    _saveAnnotationSet(event) {
         const form = event.currentTarget;
         event.preventDefault();
+        this.setState({validatedBasicInfo: false})
         if (form.checkValidity() === false) {
             event.stopPropagation();
             this.setState({validatedBasicInfo: true});
         } else {
-            this.props.saveAnnotationSet().then(() =>
-                this.setState({validatedBasicInfo: false})
-            );
+            this.props.saveAnnotationSet();
         }
     }
 
@@ -79,12 +78,13 @@ class AnnotationSetDetails extends Component {
     }
 
     _saveAnnotation() {
-        let annotation = this.props.editableAnnotation.data.values;
+        let annotation = this.props.annotationSet.annotations.editableAnnotation.values;
         if(annotation.name && annotation.name.length > 0) {
             this.setState({
                 validatedAnnotation: false,
                 createNewAnnotation: false,
-                editAnnotation: false
+                editAnnotation: false,
+                isChangeRequest: true
             });
             this.props.saveAnnotation();
         }
@@ -105,13 +105,13 @@ class AnnotationSetDetails extends Component {
 
     _renderAnnotationsTable() {
         let renderEditAnnotation = () => {
-            return <tr key={this.props.editableAnnotation.data.values.a_id || 0}>
-                <th scope="row" style={style.annotation.firstCol}>{this.props.editableAnnotation.data.values.a_id || ""}</th>
+            return <tr key={this.props.annotationSet.annotations.editableAnnotation.values.a_id || 0}>
+                <th scope="row" style={style.annotation.firstCol}>{this.props.annotationSet.annotations.editableAnnotation.values.a_id || ""}</th>
                 <td style={style.annotation.secondCol}>
                     <InputGroup className="mb-3">
                         <Form.Control type="text" placeholder="Name of the Annotation" required={true}
                                       onChange={e => {this.props.updateAnnotationField('name', e.target.value)}}
-                                      value={this.props.editableAnnotation.data.values.name || ""}/>
+                                      value={this.props.annotationSet.annotations.editableAnnotation.values.name || ""}/>
                         <Form.Control.Feedback type="invalid">
                             Please choose a name.
                         </Form.Control.Feedback>
@@ -120,7 +120,7 @@ class AnnotationSetDetails extends Component {
                 <td style={style.annotation.thirdCol}>
                     <ColorPickerBadge
                         updateColorCallback={color => {this.props.updateAnnotationField('color', color)}}
-                        color={!this._isNewAnnotation() ? this.props.editableAnnotation.data.values.color : undefined}
+                        color={!this._isNewAnnotation() ? this.props.annotationSet.annotations.editableAnnotation.values.color : undefined}
                     />
                 </td>
                 <td style={style.annotation.fourthCol}>
@@ -143,7 +143,7 @@ class AnnotationSetDetails extends Component {
 
         let renderTableData = () => {
             return this.props.annotationSet.annotations.items.map(annotation => {
-                if(this.state.editAnnotation && annotation.a_id === this.props.editableAnnotation.data.values.a_id) {
+                if(this.state.editAnnotation && annotation.a_id === this.props.annotationSet.annotations.editableAnnotation.values.a_id) {
                     return renderEditAnnotation();
                 }
 
@@ -218,7 +218,7 @@ class AnnotationSetDetails extends Component {
     }
 
     _isNewAnnotation() {
-        return this.props.editableAnnotation.data.values.a_id <= 0;
+        return this.props.annotationSet.annotations.editableAnnotation.values.a_id <= 0;
     }
 
     _abortEditAnnotationSet() {
@@ -301,8 +301,6 @@ class AnnotationSetDetails extends Component {
 function mapStateToProps(state) {
     return {
         annotationSet: state.editableAnnotationSet,
-        annotations: state.annotations,
-        editableAnnotation: state.editableAnnotation,
         emptyAnnotation: state.emptyAnnotation
     };
 }

@@ -1,6 +1,5 @@
 import fetchStatusType from "./FetchStatusTypes";
 import client from "../../backend/RestApi";
-import {receiveEditableAnnotation} from "./AnnotationEditActions";
 
 /**
  * Action creator for the action SET_EDITABLE_ANNOTATION_SET.
@@ -165,5 +164,88 @@ export function deleteAnnotation(annotationId) {
             .catch(err => {
                 dispatch(receiveEditableAnnotation({}, fetchStatusType.error, err))
             });
+    }
+}
+
+export const SET_EDITABLE_ANNOTATION = "SET_EDITABLE_ANNOTATION";
+export function setEditableAnnotation(annotation) {
+    return {
+        type: SET_EDITABLE_ANNOTATION,
+        annotation: annotation
+    }
+}
+
+export const UPDATE_ANNOTATION_FIELD = "UPDATE_ANNOTATION_FIELD";
+export function updateAnnotationField(field, value) {
+    return {
+        type: UPDATE_ANNOTATION_FIELD,
+        field,
+        value
+    }
+}
+
+// Actions for saving the editable Annotation in the backend
+
+export const REQUEST_SAVE_ANNOTATION = "REQUEST_SAVE_ANNOTATION";
+export function requestEditableAnnotation() {
+    return {
+        type: REQUEST_SAVE_ANNOTATION
+    }
+}
+
+export const RECEIVE_SAVE_ANNOTATION = "RECEIVE_SAVE_ANNOTATION";
+export function receiveSaveAnnotation(annotation, status = fetchStatusType.success, error = null) {
+    return {
+        type: RECEIVE_SAVE_ANNOTATION,
+        annotation: annotation,
+        receivedAt: Date.now(),
+        status: status,
+        error: error
+    }
+}
+
+export function saveAnnotation() {
+    return (dispatch, getState) => {
+        dispatch(requestEditableAnnotation());
+        let annotation = getState().editableAnnotationSet.annotations.editableAnnotation.values;
+
+        // Decide whether to PUT for update or POST for create
+        if(!annotation.a_id || annotation.a_id <= 0) {
+            client.httpPost('/annotation', annotation)
+                .then(result => {
+                    dispatch(receiveSaveAnnotation(result))
+                })
+                .catch(err => {
+                    dispatch(receiveSaveAnnotation({}, fetchStatusType.error, err))
+                });
+        }
+        else {
+            client.httpPut(`/annotation/${annotation.a_id}`, annotation)
+                .then(result => {
+                    dispatch(receiveSaveAnnotation(result));
+                })
+                .catch(err => {
+                    dispatch(receiveSaveAnnotation({}, fetchStatusType.error, err))
+                });
+        }
+    }
+}
+
+// Actions for reloading an Annotation
+
+export function reloadAnnotation() {
+    return (dispatch, getState) => {
+        let annotation = getState().editableAnnotationSet.annotations.editableAnnotation.values;
+        if (annotation.a_id > 0) {
+            dispatch(requestEditableAnnotation());
+            client.httpGet(`/corpus/${annotation.c_id}`)
+                .then(result => {
+                    dispatch(receiveEditableAnnotation(result));
+                })
+                .catch(error => dispatch(receiveEditableAnnotation({}, fetchStatusType.error, error)));
+        }
+        else {
+            dispatch(receiveEditableAnnotation(getState().emptyAnnotation));
+        }
     }
 }
