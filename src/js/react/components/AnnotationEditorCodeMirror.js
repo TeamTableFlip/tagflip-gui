@@ -1,8 +1,11 @@
 import React, {Component} from "react";
+import ReactDom from "react-dom";
 import * as CodeMirrorReact from "react-codemirror";
 import PropTypes from "prop-types";
 import AnnotationPicker from "./AnnotationPicker";
-import "./temp-maker.css"
+import "./AnnotationEditorCodeMirror.scss"
+import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+import Tooltip from "react-bootstrap/Tooltip";
 
 const testvalue = "Killer Bees (2017 film)\n" +
     "From Wikipedia, the free encyclopedia\n" +
@@ -87,6 +90,7 @@ const initialState = {
     markers: []
 };
 
+
 class AnnotationEditor extends Component {
 
     constructor(props) {
@@ -100,12 +104,29 @@ class AnnotationEditor extends Component {
 
         this.editorRef = React.createRef();
     }
-    _onTimeout () {
+
+    _onTimeout() {
 
     }
 
-    _onSelectionChanged (){
+    _onSelectionChanged() {
 
+    }
+
+    _createReplaceNode(text, tag) {
+        let container = document.createElement('span');
+        let reactElement = (
+            <OverlayTrigger overlay={<Tooltip id="tooltip-disabled">
+                This is a Tooltip. Fill me :)
+            </Tooltip>}>
+                <span className="annotation">
+                    <span className="annotationType">{tag}</span>
+                    <span className="annotationText">{text}</span>
+                </span>
+            </OverlayTrigger>
+        );
+        ReactDom.render(reactElement, container);
+        return container;
     }
 
     _onMouseUp() {
@@ -114,21 +135,21 @@ class AnnotationEditor extends Component {
         if (codeMirror.somethingSelected()) {
             console.log(codeMirror.listSelections());
             for (let selection of codeMirror.listSelections()) {
-                console.log(typeof  "boo");
+                console.log(typeof "boo");
                 if (this.state.markers.length > 0) this.state.markers[0].clear();
-                let  replaceNode = document.createElement('span');
-                replaceNode.addEventListener("click", ()=> {
-                    console.log("boo");
-                });
-                replaceNode.appendChild(document.createTextNode(codeMirror.getSelection()));
-                console.log(replaceNode);
-                replaceNode.style.cssText = "color: #f00; background-color: #006";
+                // let  replaceNode = document.createElement('span');
+                // replaceNode.addEventListener("click", ()=> {
+                //     console.log("boo");
+                // });
+                // replaceNode.appendChild(document.createTextNode(codeMirror.getSelection()));
+                // console.log(replaceNode);
+                // replaceNode.style.cssText = "color: #f00; background-color: #006";
                 let textMarker = codeMirror.markText(selection.anchor, selection.head, {
                     css: "color: #f00",
-                    replacedWith: replaceNode,
+                    replacedWith: this._createReplaceNode(codeMirror.getSelection(), "Type of Annotation"),
                     handleMouseEvents: true
                 });
-                this.setState({markers: [textMarker],textSelected:false});
+                this.setState({markers: [textMarker], textSelected: false});
                 console.log(codeMirror.indexFromPos(selection.anchor));
                 console.log(codeMirror.indexFromPos(selection.head));
                 console.log(codeMirror.getValue().substring(0, 100));
@@ -137,7 +158,7 @@ class AnnotationEditor extends Component {
         }
     }
 
-    _onAnnotationPicked (a_id) {
+    _onAnnotationPicked(a_id) {
 
     }
 
@@ -166,7 +187,11 @@ class AnnotationEditor extends Component {
         return (
             <React.Fragment>
                 <AnnotationPicker textSelected={this.state.textSelected}
-                                  annotations = {[{a_id: 1, name: "hello", color:"#550000"}, {a_id:5, name:"bibi", color:"#005500"},{a_id: 3, name: "hello", color:"#000055"}]}
+                                  annotations={[{a_id: 1, name: "hello", color: "#550000"}, {
+                                      a_id: 5,
+                                      name: "bibi",
+                                      color: "#005500"
+                                  }, {a_id: 3, name: "hello", color: "#000055"}]}
                                   onPicked={this._onAnnotationPicked}/>
                 <CodeMirrorReact
                     ref={this.editorRef}
