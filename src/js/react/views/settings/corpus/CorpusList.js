@@ -39,7 +39,7 @@ class CorpusList extends Component {
                 return <tr key={corpus.c_id}>
                     <td scope="row">{corpus.c_id}</td>
                     <td>{corpus.name}</td>
-                    <td>TODO</td>
+                    <td>{corpus.num_documents}</td>
                     <td>
                         <div className="float-right">
                             <Button size="sm" onClick={() => {
