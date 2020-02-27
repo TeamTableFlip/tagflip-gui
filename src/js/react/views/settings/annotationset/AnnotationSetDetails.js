@@ -231,7 +231,7 @@ class AnnotationSetDetails extends Component {
     render() {
         return (
             <React.Fragment>
-                <h2>Edit Annotation Set</h2>
+                <h2>Edit Annotation Set ({!this._isNewAnnotationSet() ? ("ID: " + this.props.annotationSet.data.values.s_id) : "New"})</h2>
                 <Form noValidate validated={this.state.validatedBasicInfo} onSubmit={this._saveAnnotationSet}>
                     <Card className="mt-3">
                         <Card.Body>
