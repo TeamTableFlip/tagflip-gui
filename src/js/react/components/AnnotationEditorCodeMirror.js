@@ -103,13 +103,13 @@ class AnnotationEditor extends Component {
         return (
             <React.Fragment>
                 <div className="editor">
-                <CodeMirror value={this.state.text}
-                            options={{
-                                lineNumbers: true,
-                                readOnly: true,
-                                lineWrapping: true
-                            }}
-                />
+                    <CodeMirror value={this.state.text}
+                                options={{
+                                    lineNumbers: true,
+                                    readOnly: true,
+                                    lineWrapping: true
+                                }}
+                    />
                 </div>
             </React.Fragment>
         );
