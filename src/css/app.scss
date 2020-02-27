@@ -5,6 +5,8 @@ $borderGray: #adadad;
 @import "../../node_modules/bootstrap/scss/variables";
 @import "../../node_modules/bootstrap/scss/mixins";
 
+@import "../../node_modules/codemirror/lib/codemirror.css";
+
 html, body {
   padding: 0;
   margin: 0;
@@ -72,4 +74,10 @@ main .content {
   background: $lightGray;
   padding: 10px;
   border-right: $borderGray 1px solid;
+}
+
+.CodeMirror {
+  width: 100%;
+  height: 100%;
+  overflow:auto;
 }

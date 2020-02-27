@@ -1,20 +1,11 @@
 import React, {Component} from "react";
-import {Redirect, Route, withRouter} from "react-router-dom";
-import AnnotationEditor from "../../components/AnnotationEditor";
-import DropdownButton from "react-bootstrap/DropdownButton";
-import DropdownItem from "react-bootstrap/DropdownItem";
-import FetchPending from "../../components/FetchPending";
-import fetchStatusType from "../../../redux/actions/FetchStatusTypes";
-import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faSearch} from "@fortawesome/free-solid-svg-icons";
 import InputGroup from "react-bootstrap/InputGroup";
 import ListGroup from "react-bootstrap/ListGroup";
-import Pagination from 'react-bootstrap/Pagination'
 import {bindActionCreators} from "redux";
 import {ActionCreators} from "../../../redux/actions/ActionCreators";
 import connect from "react-redux/es/connect/connect";
+import AnnotationEditorCodeMirror from "../../components/AnnotationEditorCodeMirror";
 
 class Editor extends Component {
 
@@ -90,7 +81,7 @@ class Editor extends Component {
                     </ListGroup>
                 </div>
 
-                <AnnotationEditor />
+                <AnnotationEditorCodeMirror />
             </React.Fragment>
         );
     }
