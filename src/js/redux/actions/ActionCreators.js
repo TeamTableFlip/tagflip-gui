@@ -15,13 +15,11 @@ import {
     updateAnnotationSetField,
     reloadAnnotationSet,
     fetchAnnotations,
-    deleteAnnotation
-} from "./AnnotationSetEditActions";
-import {
+    deleteAnnotation,
     updateAnnotationField,
     saveAnnotation,
     setEditableAnnotation
-} from "./AnnotationEditActions";
+} from "./AnnotationSetEditActions";
 
 /**
  * Grouping up all possible actions.
