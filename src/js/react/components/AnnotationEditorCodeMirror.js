@@ -1,8 +1,7 @@
 import React, {Component} from "react";
-import CodeMirror from "react-codemirror";
+import * as CodeMirrorReact from "react-codemirror";
 import PropTypes from "prop-types";
 import AnnotationPicker from "./AnnotationPicker";
-
 import "./temp-maker.css"
 
 const testvalue = "Killer Bees (2017 film)\n" +
@@ -79,12 +78,11 @@ const testvalue = "Killer Bees (2017 film)\n" +
     "\"Killer Bees on iTunes\". iTunes. 7 August 2018. Retrieved 30 November 2018.\n" +
     "External links\n" +
     "Killer Bees on IMDb\n" +
-    "Stub icon\tThis article about a documentary film is a stub. You can help Wikipedia by expanding it.\n"
+    "Stub icon\tThis article about a documentary film is a stub. You can help Wikipedia by expanding it.\n";
 
 const initialState = {
     text: testvalue,
     timerId: undefined,
-    aceEditor: undefined,
     textSelected: false,
     markers: []
 };
@@ -94,23 +92,91 @@ class AnnotationEditor extends Component {
     constructor(props) {
         super(props);
         this.state = initialState;
+
+        this._onSelectionChanged = this._onSelectionChanged.bind(this);
+        this._onTimeout = this._onTimeout.bind(this);
+        this._onAnnotationPicked = this._onAnnotationPicked.bind(this);
+        this._onMouseUp = this._onMouseUp.bind(this);
+
+        this.editorRef = React.createRef();
+    }
+    _onTimeout () {
+
+    }
+
+    _onSelectionChanged (){
+
+    }
+
+    _onMouseUp() {
+        let codeMirror = this.editorRef.current.codeMirror;
+        console.log("_onMouseUp");
+        if (codeMirror.somethingSelected()) {
+            console.log(codeMirror.listSelections());
+            for (let selection of codeMirror.listSelections()) {
+                console.log(typeof  "boo");
+                if (this.state.markers.length > 0) this.state.markers[0].clear();
+                let  replaceNode = document.createElement('span');
+                replaceNode.addEventListener("click", ()=> {
+                    console.log("boo");
+                });
+                replaceNode.appendChild(document.createTextNode(codeMirror.getSelection()));
+                console.log(replaceNode);
+                replaceNode.style.cssText = "color: #f00; background-color: #006";
+                let textMarker = codeMirror.markText(selection.anchor, selection.head, {
+                    css: "color: #f00",
+                    replacedWith: replaceNode,
+                    handleMouseEvents: true
+                });
+                this.setState({markers: [textMarker],textSelected:false});
+                console.log(codeMirror.indexFromPos(selection.anchor));
+                console.log(codeMirror.indexFromPos(selection.head));
+                console.log(codeMirror.getValue().substring(0, 100));
+                console.log(codeMirror.getSelection());
+            }
+        }
+    }
+
+    _onAnnotationPicked (a_id) {
+
     }
 
     componentDidMount() {
+        console.log(this.editorRef);
+        console.log("editor mount");
+        let codeMirror = this.editorRef.current.codeMirror;
+        console.log(codeMirror);
+        console.log(this.editorRef.current.textareaNode);
+        codeMirror.getWrapperElement().addEventListener("mouseup", this._onMouseUp);
+        //codeMirror.on("cursorActivity", this._onMouseUp);
+
+        // fallback on Click for tags:
+        // codeMirror.getWrapperElement().addEventListener("click", (e) => {
+        //     console.log("stuff")
+        //     let lineCh = codeMirror.coordsChar({left: e.clientX, top: e.clientY});
+        //     let markers = codeMirror.findMarksAt(lineCh);
+        //     if (markers.length === 0) {
+        //         return;
+        //     }
+        //     console.log(markers)
+        // });
     }
 
     render() {
         return (
             <React.Fragment>
-                <div className="editor">
-                    <CodeMirror value={this.state.text}
-                                options={{
-                                    lineNumbers: true,
-                                    readOnly: true,
-                                    lineWrapping: true
-                                }}
-                    />
-                </div>
+                <AnnotationPicker textSelected={this.state.textSelected}
+                                  annotations = {[{a_id: 1, name: "hello", color:"#550000"}, {a_id:5, name:"bibi", color:"#005500"},{a_id: 3, name: "hello", color:"#000055"}]}
+                                  onPicked={this._onAnnotationPicked}/>
+                <CodeMirrorReact
+                    ref={this.editorRef}
+                    value={this.state.text}
+                    options={{
+                        lineNumbers: true,
+                        readOnly: true,
+                        lineWrapping: true
+                    }}
+                />
             </React.Fragment>
         );
     }
@@ -119,10 +185,10 @@ class AnnotationEditor extends Component {
 }
 
 AnnotationEditor.propTypes = {
+    //annotations: PropTypes.array.isRequired,
     timerIntervalMSec: PropTypes.number,
     autoSave: PropTypes.bool,
     onSave: PropTypes.func,
-    annotations: PropTypes.any
 };
 
 export default AnnotationEditor;
