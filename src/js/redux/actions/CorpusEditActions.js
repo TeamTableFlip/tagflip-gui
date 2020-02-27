@@ -1,6 +1,7 @@
 import fetchStatusType from "./FetchStatusTypes";
 import client from "../../backend/RestApi";
 import {receiveSaveAnnotationSet, requestSaveAnnotationSet} from "./AnnotationSetListActions";
+import {receiveCorpora} from "./CorpusListActions";
 
 // Actions for editing a corpus
 /**
@@ -249,10 +250,11 @@ export function requestCorpusUploadDocuments() {
 
 export const RECEIVE_CORPUS_UPLOAD_DOCUMENTS = "RECEIVE_CORPUS_UPLOAD_DOCUMENTS";
 
-export function receiveCorpusUploadDocuments(documents, status = fetchStatusType.success, error = null) {
+export function receiveCorpusUploadDocuments(result, status = fetchStatusType.success, error = null) {
     return {
         type: RECEIVE_CORPUS_UPLOAD_DOCUMENTS,
-        documents: documents,
+        documents: result.items,
+        skippedDocuments: result.skippedItems,
         receivedAt: Date.now(),
         status: status,
         error: error
@@ -274,10 +276,69 @@ export function uploadCorpusDocuments(corpusId, files) {
             }
 
             client.httpPost(`/corpus/${corpusId}/import`, formData, {}, false)
-                .then(result =>
-                    dispatch(receiveCorpusUploadDocuments(result))
+                .then(result => {
+                    dispatch(receiveCorpusUploadDocuments(result))}
                 )
                 .catch(error => dispatch(receiveCorpusDocuments([], fetchStatusType.error, error)))
         }
     }
 }
+
+
+// Actions for deleting documents
+export const CORPUS_DELETE_DOCUMENT = "CORPUS_DELETE_DOCUMENT";
+
+export function deleteCorpusDocument(documentId) {
+    return (dispatch, getState) => {
+        client.httpDelete(`/document/${documentId}`)
+            .then(result => {
+                    dispatch({
+                        type: CORPUS_DELETE_DOCUMENT,
+                        documentId
+                    });
+                }
+            )
+            .catch(error => dispatch(receiveCorpusDocuments([], fetchStatusType.error, error)))
+    }
+}
+
+
+// Actions for displaying document contents
+
+// Actions for uploading Documents while editing a corpus
+
+export const REQUEST_CORPUS_DOCUMENT = "REQUEST_CORPUS_DOCUMENT";
+
+export function requestCorpusDocument() {
+    return {
+        type: REQUEST_CORPUS_DOCUMENT,
+    }
+}
+
+export const RECEIVE_CORPUS_DOCUMENT = "RECEIVE_CORPUS_DOCUMENT";
+
+export function receiveCorpusDocument(result, status = fetchStatusType.success, error = null) {
+    return {
+        type: RECEIVE_CORPUS_DOCUMENT,
+        document: result,
+        receivedAt: Date.now(),
+        status: status,
+        error: error
+    }
+}
+
+
+export function fetchCorpusDocument(documentId) {
+    return (dispatch, getState) => {
+        if (documentId > 0) {
+            dispatch(requestCorpusDocument())
+            client.httpGet(`/document/${documentId}`)
+                .then(result =>
+                    dispatch(receiveCorpusDocument(result))
+                )
+                .catch(error => dispatch(receiveCorpusDocument(null, fetchStatusType.error, error)))
+        }
+    }
+}
+
+

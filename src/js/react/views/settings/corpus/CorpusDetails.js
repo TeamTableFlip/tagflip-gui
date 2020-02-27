@@ -22,7 +22,6 @@ class CorpusDetails extends Component {
     constructor(props) {
         super(props);
         this.state = initialState;
-        this.annotationSetCardRef = React.createRef();
     }
 
     isNewCorpus() {
@@ -38,15 +37,16 @@ class CorpusDetails extends Component {
                     <Tab eventKey="basicdata" title="Basic Data">
                         <CorpusBasicData/>
                         <div className="mt-3">
-
+                            {!this.isNewCorpus() &&
                             <Button variant="outline-dark" className="mr-1"
                                     onClick={() => this.setState({activeTab: "annotationsets"})}>
                                 Edit Annotation Sets <FontAwesomeIcon icon={faChevronRight}/>
                             </Button>
+                            }
                         </div>
                     </Tab>
-                    <Tab eventKey="annotationsets" title="Annotation Sets" disabled={this.isNewCorpus()}>
-                        {!this.isNewCorpus() && (
+                    {!this.isNewCorpus() && (
+                        <Tab eventKey="annotationsets" title="Annotation Sets" disabled={this.isNewCorpus()}>
                             <React.Fragment>
                                 <CorpusAnnotationSets/>
                                 <div className="mt-3">
@@ -60,10 +60,10 @@ class CorpusDetails extends Component {
                                     </Button>
                                 </div>
                             </React.Fragment>
-                        )}
-                    </Tab>
-                    <Tab eventKey="documents" title="Documents" disabled={this.isNewCorpus()}>
-                        {!this.isNewCorpus() && (
+                        </Tab>
+                    )}
+                    {!this.isNewCorpus() && (
+                        <Tab eventKey="documents" title="Documents" disabled={this.isNewCorpus()}>
                             <React.Fragment>
                                 <CorpusDocuments/>
                                 <div className="mt-3">
@@ -73,8 +73,9 @@ class CorpusDetails extends Component {
                                     </Button>
                                 </div>
                             </React.Fragment>
-                        )}
-                    </Tab>
+
+                        </Tab>
+                    )}
                 </Tabs>
 
             </React.Fragment>
