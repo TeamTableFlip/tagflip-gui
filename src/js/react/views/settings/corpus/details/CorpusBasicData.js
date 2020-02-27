@@ -76,9 +76,9 @@ class CorpusBasicData extends Component {
                                                   onChange={(e) => this.props.updateCorpusField('description', e.target.value)}
                                                   value={this.props.corpus.data.values.description || ""}/>
                                 </Form.Group>
+                                <Button variant="success" className="mr-1" type="submit">Save</Button>
+                                {!this.isNewCorpus() && <Button variant="danger" className="mr-1" onClick={()=> this.props.reloadCorpus()}>Abort</Button> }
                             </FetchPending>
-                            <Button variant="success" className="mr-1" type="submit">Save</Button>
-                            {!this.isNewCorpus() && <Button variant="danger" className="mr-1" onClick={()=> this.props.reloadCorpus()}>Abort</Button> }
                         </Card.Body>
                     </Card>
                 </Form>
