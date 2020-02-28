@@ -1,6 +1,12 @@
 $lightGray: #f6f6f6;
 $borderGray: #adadad;
 
+@import "../../node_modules/bootstrap/scss/functions";
+@import "../../node_modules/bootstrap/scss/variables";
+@import "../../node_modules/bootstrap/scss/mixins";
+
+@import "../../node_modules/codemirror/lib/codemirror.css";
+
 html, body {
   padding: 0;
   margin: 0;
@@ -40,8 +46,14 @@ main .leftNav {
 }
 
 main .content {
-  flex: 0.5;
-  padding: 50px;
+  flex: 0.7;
+  @include media-breakpoint-down(md) {
+    padding: 10px;
+    flex: 0.9;
+  }
+  @include media-breakpoint-up(md) {
+    padding: 50px;
+  }
 }
 
 #footer {
@@ -55,4 +67,16 @@ main .content {
 .editor {
   width: 100%;
   height: 100%;
+  display: flex;
+}
+
+.editorNav {
+  flex: 0.2;
+  background: $lightGray;
+  padding: 10px;
+  border-right: $borderGray 1px solid;
+}
+
+.CodeMirror {
+  min-height: 100%;
 }

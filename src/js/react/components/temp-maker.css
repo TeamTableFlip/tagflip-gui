@@ -1,0 +1,19 @@
+.ace_marker-temp {
+    position: absolute;
+    background-color: #ec9192;
+    border-radius: 5px;
+}
+
+.marker {
+    cursor: pointer;
+    padding: 3px 5px 3px 5px;
+    border-radius: 5px 5px 5px 5px;
+    -moz-border-radius: 5px 5px 5px 5px;
+    -webkit-border-radius: 5px 5px 5px 5px;
+    border: 0px solid #000000;
+    -webkit-box-shadow: inset 0px 0px 3px 0px rgba(0,0,0,075);
+    -moz-box-shadow: inset 0px 0px 3px 0px rgba(0,0,0,075);
+    box-shadow: inset 0px 0px 3px 0px rgba(0,0,0,075);
+    background: rgba(255,0,0,0.4);
+    position: absolute;
+}
