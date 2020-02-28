@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import Dropdown from "react-bootstrap/Dropdown";
-import Form from "react-bootstrap/Form";
+import FormControl from "react-bootstrap/FormControl";
 import PropTypes from "prop-types";
 
 class SearchableDropdown extends Component {
@@ -11,7 +11,6 @@ class SearchableDropdown extends Component {
             searchSubstring: ""
         };
         this._renderItems = this._renderItems.bind(this);
-        this._dropdownMenu = this._dropdownMenu.bind(this);
         this._renderSearchField = this._renderSearchField.bind(this);
     }
 
@@ -55,7 +54,10 @@ class SearchableDropdown extends Component {
 
                 return (
                     <Dropdown.Item key={key} onClick={e => {
-                        this.setState({selectedOption: option});
+                        this.setState({
+                            selectedOption: option,
+                            searchSubstring: ""
+                        });
                         this.props.onChange(option);
                     }}>
                         {text}
@@ -74,19 +76,10 @@ class SearchableDropdown extends Component {
     }
 
     _renderSearchField() {
-        return <Form.FormControl autoFocus
-                              placeholder={this.props.searchPlaceholder}
-                              value={this.state.searchSubstring}
-                              onChange={e => this.setState({searchSubstring: e.target.value})}
-            />
-    }
-
-    _dropdownMenu() {
-        return this._renderSearchField();
-            {/*<ul>*/}
-                {/*{React.Children.toArray(this.props.options)}*/}
-            {/*</ul>*/}
-
+        return <FormControl autoFocus
+                            placeholder={this.props.searchPlaceholder}
+                            value={this.state.searchSubstring}
+                            onChange={e => this.setState({searchSubstring: e.target.value})} />
     }
 
     render() {
@@ -96,7 +89,7 @@ class SearchableDropdown extends Component {
             </Dropdown.Toggle>
 
             <Dropdown.Menu>
-                {/*{this._renderSearchField()}*/}
+                {this._renderSearchField()}
                 {this._renderItems()}
             </Dropdown.Menu>
         </Dropdown>
@@ -105,14 +98,14 @@ class SearchableDropdown extends Component {
 }
 
 SearchableDropdown.propTypes = {
-    buttonText: PropTypes.string.isRequired,
-    searchPlaceholder: PropTypes.string,
-    label: PropTypes.string,
-    optionKey: PropTypes.string,
-    variant: PropTypes.string,
-    options: PropTypes.array.isRequired,
-    onChange: PropTypes.func.isRequired,        // 1 param: option
-    filter: PropTypes.func                      // 2 params: option, searchSubstring
+    buttonText: PropTypes.string.isRequired,    // The text to de displayed in the Dropdown
+    searchPlaceholder: PropTypes.string,        // The placeholder for the search text field
+    label: PropTypes.string,                    // The property of the option-object to be used for display
+    optionKey: PropTypes.string,                // The property of the option-object to be used as a key
+    variant: PropTypes.string,                  // The bootstrap styling of the Dropdown
+    options: PropTypes.array.isRequired,        // The list of objects/strings to be displayed as Dropdown-Items
+    onChange: PropTypes.func.isRequired,        // Is called when clicking on a DropdownItem - 1 param: option
+    filter: PropTypes.func                      // Is called when typing in the search field - 2 params: option, searchSubstring
 };
 
 export default SearchableDropdown;

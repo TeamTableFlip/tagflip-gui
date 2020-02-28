@@ -12,7 +12,6 @@ import {faSearch, faTimes} from "@fortawesome/free-solid-svg-icons";
 import InputGroup from "react-bootstrap/InputGroup";
 import ListGroup from "react-bootstrap/ListGroup";
 import Pagination from 'react-bootstrap/Pagination'
-import {Typeahead, Menu, MenuItem} from "react-bootstrap-typeahead";
 import {bindActionCreators} from "redux";
 import {ActionCreators} from "../../../redux/actions/ActionCreators";
 import connect from "react-redux/es/connect/connect";
