@@ -13,9 +13,14 @@ import {receiveCorpora} from "./CorpusListActions";
 export const SET_EDITABLE_CORPUS = "SET_EDITABLE_CORPUS";
 
 export function setEditableCorpus(corpus) {
-    return {
-        type: SET_EDITABLE_CORPUS,
-        corpus
+    return (dispatch, getState) => {
+        dispatch({
+            type: SET_EDITABLE_CORPUS,
+            corpus
+        });
+        if(corpus.c_id > 0) {
+            dispatch(reloadCorpus());
+        }
     }
 }
 
@@ -87,7 +92,7 @@ export const REMOVE_CORPUS_ANNOTATION_SET = "REMOVE_CORPUS_ANNOTATION_SET";
 
 export function toggleCorpusAnnotationSet(annotationSet) {
     return (dispatch, getState) => {
-        let corpusId = getState().editableCorpus.data.values.c_id
+        let corpusId = getState().editableCorpus.values.c_id
         let selectedAnnotationSets = getState().editableCorpus.annotationSets.items;
         let selectedAnnotationSetIds = new Set(selectedAnnotationSets.map(s => s.s_id));
 
@@ -143,7 +148,7 @@ export function receiveUpdateCorpus(corpus, status = fetchStatusType.success, er
 
 export function saveCorpus() {
     return (dispatch, getState) => {
-        let corpus = getState().editableCorpus.data.values;
+        let corpus = getState().editableCorpus.values;
         dispatch(requestUpdateCorpus());
         // Decide whether to PUT for update or POST for create
         console.log(corpus.c_id)
@@ -171,7 +176,7 @@ export function saveCorpus() {
 // ActionCreators for reloading editable corpus
 export function reloadCorpus() {
     return (dispatch, getState) => {
-        let corpus = getState().editableCorpus.data.values;
+        let corpus = getState().editableCorpus.values;
         console.log("Reloading corpus", corpus)
         if (corpus.c_id > 0) {
             dispatch(requestUpdateCorpus());
@@ -305,8 +310,6 @@ export function deleteCorpusDocument(documentId) {
 
 // Actions for displaying document contents
 
-// Actions for uploading Documents while editing a corpus
-
 export const REQUEST_CORPUS_DOCUMENT = "REQUEST_CORPUS_DOCUMENT";
 
 export function requestCorpusDocument() {
@@ -340,5 +343,3 @@ export function fetchCorpusDocument(documentId) {
         }
     }
 }
-
-

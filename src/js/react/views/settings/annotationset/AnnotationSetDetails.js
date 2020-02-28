@@ -73,7 +73,7 @@ class AnnotationSetDetails extends Component {
             editAnnotation: false
         });
         let newAnnotation = this.props.emptyAnnotation;
-        newAnnotation.s_id = this.props.annotationSet.data.values.s_id;
+        newAnnotation.s_id = this.props.annotationSet.values.s_id;
         this.props.setEditableAnnotation(newAnnotation);
     }
 
@@ -214,7 +214,7 @@ class AnnotationSetDetails extends Component {
     }
 
     _isNewAnnotationSet() {
-        return this.props.annotationSet.data.values.s_id <= 0;
+        return this.props.annotationSet.values.s_id <= 0;
     }
 
     _isNewAnnotation() {
@@ -231,7 +231,7 @@ class AnnotationSetDetails extends Component {
     render() {
         return (
             <React.Fragment>
-                <h2>Edit Annotation Set ({!this._isNewAnnotationSet() ? ("ID: " + this.props.annotationSet.data.values.s_id) : "New"})</h2>
+                <h2>Edit Annotation Set ({!this._isNewAnnotationSet() ? ("ID: " + this.props.annotationSet.values.s_id) : "New"})</h2>
                 <Form noValidate validated={this.state.validatedBasicInfo} onSubmit={this._saveAnnotationSet}>
                     <Card className="mt-3">
                         <Card.Body>
@@ -239,14 +239,14 @@ class AnnotationSetDetails extends Component {
                                 Basic Information
                             </Card.Title>
                             <FetchPending
-                                isPending={this.props.annotationSet.data.isFetching}
-                                success={this.props.annotationSet.data.status === fetchStatusType.success}
+                                isPending={this.props.annotationSet.isFetching}
+                                success={this.props.annotationSet.status === fetchStatusType.success}
                                 retryCallback={this.props.reloadAnnotationSet}
                             >
                                 <Form.Group controlId="formName">
                                     <Form.Label>Name</Form.Label>
                                     <Form.Control type="text" placeholder="Name of the Annotation Set"
-                                                  value={this.props.annotationSet.data.values.name || ''}
+                                                  value={this.props.annotationSet.values.name || ''}
                                                   onChange={e => {this.props.updateAnnotationSetField('name', e.target.value)}}
                                                   name='name' required={true} />
                                     <Form.Control.Feedback type="invalid">
@@ -258,7 +258,7 @@ class AnnotationSetDetails extends Component {
                                     <Form.Control as="textarea" placeholder="Description of the Annotation Set"
                                                   name='description'
                                                   onChange={e => {this.props.updateAnnotationSetField('description', e.target.value)}}
-                                                  value={this.props.annotationSet.data.values.description || ''} />
+                                                  value={this.props.annotationSet.values.description || ''} />
                                 </Form.Group>
                                 <div className="mt-3">
                                     <Button variant="success" className="mr-1" type="submit">Save</Button>
@@ -300,7 +300,7 @@ class AnnotationSetDetails extends Component {
  */
 function mapStateToProps(state) {
     return {
-        annotationSet: state.editableAnnotationSet,
+        annotationSet: state.activeAnnotationSet,
         emptyAnnotation: state.emptyAnnotation
     };
 }

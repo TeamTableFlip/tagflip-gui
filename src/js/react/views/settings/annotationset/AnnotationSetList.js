@@ -29,7 +29,7 @@ class AnnotationSetList extends Component {
     }
 
     _addNewAnnotationSet() {
-        this.props.setEditableAnnotationSet(this.props.emptyAnnotationSet);
+        this.props.setActiveAnnotationSet(this.props.emptyAnnotationSet);
         return this.props.history.push(`${this.props.match.path}/edit`)
     }
 
@@ -43,7 +43,7 @@ class AnnotationSetList extends Component {
                         <div className="float-right">
                             <Button size="sm"
                                     onClick={() => {
-                                        this.props.setEditableAnnotationSet(annotationSet);
+                                        this.props.setActiveAnnotationSet(annotationSet);
                                         return this.props.history.push(`${this.props.match.path}/edit`)
                                     }}><FontAwesomeIcon
                                 icon={faPen}/></Button>

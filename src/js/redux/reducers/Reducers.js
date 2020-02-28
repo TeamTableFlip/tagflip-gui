@@ -1,8 +1,8 @@
 import * as corpusFetchReducers from './CorpusListReducers';
-import * as corpusEditReducers from './CorpusEditReducers';
+import * as corpusEditReducers from './CorpusReducers';
 import * as serverStatusFetchReducers from './ServerStatusFetchReducers';
 import * as annotationSetFetchReducers from './AnnotationSetListReducers';
-import * as annotationSetEditReducers from './AnnotationSetEditReducers';
+import * as annotationSetEditReducers from './AnnotationSetReducers';
 import * as documentTaggingReducers from './DocumentTaggingReducers';
 
 //import produce from 'immer';

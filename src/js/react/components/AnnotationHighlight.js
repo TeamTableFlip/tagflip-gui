@@ -17,7 +17,7 @@ class AnnotationHighlight extends React.Component {
 
     render() {
         let reactElement = (
-            <span className="annotation" style={{background: this.props.annotation.color + "40"}}>
+            <span className="annotation" style={{background: this.props.annotation.color}}>
                 <span className="annotationType">{this.props.annotation.name}</span>
                 <span className="annotationText">
                     {this.props.text}

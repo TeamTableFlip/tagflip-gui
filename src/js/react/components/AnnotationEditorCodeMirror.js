@@ -94,7 +94,7 @@ const initialState = {
 };
 
 
-class AnnotationEditor extends Component {
+class AnnotationEditorCodeMirror extends Component {
 
     constructor(props) {
         super(props);
@@ -171,7 +171,7 @@ class AnnotationEditor extends Component {
                                   onPicked={this._onAnnotationPicked}/>
                 <CodeMirrorReact
                     ref={this.editorRef}
-                    value={this.state.text}
+                    value={this.props.document || ""}
                     options={{
                         lineNumbers: true,
                         readOnly: true,
@@ -184,11 +184,12 @@ class AnnotationEditor extends Component {
 
 }
 
-AnnotationEditor.propTypes = {
+AnnotationEditorCodeMirror.propTypes = {
     annotations: PropTypes.array,
+    document: PropTypes.string,
     timerIntervalMSec: PropTypes.number,
     autoSave: PropTypes.bool,
     onSave: PropTypes.func,
 };
 
-export default AnnotationEditor;
+export default AnnotationEditorCodeMirror;

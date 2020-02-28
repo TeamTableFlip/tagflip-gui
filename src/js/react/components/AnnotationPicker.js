@@ -27,6 +27,9 @@ class AnnotationPicker extends Component {
     }
 
     _renderAnnotationsTable() {
+        console.log(this.props.annotations)
+        if(!this.props.annotations)
+            return null;
         return this.props.annotations.map((annotation, idx) => {
             return   <ListGroup horizontal={"sm"} key={idx}>
                 <ListGroup.Item action onClick={()=>{this.props.onPicked(annotation)}} sytle={{backgroundColor: annotation.color}}>{annotation.name}</ListGroup.Item>

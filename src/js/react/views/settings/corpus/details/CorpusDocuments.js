@@ -26,10 +26,6 @@ class CorpusDocuments extends Component {
         }
     }
 
-    componentDidMount() {
-        this.props.reloadCorpus();
-    }
-
     _renderDocuments() {
         let renderDocumentTableData = () => {
             return this.props.corpus.documents.items.map(document => {
@@ -78,7 +74,7 @@ class CorpusDocuments extends Component {
             <div className="table-responsive">
                 <FetchPending isPending={this.props.corpus.documents.isFetching}
                               success={this.props.corpus.documents.status !== fetchStatusType.error}
-                              retryCallback={() => this.props.fetchCorpusDocuments(this.props.corpus.data.values.c_id)}
+                              retryCallback={() => this.props.fetchCorpusDocuments(this.props.corpus.values.c_id)}
                 >
                     <table className="table">
                         <thead>
@@ -124,7 +120,7 @@ class CorpusDocuments extends Component {
                             }
                             <FileUpload
                                 isUploading={this.props.corpus.documents.isFetching}
-                                onUpload={(files) => this.props.uploadCorpusDocuments(this.props.corpus.data.values.c_id, files)}
+                                onUpload={(files) => this.props.uploadCorpusDocuments(this.props.corpus.values.c_id, files)}
                                 maxCount={50}
                                 uploadText="Drop Text-Files or ZIP-Archive here... or just click..."
                                 acceptMimeTypes='text/plain, application/zip,application/x-zip-compressed,multipart/x-zip"'

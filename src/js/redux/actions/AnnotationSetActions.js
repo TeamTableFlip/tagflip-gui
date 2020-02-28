@@ -1,17 +1,23 @@
 import fetchStatusType from "./FetchStatusTypes";
 import client from "../../backend/RestApi";
+import {fetchCorpusAnnotationSets, fetchCorpusDocuments, reloadCorpus, SET_EDITABLE_CORPUS} from "./CorpusActions";
 
 /**
- * Action creator for the action SET_EDITABLE_ANNOTATION_SET.
+ * Action creator for the action SET_ACTIVE_ANNOTATION_SET.
  *
  * @param corpus
  * @returns {{type: string, annotationSet: *}}
  */
-export const SET_EDITABLE_ANNOTATION_SET = "SET_EDITABLE_ANNOTATION_SET";
-export function setEditableAnnotationSet(annotationSet) {
-    return {
-        type: SET_EDITABLE_ANNOTATION_SET,
-        annotationSet
+export const SET_ACTIVE_ANNOTATION_SET = "SET_ACTIVE_ANNOTATION_SET";
+export function setActiveAnnotationSet(annotationSet) {
+    return (dispatch, getState) => {
+        dispatch({
+            type: SET_ACTIVE_ANNOTATION_SET,
+            annotationSet
+        });
+        if(annotationSet.s_id > 0) {
+            dispatch(reloadAnnotationSet());
+        }
     }
 }
 
@@ -26,17 +32,17 @@ export function updateAnnotationSetField(field, value) {
 
 // Actions for saving the editable AnnotationSet in the backend
 
-export const REQUEST_EDITABLE_ANNOTATION_SET = "REQUEST_EDITABLE_ANNOTATION_SET";
-export function requestEditableAnnotationSet() {
+export const REQUEST_ACTIVE_ANNOTATION_SET = "REQUEST_ACTIVE_ANNOTATION_SET";
+export function requestActiveAnnotationSet() {
     return {
-        type: REQUEST_EDITABLE_ANNOTATION_SET
+        type: REQUEST_ACTIVE_ANNOTATION_SET
     }
 }
 
-export const RECEIVE_EDITABLE_ANNOTATION_SET = "RECEIVE_EDITABLE_ANNOTATION_SET";
-export function receiveEditableAnnotationSet(annotationSet, status = fetchStatusType.success, error = null) {
+export const RECEIVE_ACTIVE_ANNOTATION_SET = "RECEIVE_ACTIVE_ANNOTATION_SET";
+export function receiveActiveAnnotationSet(annotationSet, status = fetchStatusType.success, error = null) {
     return {
-        type: RECEIVE_EDITABLE_ANNOTATION_SET,
+        type: RECEIVE_ACTIVE_ANNOTATION_SET,
         annotationSet: annotationSet,
         receivedAt: Date.now(),
         status: status,
@@ -46,28 +52,26 @@ export function receiveEditableAnnotationSet(annotationSet, status = fetchStatus
 
 export function saveAnnotationSet() {
     return (dispatch, getState) => {
-        dispatch(requestEditableAnnotationSet());
-        let annotationSet = getState().editableAnnotationSet.data.values;
+        dispatch(requestActiveAnnotationSet());
+        let annotationSet = getState().activeAnnotationSet.values;
 
         // Decide whether to PUT for update or POST for create
         if(!annotationSet.s_id || annotationSet.s_id <= 0) {
             client.httpPost('/annotationset', annotationSet)
                 .then(result => {
-                    dispatch(receiveEditableAnnotationSet(result));
-                    dispatch(setEditableAnnotationSet(result));
+                    dispatch(receiveActiveAnnotationSet(result));
                 })
                 .catch(err => {
-                    dispatch(receiveEditableAnnotationSet({}, fetchStatusType.error, err))
+                    dispatch(receiveActiveAnnotationSet({}, fetchStatusType.error, err))
                 });
         }
         else {
             client.httpPut(`/annotationset/${annotationSet.s_id}`, annotationSet)
                 .then(result => {
-                    dispatch(receiveEditableAnnotationSet(result));
-                    dispatch(setEditableAnnotationSet(result));
+                    dispatch(receiveActiveAnnotationSet(result));
                 })
                 .catch(err => {
-                    dispatch(receiveEditableAnnotationSet({}, fetchStatusType.error, err))
+                    dispatch(receiveActiveAnnotationSet({}, fetchStatusType.error, err))
                 });
         }
     }
@@ -77,23 +81,21 @@ export function saveAnnotationSet() {
 
 export function reloadAnnotationSet() {
     return (dispatch, getState) => {
-        dispatch(requestEditableAnnotationSet());
-        let annotationSet = getState().editableAnnotationSet.data.values;
+        let annotationSet = getState().activeAnnotationSet.values;
         if (annotationSet.s_id > 0) {
-            dispatch(requestEditableAnnotationSet());
+            dispatch(requestActiveAnnotationSet());
             client.httpGet(`/annotationset/${annotationSet.s_id}`)
                 .then(result => {
-                        dispatch(receiveEditableAnnotationSet(result));
-                        dispatch(setEditableAnnotationSet(result));
+                        dispatch(receiveActiveAnnotationSet(result));
+                        dispatch(fetchAnnotations());
                     }
                 )
                 .catch(error => {
-                    dispatch(receiveEditableAnnotationSet({}, fetchStatusType.error, error))
+                    dispatch(receiveActiveAnnotationSet({}, fetchStatusType.error, error))
                 });
         }
         else {
-            dispatch(receiveEditableAnnotationSet(getState().emptyAnnotationSet));
-            dispatch(setEditableAnnotationSet(getState().emptyAnnotationSet));
+            dispatch(receiveActiveAnnotationSet(getState().emptyAnnotationSet));
         }
     }
 }
@@ -132,7 +134,7 @@ export function receiveAnnotations(annotations, status = fetchStatusType.success
 export function fetchAnnotations() {
     return (dispatch, getState) => {
         dispatch(requestAnnotations());
-        let annotationSet = getState().editableAnnotationSet.data.values;
+        let annotationSet = getState().activeAnnotationSet.values;
         if(annotationSet.s_id > 0) {
             client.httpGet(`/annotationset/${annotationSet.s_id}/annotation`)
                 .then(result =>
@@ -207,7 +209,7 @@ export function receiveSaveAnnotation(annotation, status = fetchStatusType.succe
 export function saveAnnotation() {
     return (dispatch, getState) => {
         dispatch(requestEditableAnnotation());
-        let annotation = getState().editableAnnotationSet.annotations.editableAnnotation.values;
+        let annotation = getState().activeAnnotationSet.annotations.editableAnnotation.values;
 
         // Decide whether to PUT for update or POST for create
         if(!annotation.a_id || annotation.a_id <= 0) {
@@ -235,7 +237,7 @@ export function saveAnnotation() {
 
 export function reloadAnnotation() {
     return (dispatch, getState) => {
-        let annotation = getState().editableAnnotationSet.annotations.editableAnnotation.values;
+        let annotation = getState().activeAnnotationSet.annotations.editableAnnotation.values;
         if (annotation.a_id > 0) {
             dispatch(requestEditableAnnotation());
             client.httpGet(`/corpus/${annotation.c_id}`)
