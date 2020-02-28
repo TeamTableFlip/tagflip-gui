@@ -21,34 +21,14 @@ class Editor extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {
-            searchCorpusSubstring: "",
-            searchDocumentSubstring: ""
-        }
     }
 
     componentDidMount() {
         this.props.fetchCorpora();
     }
 
-    _renderCorpora() {
-        return this.props.corpora.items
-            .filter(corpus => corpus.name.toLowerCase().includes(this.state.searchCorpusSubstring.toLowerCase()))
-            .map(corpus => {
-                return <ListGroup.Item action key={corpus.c_id}
-                                       active={this.props.selectedCorpus.data.values.c_id === corpus.c_id}
-                                       onClick={() => {
-                                           this.props.fetchCorpusDocuments(corpus.c_id);
-                                           this.props.setEditableCorpus(corpus);
-                                       }}>
-                    {corpus.name}
-                </ListGroup.Item>
-            });
-    }
-
     _renderDocuments() {
         return this.props.selectedCorpus.documents.items
-            .filter(document => document.filename.toLowerCase().includes(this.state.searchDocumentSubstring.toLowerCase()))
             .map(document => {
                 let filenamePath = document.filename.split('/');
                 let documentName = document.d_id + ': ' + filenamePath[filenamePath.length-1];
@@ -60,50 +40,58 @@ class Editor extends Component {
             });
     }
 
+    _isSelectedCorpusNew() {
+        return this.props.selectedCorpus.data.values.c_id <= 0;
+    }
+
+    _isSelectedDocumentNew() {
+        return this.props.selectedDocument.data.values.d_id <= 0;
+    }
+
     render() {
+        // TODO: Synchronize documents list and selected item of searchable dropdown
         return (
             <React.Fragment>
                 <div className="editorNav">
                     <div style={{minWidth: "300px"}} />
 
-                    {/*<div>Select Corpus</div>*/}
-                    <SearchableDropdown buttonText="Select Corpus"
+                    <div>Select Corpus</div>
+                    <SearchableDropdown buttonText="No Corpus selected"
+                                        toggleId="corpusToggle"
                                         onChange={(corpus) => {
                                             this.props.fetchCorpusDocuments(corpus.c_id);
                                             this.props.setEditableCorpus(corpus);
                                         }}
                                         optionKey="c_id"
-                                        // filter={(corpus, searchSubstring) => {
-                                        //     return corpus.name.toLowerCase().includes(searchSubstring.toLowerCase())
-                                        // }}
                                         options={this.props.corpora.items}
+                                        initOption={this._isSelectedCorpusNew() ? undefined : this.props.selectedCorpus.data.values}
                                         label="name"
-                                        searchPlaceholder={"Filter corpora..."}
-                    />
-                    {/*<Form>*/}
-                        {/*<InputGroup className="mb-3">*/}
-                            {/*<Form.Control type="text" placeholder="Search Corpus..."*/}
-                                          {/*onChange={e => this.setState({searchCorpusSubstring: e.target.value})}*/}
-                                          {/*value={this.state.searchCorpusSubstring}/>*/}
-                        {/*</InputGroup>*/}
-                    {/*</Form>*/}
-                    {/*<ListGroup>*/}
-                        {/*{this._renderCorpora()}*/}
-                    {/*</ListGroup>*/}
-
-                    <hr/>
-
-                    <div>Select Document</div>
-                    <Form>
-                        <InputGroup className="mb-3">
-                            <Form.Control type="text" placeholder="Search Document..."
-                                          onChange={e => this.setState({searchDocumentSubstring: e.target.value})}
-                                          value={this.state.searchDocumentSubstring}/>
-                        </InputGroup>
-                    </Form>
-                    <ListGroup>
-                        {this._renderDocuments()}
-                    </ListGroup>
+                                        searchPlaceholder={"Find Corpus..."} />
+                    { !this._isSelectedCorpusNew() && <div>
+                        <hr/>
+                        <div>Select Document</div>
+                        <SearchableDropdown buttonText="No Document selected"
+                                            toggleId="documentToggle"
+                                            onChange={(document) => this.props.setTagableDocument(document)}
+                                            optionKey="d_id"
+                                            disabled={this._isSelectedCorpusNew()}
+                                            options={this.props.selectedCorpus.documents.items}
+                                            initOption={this._isSelectedDocumentNew() ? undefined : this.props.selectedDocument.data.values}
+                                            getText={document => {
+                                                let filenamePath = document.filename.split('/');
+                                                return document.d_id + ': ' + filenamePath[filenamePath.length-1];
+                                            }}
+                                            filter={(document, searchSubstring) => {
+                                                let matchFilename = document.filename.toLowerCase().includes(searchSubstring.toLowerCase());
+                                                let matchId = document.d_id.toString().toLowerCase().includes(searchSubstring.toLowerCase());
+                                                return matchFilename || matchId;
+                                            }}
+                                            searchPlaceholder={"Find Document..."}
+                        />
+                        <ListGroup style={{marginTop: "10px"}}>
+                            {this._renderDocuments()}
+                        </ListGroup></div>
+                    }
                 </div>
 
                 <AnnotationEditor />
