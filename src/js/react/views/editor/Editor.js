@@ -81,7 +81,7 @@ class Editor extends Component {
                     </ListGroup>
                 </div>
 
-                <AnnotationEditorCodeMirror />
+                <AnnotationEditorCodeMirror annotations={[{a_id: 1, name: "hello", color:"#550000"}, {a_id:5, name:"bibi", color:"#005500"},{a_id: 3, name: "hello", color:"#000055"}, {a_id: 7, name: "hello", color:"#b0a0f0"}]}/>
             </React.Fragment>
         );
     }

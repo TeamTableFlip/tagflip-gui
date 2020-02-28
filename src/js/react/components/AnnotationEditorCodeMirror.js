@@ -6,6 +6,9 @@ import AnnotationPicker from "./AnnotationPicker";
 import "./AnnotationEditorCodeMirror.scss"
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
+import "./temp-maker.css"
+import AnnotationHighlight from "./AnnotationHighlight";
+
 
 const testvalue = "Killer Bees (2017 film)\n" +
     "From Wikipedia, the free encyclopedia\n" +
@@ -96,8 +99,6 @@ class AnnotationEditor extends Component {
     constructor(props) {
         super(props);
         this.state = initialState;
-
-        this._onSelectionChanged = this._onSelectionChanged.bind(this);
         this._onTimeout = this._onTimeout.bind(this);
         this._onAnnotationPicked = this._onAnnotationPicked.bind(this);
         this._onMouseUp = this._onMouseUp.bind(this);
@@ -109,67 +110,45 @@ class AnnotationEditor extends Component {
 
     }
 
-    _onSelectionChanged() {
-
-    }
-
-    _createReplaceNode(text, tag) {
-        let container = document.createElement('span');
-        let reactElement = (
-            <OverlayTrigger overlay={<Tooltip id="tooltip-disabled">
-                This is a Tooltip. Fill me :)
-            </Tooltip>}>
-                <span className="annotation">
-                    <span className="annotationType">{tag}</span>
-                    <span className="annotationText">{text}</span>
-                </span>
-            </OverlayTrigger>
-        );
-        ReactDom.render(reactElement, container);
-        return container;
-    }
-
     _onMouseUp() {
         let codeMirror = this.editorRef.current.codeMirror;
         console.log("_onMouseUp");
         if (codeMirror.somethingSelected()) {
+
             console.log(codeMirror.listSelections());
-            for (let selection of codeMirror.listSelections()) {
-                console.log(typeof "boo");
-                if (this.state.markers.length > 0) this.state.markers[0].clear();
-                // let  replaceNode = document.createElement('span');
-                // replaceNode.addEventListener("click", ()=> {
-                //     console.log("boo");
-                // });
-                // replaceNode.appendChild(document.createTextNode(codeMirror.getSelection()));
-                // console.log(replaceNode);
-                // replaceNode.style.cssText = "color: #f00; background-color: #006";
-                let textMarker = codeMirror.markText(selection.anchor, selection.head, {
-                    css: "color: #f00",
-                    replacedWith: this._createReplaceNode(codeMirror.getSelection(), "Type of Annotation"),
-                    handleMouseEvents: true
-                });
-                this.setState({markers: [textMarker], textSelected: false});
-                console.log(codeMirror.indexFromPos(selection.anchor));
-                console.log(codeMirror.indexFromPos(selection.head));
-                console.log(codeMirror.getValue().substring(0, 100));
-                console.log(codeMirror.getSelection());
+            let selections = codeMirror.listSelections();
+            if (selections.length === 1) {
+                this.setState({textSelected: true});
             }
         }
     }
 
-    _onAnnotationPicked(a_id) {
+    _onAnnotationPicked (annotation) { //annotation  has .a_id .color .name .s_id
+        console.log(annotation);
+        let codeMirror = this.editorRef.current.codeMirror;
+        let selections = codeMirror.listSelections();
+        if (selections.length === 1) {
+            let selection = selections[0];
+            console.log(codeMirror.indexFromPos(selection.anchor));
+            console.log(codeMirror.indexFromPos(selection.head));
+            console.log(codeMirror.getSelection());
 
+            let replacementContainer = document.createElement('span'); // this has to be here to handle click events ...
+            let textMarker = codeMirror.markText(selection.anchor, selection.head, {
+                replacedWith: replacementContainer,
+                handleMouseEvents: true
+            });
+            let reactElement = (<AnnotationHighlight annotation={annotation} text={codeMirror.getSelection()} tooltip={"id: " + annotation.a_id}/>);
+            ReactDom.render(reactElement, replacementContainer);
+
+            this.setState({markers: [textMarker], textSelected: false});
+            codeMirror.setSelections([]);
+        }
     }
 
     componentDidMount() {
-        console.log(this.editorRef);
-        console.log("editor mount");
         let codeMirror = this.editorRef.current.codeMirror;
-        console.log(codeMirror);
-        console.log(this.editorRef.current.textareaNode);
         codeMirror.getWrapperElement().addEventListener("mouseup", this._onMouseUp);
-        //codeMirror.on("cursorActivity", this._onMouseUp);
 
         // fallback on Click for tags:
         // codeMirror.getWrapperElement().addEventListener("click", (e) => {
@@ -186,12 +165,9 @@ class AnnotationEditor extends Component {
     render() {
         return (
             <React.Fragment>
+
                 <AnnotationPicker textSelected={this.state.textSelected}
-                                  annotations={[{a_id: 1, name: "hello", color: "#550000"}, {
-                                      a_id: 5,
-                                      name: "bibi",
-                                      color: "#005500"
-                                  }, {a_id: 3, name: "hello", color: "#000055"}]}
+                                  annotations={this.props.annotations}
                                   onPicked={this._onAnnotationPicked}/>
                 <CodeMirrorReact
                     ref={this.editorRef}
@@ -206,11 +182,10 @@ class AnnotationEditor extends Component {
         );
     }
 
-
 }
 
 AnnotationEditor.propTypes = {
-    //annotations: PropTypes.array.isRequired,
+    annotations: PropTypes.array,
     timerIntervalMSec: PropTypes.number,
     autoSave: PropTypes.bool,
     onSave: PropTypes.func,
