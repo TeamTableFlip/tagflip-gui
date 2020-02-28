@@ -138,7 +138,7 @@ class AnnotationEditorCodeMirror extends Component {
                 replacedWith: replacementContainer,
                 handleMouseEvents: true
             });
-            let reactElement = (<AnnotationHighlight annotation={annotation} text={codeMirror.getSelection()} tooltip={"id: " + annotation.a_id}/>);
+            let reactElement = (<AnnotationHighlight annotation={annotation} text={codeMirror.getSelection()} tooltip={"id: " + annotation.a_id} onDelete={() => alert("DELETEEEE!")}/>);
             ReactDom.render(reactElement, replacementContainer);
 
             this.setState({markers: [textMarker], textSelected: false});
