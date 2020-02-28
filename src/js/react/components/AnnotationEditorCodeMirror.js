@@ -104,10 +104,18 @@ class AnnotationEditorCodeMirror extends Component {
         this._onMouseUp = this._onMouseUp.bind(this);
 
         this.editorRef = React.createRef();
+        this.annotationContainers = [];
     }
 
     _onTimeout() {
 
+    }
+
+    componentWillUnmount() {
+        // unmounting custom mount components
+        for(let container of this.annotationContainers) {
+            ReactDom.unmountComponentAtNode(container)
+        }
     }
 
     _onMouseUp() {
@@ -138,6 +146,7 @@ class AnnotationEditorCodeMirror extends Component {
                 replacedWith: replacementContainer,
                 handleMouseEvents: true
             });
+            this.annotationContainers.push(replacementContainer);
             let reactElement = (<AnnotationHighlight annotation={annotation} text={codeMirror.getSelection()} tooltip={"id: " + annotation.a_id} onDelete={() => alert("DELETEEEE!")}/>);
             ReactDom.render(reactElement, replacementContainer);
 
