@@ -16,7 +16,7 @@ class Navigation extends Component {
     render() {
         return (
             <Navbar id="topNav" bg="dark" variant="dark" expand="lg">
-                <Navbar.Brand href="#home">TagFlip</Navbar.Brand>
+                <Navbar.Brand href="/">TagFlip</Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav"/>
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="mr-auto" activeKey={this.state.activeLink} onSelect={ k => this.setState({activeLink: k})}>

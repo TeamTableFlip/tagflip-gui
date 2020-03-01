@@ -15,10 +15,11 @@ class SearchableDropdown extends Component {
         this._renderItems = this._renderItems.bind(this);
         this._renderSearchField = this._renderSearchField.bind(this);
         this._getDropdownText = this._getDropdownText.bind(this);
+        this.inputRef = React.createRef();
     }
 
     componentDidMount() {
-        if(this.props.initOption) {
+        if (this.props.initOption) {
             this.setState({
                 selectedOption: this.props.initOption
             });
@@ -29,10 +30,10 @@ class SearchableDropdown extends Component {
     _renderItems() {
         return this.props.options
             .filter(option => {
-                if(this.props.filter) {
+                if (this.props.filter) {
                     return this.props.filter(option, this.state.searchSubstring);
                 }
-                if(this.props.label && option.hasOwnProperty(this.props.label)) {
+                if (this.props.label && option.hasOwnProperty(this.props.label)) {
                     return option[this.props.label].toString().toLowerCase().includes(this.state.searchSubstring.toLowerCase())
                 }
                 return option.toString().toLowerCase().includes(this.state.searchSubstring.toLowerCase())
@@ -42,10 +43,9 @@ class SearchableDropdown extends Component {
                 let hasOptionsKey = this.props.optionKey && option.hasOwnProperty(this.props.optionKey);
 
                 // Determine key
-                if(hasOptionsKey) {
+                if (hasOptionsKey) {
                     key = option[this.props.optionKey];
-                }
-                else {
+                } else {
                     key = option;
                 }
 
@@ -59,12 +59,12 @@ class SearchableDropdown extends Component {
                             )
                         }
                         onClick={e => {
-                        this.setState({
-                            selectedOption: option,
-                            searchSubstring: ""
-                        });
-                        this.props.onChange(option);
-                    }}>
+                            this.setState({
+                                selectedOption: option,
+                                searchSubstring: ""
+                            });
+                            this.props.onChange(option);
+                        }}>
                         {this._getDropdownText(option)}
                     </Dropdown.Item>
                 )
@@ -72,10 +72,10 @@ class SearchableDropdown extends Component {
     }
 
     _getDropdownText(option) {
-        if(option) {
-            if(this.props.getText)
+        if (option) {
+            if (this.props.getText)
                 return this.props.getText(option);
-            else if(this.props.label && option.hasOwnProperty(this.props.label))
+            else if (this.props.label && option.hasOwnProperty(this.props.label))
                 return option[this.props.label];
             return option;
         }
@@ -83,11 +83,11 @@ class SearchableDropdown extends Component {
     }
 
     _renderSearchField() {
-        return <FormControl autoFocus
-                            placeholder={this.props.searchPlaceholder}
+        return <FormControl placeholder={this.props.searchPlaceholder}
+                            autoFocus
+                            ref={this.inputRef}
                             value={this.state.searchSubstring}
-                            className="dropdownInput"
-                            onChange={e => this.setState({searchSubstring: e.target.value})} />
+                            onChange={e => this.setState({searchSubstring: e.target.value})}/>
     }
 
     render() {
@@ -98,9 +98,10 @@ class SearchableDropdown extends Component {
             >
                 {this._getDropdownText(this.state.selectedOption)}
             </Dropdown.Toggle>
-
             <Dropdown.Menu className="dropdownItems">
-                {this._renderSearchField()}
+                <div
+                    className="d-flex justify-content-center align-content-center m-1">{this._renderSearchField()}</div>
+
                 {this._renderItems()}
             </Dropdown.Menu>
         </Dropdown>

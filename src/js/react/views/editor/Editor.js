@@ -115,7 +115,7 @@ class Editor extends Component {
                                             options={this.props.corpora.items}
                                             initOption={!this._isSelectedCorpusNew() ? this.props.selectedCorpus.values : (this.props.corpora.items.length === 0 ? undefined : this.props.corpora.items[0])}
                                             label="name"
-                                            searchPlaceholder={"Find Annotation Set..."}/>
+                                            searchPlaceholder={"Find Corpus..."}/>
 
 
                         <React.Fragment>
@@ -133,12 +133,12 @@ class Editor extends Component {
                                                     }}
                                                     optionKey="s_id"
                                                     options={this.props.selectedCorpus.annotationSets.items}
-                                                    initOption={this.props.selectedAnnotationSet.values
+                                                    initOption={this.props.selectedAnnotationSet.values.s_id > 0
                                                     && this.props.selectedCorpus.annotationSets.items.filter(x => x.s_id === this.props.selectedAnnotationSet.values.s_id).length > 0
                                                         ? this.props.selectedAnnotationSet.values
                                                         : (this.props.selectedCorpus.annotationSets.items.length === 0 ? undefined : this.props.selectedCorpus.annotationSets.items[0])}
                                                     label="name"
-                                                    searchPlaceholder={"Find Corpus..."}/>
+                                                    searchPlaceholder={"Find Annotation Set..."}/>
                             </FetchPending>
                         </React.Fragment>
                         {!this._isSelectedCorpusNew() &&
@@ -156,7 +156,13 @@ class Editor extends Component {
                                                     optionKey="d_id"
                                                     disabled={this._isSelectedCorpusNew()}
                                                     options={this.props.selectedCorpus.documents.items}
-                                                    initOption={this.props.selectedCorpus.documents.items.length === 0 ? undefined : this.props.selectedCorpus.documents.items[0]}
+                                                    initOption={
+                                                        this.props.selectedDocument.item &&
+                                                        this.props.selectedDocument.item.d_id > 0
+                                                        && this.props.selectedCorpus.documents.items.filter(x => x.d_id === this.props.selectedDocument.item.d_id).length > 0
+                                                            ? this.props.selectedDocument.item
+                                                            : (this.props.selectedCorpus.documents.items.length === 0 ? undefined : this.props.selectedCorpus.documents.items[0])
+                                                    }
                                                     getText={document => {
                                                         let filenamePath = document.filename.split('/');
                                                         return document.d_id + ': ' + filenamePath[filenamePath.length - 1];
