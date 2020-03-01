@@ -230,7 +230,7 @@ class AnnotationEditorCodeMirror extends Component {
                     handleMouseEvents: true
                 });
                 codeMirror.setSelection(anchor, head)
-                let text = codeMirror.getSelection(" ");
+                let text = codeMirror.getSelection();
                 codeMirror.setCursor(0, 0);
                 codeMirror.setSelection(codeMirror.posFromIndex(0), codeMirror.posFromIndex(0))
 
@@ -239,7 +239,6 @@ class AnnotationEditorCodeMirror extends Component {
                     container: replacementContainer,
                     text: text
                 });
-
 
                 let reactElement = (
                     <AnnotationHighlight id={`hightlight-${tag.t_id}`}
