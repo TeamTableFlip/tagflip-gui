@@ -51,10 +51,18 @@ class Editor extends Component {
             .map(document => {
                 return <ListGroup.Item action key={document.d_id}
                                        active={this.props.selectedDocument.item && this.props.selectedDocument.item.d_id === document.d_id}
-                                       onClick={() => this.props.fetchCorpusDocument(document.d_id)}>
+                                       onClick={() => this.props.fetchCorpusDocument(document.d_id, true)}>
                     {document.filename}
                 </ListGroup.Item>
             });
+    }
+
+    _saveTag(tag) {
+        this.props.saveTagForActiveDocument(tag);
+    }
+
+    _deleteTag(tag) {
+        this.props.deleteTagForActiveDocument(tag);
     }
 
     render() {
@@ -105,11 +113,17 @@ class Editor extends Component {
                                   success={this.props.selectedDocument.status === fetchStatusType.success}>
                         <FetchPending isPending={this.props.selectedAnnotationSet.annotations.isFetching}
                                       success={this.props.selectedAnnotationSet.annotations.status === fetchStatusType.success}>
-                            <div className="editor">
-                                <AnnotationEditorCodeMirror
-                                    annotations={this.props.selectedAnnotationSet.annotations.items}
-                                    document={this.props.selectedDocument.item && this.props.selectedDocument.item.text || ""}/>
-                            </div>
+                            <FetchPending isPending={this.props.selectedDocument.tags.isFetching}
+                                          success={this.props.selectedDocument.tags.status === fetchStatusType.success}>
+                                <div className="editor">
+                                    <AnnotationEditorCodeMirror
+                                        annotations={this.props.selectedAnnotationSet.annotations.items}
+                                        tags={this.props.selectedDocument.tags.items}
+                                        onSaveTag={(tag) => this._saveTag(tag)}
+                                        onDeleteTag={(tag) => this._deleteTag(tag)}
+                                        document={this.props.selectedDocument.item}/>
+                                </div>
+                            </FetchPending>
                         </FetchPending>
                     </FetchPending>
                 </FetchPending>

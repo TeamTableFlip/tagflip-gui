@@ -27,7 +27,6 @@ class AnnotationPicker extends Component {
     }
 
     _renderAnnotationsTable() {
-        console.log(this.props.annotations)
         if(!this.props.annotations)
             return null;
         return this.props.annotations.map((annotation, idx) => {

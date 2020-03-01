@@ -10,6 +10,8 @@ import {
     uploadCorpusDocuments,
     deleteCorpusDocument,
     fetchCorpusDocument,
+    saveTagForActiveDocument,
+    deleteTagForActiveDocument
 } from './CorpusActions';
 import {fetchServerStatus} from './ServerStatusFetchActions';
 import {fetchAnnotationSets, deleteAnnotationSet} from "./AnnotationSetListActions";
@@ -24,7 +26,6 @@ import {
     saveAnnotation,
     setEditableAnnotation
 } from "./AnnotationSetActions";
-import {setTagableDocument} from "./DocumentTaggingActions";
 
 
 /**
@@ -55,7 +56,8 @@ export const ActionCreators = Object.assign({},
         updateAnnotationField,
         setEditableAnnotation,
         deleteAnnotation,
-        setTagableDocument,
+        saveTagForActiveDocument,
+        deleteTagForActiveDocument,
         setActiveAnnotationSet
     }
 );

@@ -1,7 +1,5 @@
 import fetchStatusType from "./FetchStatusTypes";
 import client from "../../backend/RestApi";
-import {receiveSaveAnnotationSet, requestSaveAnnotationSet} from "./AnnotationSetListActions";
-import {receiveCorpora} from "./CorpusListActions";
 
 // Actions for editing a corpus
 /**
@@ -331,15 +329,153 @@ export function receiveCorpusDocument(result, status = fetchStatusType.success, 
 }
 
 
-export function fetchCorpusDocument(documentId) {
+export function fetchCorpusDocument(documentId, withTags=false) {
     return (dispatch, getState) => {
         if (documentId > 0) {
-            dispatch(requestCorpusDocument())
+            dispatch(requestCorpusDocument());
             client.httpGet(`/document/${documentId}`)
-                .then(result =>
-                    dispatch(receiveCorpusDocument(result))
+                .then(result => {
+                        dispatch(receiveCorpusDocument(result));
+                        if(withTags) {
+                            dispatch(fetchTagsForActiveDocument())
+                        }
+                    }
                 )
                 .catch(error => dispatch(receiveCorpusDocument(null, fetchStatusType.error, error)))
         }
+    }
+}
+
+
+export const REQUEST_TAGS_FOR_ACTIVE_DOCUMENT = "REQUEST_TAGS_FOR_ACTIVE_DOCUMENT";
+function requestTagsForActiveDocument() {
+    return {
+        type: REQUEST_TAGS_FOR_ACTIVE_DOCUMENT
+    }
+}
+
+export const INVALIDATE_TAGS_FOR_ACTIVE_DOCUMENT = "INVALIDATE_TAGS_FOR_ACTIVE_DOCUMENT";
+function invalidateTagsForActiveDocument() {
+    return {
+        type: INVALIDATE_TAGS_FOR_ACTIVE_DOCUMENT,
+    }
+}
+
+
+export const RECEIVE_TAGS_FOR_ACTIVE_DOCUMENT = "RECEIVE_TAGS_FOR_ACTIVE_DOCUMENT";
+
+export function receiveTagsForActiveDocument(tags, status = fetchStatusType.success, error = null) {
+    return {
+        type: RECEIVE_TAGS_FOR_ACTIVE_DOCUMENT,
+        tags: tags,
+        receivedAt: Date.now(),
+        status: status,
+        error: error
+    }
+}
+
+// Actions for setting the current Document
+export function fetchTagsForActiveDocument() {
+    return (dispatch, getState) => {
+        let documentId = getState().editableCorpus.activeDocument.item.d_id
+        dispatch(requestTagsForActiveDocument());
+        dispatch(invalidateTagsForActiveDocument());
+        client.httpGet(`/document/${documentId}/tag`)
+            .then(result =>
+                dispatch(receiveTagsForActiveDocument(result))
+            )
+            .catch(error => dispatch(receiveTagsForActiveDocument([], fetchStatusType.error, error)))
+    }
+}
+
+
+export const REQUEST_SAVE_TAG = "REQUEST_SAVE_TAG";
+
+export function requestSaveTag() {
+    return {
+        type: REQUEST_SAVE_TAG,
+    }
+}
+
+
+export const RECEIVE_SAVE_TAG = "RECEIVE_SAVE_TAG";
+
+export function receiveSaveTag(tag, status = fetchStatusType.success, error = null) {
+    return {
+        type: RECEIVE_SAVE_TAG,
+        tag: tag,
+        receivedAt: Date.now(),
+        status: status,
+        error: error
+    }
+}
+
+export function saveTagForActiveDocument(newTag) {
+    return (dispatch, getState) => {
+        let document = getState().editableCorpus.activeDocument.item;
+        if(!newTag.d_id) {
+            Object.assign(newTag, {
+                d_id: document.d_id
+            })
+        } else {
+            if(newTag.d_id !== document.d_id) {
+                console.log("New tag does not relate current selected document id")
+                return;
+            }
+        }
+        dispatch(requestSaveTag());
+        client.httpPost('/tag', newTag)
+            .then(result => {
+                dispatch(receiveSaveTag(result));
+            })
+            .catch(err =>
+                dispatch(receiveSaveTag([], fetchStatusType.error, err))
+            );
+    }
+}
+
+
+export const REQUEST_DELETE_TAG = "REQUEST_DELETE_TAG";
+
+export function requestDeleteTag() {
+    return {
+        type: REQUEST_DELETE_TAG,
+    }
+}
+
+
+export const RECEIVE_DELETE_TAG = "RECEIVE_DELETE_TAG";
+
+export function receiveDeleteTag(tagId, status = fetchStatusType.success, error = null) {
+    return {
+        type: RECEIVE_DELETE_TAG,
+        tagId: tagId,
+        receivedAt: Date.now(),
+        status: status,
+        error: error
+    }
+}
+
+export function deleteTagForActiveDocument(tag) {
+    return (dispatch, getState) => {
+        let document = getState().editableCorpus.activeDocument.item;
+        if(!tag.d_id) {
+            Object.assign(tag, {
+                d_id: document.d_id
+            })
+        } else {
+            if(tag.d_id !== document.d_id) {
+                console.log("New tag does not relate current selected document id")
+                return;
+            }
+        }
+        dispatch(requestDeleteTag());
+        client.httpDelete(`/tag/${tag.t_id}`)
+            .then(result => {
+                dispatch(receiveDeleteTag(tag.t_id));
+            })
+            .catch(err =>
+                dispatch(receiveDeleteTag(tag.t_id, fetchStatusType.error, err))
+            );
     }
 }
