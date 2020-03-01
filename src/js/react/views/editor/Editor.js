@@ -7,7 +7,6 @@ import {ActionCreators} from "../../../redux/actions/ActionCreators";
 import connect from "react-redux/es/connect/connect";
 import AnnotationEditorCodeMirror from "../../components/AnnotationEditorCodeMirror";
 import SearchableDropdown from "../../components/searchableDropdown/SearchableDropdown";
-import Alert from "react-bootstrap/Alert";
 
 class Editor extends Component {
 
@@ -31,7 +30,6 @@ class Editor extends Component {
                                        active={this.props.selectedCorpus.values.c_id === corpus.c_id}
                                        onClick={() => {
                                            this.props.setEditableCorpus(corpus);
-                                           this.props.sele
                                        }}>
                     {corpus.name}
                 </ListGroup.Item>
