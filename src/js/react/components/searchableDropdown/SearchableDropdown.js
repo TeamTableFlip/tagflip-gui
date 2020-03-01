@@ -3,6 +3,8 @@ import Dropdown from "react-bootstrap/Dropdown";
 import FormControl from "react-bootstrap/FormControl";
 import PropTypes from "prop-types";
 
+import './SearchableDropdown.scss'
+
 class SearchableDropdown extends Component {
     constructor(props) {
         super(props);
@@ -20,6 +22,7 @@ class SearchableDropdown extends Component {
             this.setState({
                 selectedOption: this.props.initOption
             });
+            this.props.onChange(this.props.initOption);
         }
     }
 
@@ -83,16 +86,20 @@ class SearchableDropdown extends Component {
         return <FormControl autoFocus
                             placeholder={this.props.searchPlaceholder}
                             value={this.state.searchSubstring}
+                            className="dropdownInput"
                             onChange={e => this.setState({searchSubstring: e.target.value})} />
     }
 
     render() {
         return <Dropdown disabled>
-            <Dropdown.Toggle id={this.props.toggleId} variant={this.props.variant || "outline-primary"}>
+            <Dropdown.Toggle id={this.props.toggleId}
+                             variant={this.props.variant || "outline-primary"}
+                             className="dropdownToggle"
+            >
                 {this._getDropdownText(this.state.selectedOption)}
             </Dropdown.Toggle>
 
-            <Dropdown.Menu>
+            <Dropdown.Menu className="dropdownItems">
                 {this._renderSearchField()}
                 {this._renderItems()}
             </Dropdown.Menu>

@@ -1,0 +1,53 @@
+
+// Alternative 1
+
+/*
+.annotation {
+    cursor: pointer;
+    padding: 4px 4px 4px 4px;
+    outline: 1px solid #000;
+    background: #95e345;
+    z-index: 1;
+}
+
+.annotationType {
+    position:relative;
+    display: inline-block;
+    text-align: center;
+    background: #ffffff;
+    border: 3px #000000;
+    border-radius: 3px;
+    vertical-align: middle;
+    padding: 0px 3px 0px 3px;
+    margin-left: 3px;
+    margin-bottom: 2px;
+    line-height: 1.5em;
+    -webkit-box-shadow: 0px 0px 3px 0px rgba(0,0,0,0.75);
+    -moz-box-shadow: 0px 0px 3px 0px rgba(0,0,0,0.75);
+    box-shadow: 0px 0px 3px 0px rgba(0,0,0,0.75);
+    font-size: 60%;
+    text-shadow: 0px 0px 2px #C0C0C0;
+}
+
+.annotationText {
+    margin-left: 8px;
+}
+
+
+ */
+// Alternative 2
+
+.dropdownToggle {
+    background: #fff;
+    width: 100%;
+}
+
+.dropdownInput {
+    background: #fff;
+    width: 100%;
+}
+
+.dropdownItems {
+    background: #fff;
+    width: 100%;
+}

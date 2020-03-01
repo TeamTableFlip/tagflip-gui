@@ -13,10 +13,10 @@ class AnnotationPicker extends Component {
     render() {
         return (
             <Modal show={this.props.textSelected} onHide={() => {
-
+                this.props.onCanceled();
             }}>
-                <Modal.Header>
-                    <Modal.Title>Pick the correct Annotation!</Modal.Title>
+                <Modal.Header closeButton>
+                    <Modal.Title>Pick your Annotation</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     {this._renderAnnotationsTable()}
@@ -41,7 +41,8 @@ class AnnotationPicker extends Component {
 AnnotationPicker.propTypes = {
     textSelected: PropTypes.bool,
     annotations: PropTypes.array,
-    onPicked: PropTypes.func
+    onPicked: PropTypes.func,
+    onCanceled: PropTypes.func
 };
 
 export default AnnotationPicker

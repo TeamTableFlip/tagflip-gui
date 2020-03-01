@@ -166,22 +166,34 @@ class AnnotationEditorCodeMirror extends Component {
 
     _onAnnotationPicked(annotation) { //annotation  has .a_id .color .name .s_id
         let codeMirror = this.editorRef.codeMirror;
-        let selections = codeMirror.listSelections();
-        if (selections.length === 1) {
-            let selection = selections[0];
-            let newTag = {
-                start_index: this.state.selectionFromIndex,
-                end_index: this.state.selectionToIndex,
-                a_id: annotation.a_id,
-                d_id: this.props.document.d_id
-            };
 
-            this.props.onSaveTag(newTag);
-            this.setState({textSelected: false});
+        let startIndex = this.state.selectionFromIndex;
+        let endIndex = this.state.selectionToIndex;
+
+        if(endIndex < startIndex) {
+            let helpIndex = startIndex;
+            startIndex = endIndex;
+            endIndex = helpIndex;
         }
+
+        let newTag = {
+            start_index: startIndex,
+            end_index: endIndex,
+            a_id: annotation.a_id,
+            d_id: this.props.document.d_id
+        };
+
+        this.props.onSaveTag(newTag);
+        this.setState({textSelected: false});
     }
 
-    _renderTags(newTags, deletedTags=new Set()) {
+    _cancelSelection() {
+        let codeMirror = this.editorRef.codeMirror;
+        codeMirror.setCursor(0, 0);
+        this.setState({textSelected: ""})
+    }
+
+    _renderTags(newTags, deletedTags = new Set()) {
         if (!this.editorRef)
             return;
 
@@ -218,8 +230,9 @@ class AnnotationEditorCodeMirror extends Component {
                     handleMouseEvents: true
                 });
                 codeMirror.setSelection(anchor, head)
-                let text = codeMirror.getSelection();
+                let text = codeMirror.getSelection(" ");
                 codeMirror.setCursor(0, 0);
+                codeMirror.setSelection(codeMirror.posFromIndex(0), codeMirror.posFromIndex(0))
 
                 this.activeMarkers.set(tag.t_id, {
                     marker: textMarker,
@@ -250,8 +263,11 @@ class AnnotationEditorCodeMirror extends Component {
             <React.Fragment>
                 <AnnotationPicker textSelected={this.state.textSelected}
                                   annotations={this.props.annotations}
-                                  onPicked={this._onAnnotationPicked}/>
+                                  onPicked={this._onAnnotationPicked}
+                                  onCanceled={() => this._cancelSelection()}
+                />
                 <CodeMirrorReact
+                    className="w-100 h-100"
                     ref={this.editorRefCallback}
                     value={this.props.document && this.props.document.text || ""}
                     options={{
