@@ -14,7 +14,7 @@ class Editor extends Component {
         super(props);
         this.state = {
             searchCorpusSubstring: "",
-            searchDocumentSubstring: ""
+            searchDocumentSubstring: "",
         }
     }
 
@@ -113,7 +113,7 @@ class Editor extends Component {
                                             }}
                                             optionKey="c_id"
                                             options={this.props.corpora.items}
-                                            initOption={this.props.corpora.items.length === 0 ? undefined : this.props.corpora.items[0]}
+                                            initOption={!this._isSelectedCorpusNew() ? this.props.selectedCorpus.values : (this.props.corpora.items.length === 0 ? undefined : this.props.corpora.items[0])}
                                             label="name"
                                             searchPlaceholder={"Find Annotation Set..."}/>
 
@@ -133,7 +133,10 @@ class Editor extends Component {
                                                     }}
                                                     optionKey="s_id"
                                                     options={this.props.selectedCorpus.annotationSets.items}
-                                                    initOption={this.props.selectedCorpus.annotationSets.items.length === 0 ? undefined : this.props.selectedCorpus.annotationSets.items[0]}
+                                                    initOption={this.props.selectedAnnotationSet.values
+                                                    && this.props.selectedCorpus.annotationSets.items.filter(x => x.s_id === this.props.selectedAnnotationSet.values.s_id).length > 0
+                                                        ? this.props.selectedAnnotationSet.values
+                                                        : (this.props.selectedCorpus.annotationSets.items.length === 0 ? undefined : this.props.selectedCorpus.annotationSets.items[0])}
                                                     label="name"
                                                     searchPlaceholder={"Find Corpus..."}/>
                             </FetchPending>

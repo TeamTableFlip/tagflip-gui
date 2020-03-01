@@ -237,7 +237,8 @@ class AnnotationEditorCodeMirror extends Component {
                 this.activeMarkers.set(tag.t_id, {
                     marker: textMarker,
                     container: replacementContainer,
-                    text: text
+                    text: text,
+                    flattenSpans: false
                 });
 
                 let reactElement = (
