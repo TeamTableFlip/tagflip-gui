@@ -1,7 +1,17 @@
 import React, {Component} from "react";
+import {Redirect, Route, withRouter} from "react-router-dom";
+import AnnotationEditor from "../../components/AnnotationEditor";
+import DropdownButton from "react-bootstrap/DropdownButton";
+import DropdownItem from "react-bootstrap/DropdownItem";
+import FetchPending from "../../components/FetchPending";
+import fetchStatusType from "../../../redux/actions/FetchStatusTypes";
+import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faSearch} from "@fortawesome/free-solid-svg-icons";
 import InputGroup from "react-bootstrap/InputGroup";
 import ListGroup from "react-bootstrap/ListGroup";
+import Pagination from 'react-bootstrap/Pagination'
 import {bindActionCreators} from "redux";
 import {ActionCreators} from "../../../redux/actions/ActionCreators";
 import connect from "react-redux/es/connect/connect";
@@ -49,10 +59,12 @@ class Editor extends Component {
         return this.props.selectedCorpus.documents.items
             .filter(document => document.filename.toLowerCase().includes(this.state.searchDocumentSubstring.toLowerCase()))
             .map(document => {
+                let filenamePath = document.filename.split('/');
+                let documentName = document.d_id + ': ' + filenamePath[filenamePath.length - 1];
                 return <ListGroup.Item action key={document.d_id}
                                        active={this.props.selectedDocument.item && this.props.selectedDocument.item.d_id === document.d_id}
                                        onClick={() => this.props.fetchCorpusDocument(document.d_id, true)}>
-                    {document.filename}
+                    {documentName}
                 </ListGroup.Item>
             });
     }
@@ -63,6 +75,14 @@ class Editor extends Component {
 
     _deleteTag(tag) {
         this.props.deleteTagForActiveDocument(tag);
+    }
+
+    _isSelectedCorpusNew() {
+        return this.props.selectedCorpus.data.values.c_id <= 0;
+    }
+
+    _isSelectedDocumentNew() {
+        return this.props.selectedDocument.data.values.d_id <= 0;
     }
 
     render() {
@@ -77,35 +97,51 @@ class Editor extends Component {
                                   inheritChildrenHeight={false}
                                   silent={true}
                     >
-                        <Form>
-                            <InputGroup className="mb-3">
-                                <Form.Control type="text" placeholder="Search Corpus..."
-                                              onChange={e => this.setState({searchCorpusSubstring: e.target.value})}
-                                              value={this.state.searchCorpusSubstring}/>
-                            </InputGroup>
-                        </Form>
-                        <ListGroup>
-                            {this._renderCorpora()}
-                        </ListGroup>
+                        <SearchableDropdown buttonText="No Corpus selected"
+                                            toggleId="corpusToggle"
+                                            onChange={(corpus) => {
+                                                this.props.fetchCorpusDocuments(corpus.c_id);
+                                                this.props.setEditableCorpus(corpus);
+                                            }}
+                                            optionKey="c_id"
+                                            options={this.props.corpora.items}
+                                            initOption={this._isSelectedCorpusNew() ? undefined : this.props.selectedCorpus.data.values}
+                                            label="name"
+                                            searchPlaceholder={"Find Corpus..."}/>
                     </FetchPending>
-                    <hr/>
-
-                    <div>Select Document</div>
+                    {!this._isSelectedCorpusNew() &&
                     <FetchPending isPending={this.props.selectedCorpus.documents.isFetching}
                                   success={this.props.selectedCorpus.documents.status === fetchStatusType.success}
                                   inheritChildrenHeight={false}
                     >
-                        <Form>
-                            <InputGroup className="mb-3">
-                                <Form.Control type="text" placeholder="Search Document..."
-                                              onChange={e => this.setState({searchDocumentSubstring: e.target.value})}
-                                              value={this.state.searchDocumentSubstring}/>
-                            </InputGroup>
-                        </Form>
-                        <ListGroup>
-                            {this._renderDocuments()}
-                        </ListGroup>
+                        (
+                        <div>
+                            <hr/>
+                            <div>Select Document</div>
+                            <SearchableDropdown buttonText="No Document selected"
+                                                toggleId="documentToggle"
+                                                onChange={(document) => this.props.setTagableDocument(document)}
+                                                optionKey="d_id"
+                                                disabled={this._isSelectedCorpusNew()}
+                                                options={this.props.selectedCorpus.documents.items}
+                                                initOption={this._isSelectedDocumentNew() ? undefined : this.props.selectedDocument.data.values}
+                                                getText={document => {
+                                                    let filenamePath = document.filename.split('/');
+                                                    return document.d_id + ': ' + filenamePath[filenamePath.length - 1];
+                                                }}
+                                                filter={(document, searchSubstring) => {
+                                                    let matchFilename = document.filename.toLowerCase().includes(searchSubstring.toLowerCase());
+                                                    let matchId = document.d_id.toString().toLowerCase().includes(searchSubstring.toLowerCase());
+                                                    return matchFilename || matchId;
+                                                }}
+                                                searchPlaceholder={"Find Document..."}
+                            />
+                            <ListGroup style={{marginTop: "10px"}}>
+                                {this._renderDocuments()}
+                            </ListGroup></div>
+                        )
                     </FetchPending>
+                    }
                 </div>
                 <FetchPending isPending={this.props.corpora.isFetching}
                               success={this.props.corpora.status === fetchStatusType.success}>
