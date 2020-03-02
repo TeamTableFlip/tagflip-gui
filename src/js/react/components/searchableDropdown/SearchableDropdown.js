@@ -19,11 +19,17 @@ class SearchableDropdown extends Component {
     }
 
     componentDidMount() {
-        if (this.props.initOption) {
+        if (this.props.selected) {
             this.setState({
-                selectedOption: this.props.initOption
+                selectedOption: this.props.selected
             });
-            this.props.onChange(this.props.initOption);
+            this.props.onChange(this.props.selected);
+        }
+    }
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if(prevProps.selected[this.props.optionKey] !== this.props.selected[this.props.optionKey]) {
+            this.setState({selectedOption: this.props.selected})
         }
     }
 
@@ -119,7 +125,7 @@ SearchableDropdown.propTypes = {
     variant: PropTypes.string,                  // The bootstrap styling of the Dropdown
     options: PropTypes.array.isRequired,        // The list of objects/strings to be selectable in the Dropdown
                                                 //  - If label and getText are not set, the options will be used for display
-    initOption: PropTypes.object,               // Default option when rendering the Component
+    selected: PropTypes.object,               // Default option when rendering the Component
                                                 //  - Can be used to remember state after refreshing the page
     disabled: PropTypes.bool,                   // The flag to determine whether the Dropdown is disabled or not
     onChange: PropTypes.func.isRequired,        // Is called when clicking on a DropdownItem - 1 param: option
