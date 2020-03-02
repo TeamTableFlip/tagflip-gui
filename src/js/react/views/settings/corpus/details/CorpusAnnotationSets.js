@@ -57,7 +57,7 @@ class CorpusAnnotationSets extends Component {
                 success={this.props.annotationSets.status === fetchStatusType.success && this.props.corpus.annotationSets.status === fetchStatusType.success}
                 retryCallback={() => {
                     this.props.fetchAnnotationSets();
-                    this.props.fetchCorpusAnnotationSets(this.props.corpus.data.c_id);
+                    this.props.fetchCorpusAnnotationSets(this.props.corpus.values.c_id);
                 }}
             >
                 <ListGroup>

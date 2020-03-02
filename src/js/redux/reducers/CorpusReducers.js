@@ -1,5 +1,5 @@
 import createReducer from './CreateReducer'
-import * as CorpusEditActions from '../actions/CorpusEditActions'
+import * as CorpusEditActions from '../actions/CorpusActions'
 import fetchStatusType from "../actions/FetchStatusTypes";
 import * as CorpusFetchActions from "../actions/CorpusListActions";
 
@@ -13,17 +13,16 @@ export const emptyCorpus = function (state = {}, action) {
 
 //@see https://www.pluralsight.com/guides/deeply-nested-objectives-redux
 export const editableCorpus = createReducer({
-    data: {
-        values: {
-            c_id: 0,
-            name: "",
-            description: "",
-        },
-        isFetching: false,
-        lastUpdated: undefined,
-        status: fetchStatusType.success,
-        error: null,
+    values: {
+        c_id: 0,
+        name: "",
+        description: "",
     },
+    didInvalidate: false,
+    isFetching: false,
+    lastUpdated: undefined,
+    status: fetchStatusType.success,
+    error: null,
     annotationSets: {
         isFetching: false,
         didInvalidate: false,
@@ -42,17 +41,31 @@ export const editableCorpus = createReducer({
     },
     activeDocument: {
         isFetching: false,
+        didInvalidate: true,
         item: null,
         lastUpdated: undefined,
         status: fetchStatusType.success,
-        error: null
+        error: null,
+        tags: {
+            isFetching: false,
+            didInvalidate: true,
+            items:[],
+            lastUpdated: undefined,
+            status: fetchStatusType.success,
+            error: null,
+        }
     }
 }, {
     [CorpusEditActions.SET_EDITABLE_CORPUS](draft, action) {
-        draft.data.values = action.corpus;
+        draft.values = action.corpus;
+        draft.didInvalidate = true;
+        draft.annotationSets.didInvalidate = true;
+        draft.documents.didInvalidate = true;
+        draft.activeDocument.didInvalidate = true;
+        draft.activeDocument.tags.didInvalidate = true;
     },
     [CorpusEditActions.UPDATE_CORPUS_FIELD](draft, action) {
-        draft.data.values[action.field] = action.value;
+        draft.values[action.field] = action.value;
     },
     [CorpusEditActions.ADD_CORPUS_ANNOTATION_SET](draft, action) {
         draft.annotationSets.items.push(action.annotationSet); // add
@@ -85,19 +98,20 @@ export const editableCorpus = createReducer({
     },
 
     [CorpusEditActions.REQUEST_UPDATE_CORPUS](draft, action) {
-        draft.data.isFetching = true;
+        draft.isFetching = true;
     },
     [CorpusEditActions.RECEIVE_UPDATE_CORPUS](draft, action) {
-        draft.data.isFetching = false;
+        draft.isFetching = false;
+        draft.didInvalidate = false;
         if (action.status === fetchStatusType.success) {
-            draft.data.values = action.corpus;
-            draft.data.lastUpdated = action.receivedAt;
-            draft.data.status = fetchStatusType.success;
-            draft.data.error = null;
+            draft.values = action.corpus;
+            draft.lastUpdated = action.receivedAt;
+            draft.status = fetchStatusType.success;
+            draft.error = null;
         } else {
-            draft.data.isFetching = false;
-            draft.data.status = fetchStatusType.error;
-            draft.data.error = action.error;
+            draft.isFetching = false;
+            draft.status = fetchStatusType.error;
+            draft.error = action.error;
         }
     },
 
@@ -131,12 +145,12 @@ export const editableCorpus = createReducer({
         draft.documents.isFetching = false;
         draft.documents.didInvalidate = false;
         draft.documents.items.push(...action.documents);
-        if(action.skippedDocuments.length !== 0) {
+        if (action.skippedDocuments.length !== 0) {
             draft.documents.status = fetchStatusType.warning;
             draft.documents.error = "Could not process all documents."
-            for(let doc of action.skippedDocuments) {
+            for (let doc of action.skippedDocuments) {
                 draft.documents.error = draft.documents.error.concat("\n");
-                draft.documents.error =draft.documents.error.concat(doc.item.filename).concat(": ").concat(doc.reason)
+                draft.documents.error = draft.documents.error.concat(doc.item.filename).concat(": ").concat(doc.reason)
             }
         } else {
             draft.documents.status = fetchStatusType.success;
@@ -154,6 +168,7 @@ export const editableCorpus = createReducer({
     },
     [CorpusEditActions.RECEIVE_CORPUS_DOCUMENT](draft, action) {
         draft.activeDocument.isFetching = false;
+        draft.activeDocument.didInvalidate = false;
         if (action.status === fetchStatusType.success) {
             draft.activeDocument.item = action.document;
             draft.activeDocument.lastUpdated = action.receivedAt;
@@ -165,4 +180,59 @@ export const editableCorpus = createReducer({
             draft.activeDocument.error = action.error;
         }
     },
+    [CorpusEditActions.REQUEST_TAGS_FOR_ACTIVE_DOCUMENT](draft, action) {
+        draft.activeDocument.tags.isFetching = true;
+        draft.activeDocument.tags.didInvalidate = true;
+    },
+    [CorpusEditActions.RECEIVE_TAGS_FOR_ACTIVE_DOCUMENT](draft, action) {
+        draft.activeDocument.tags.isFetching = false;
+        draft.activeDocument.tags.didInvalidate = false;
+        if (action.status === fetchStatusType.success) {
+            draft.activeDocument.tags.items = action.tags;
+            draft.activeDocument.tags.lastUpdated = action.receivedAt;
+            draft.activeDocument.tags.status = fetchStatusType.success;
+            draft.activeDocument.tags.error = null;
+        } else {
+            draft.activeDocument.tags.lastUpdated = action.receivedAt;
+            draft.activeDocument.tags.status = fetchStatusType.error;
+            draft.activeDocument.tags.error = action.error;
+        }
+    },
+    [CorpusEditActions.REQUEST_SAVE_TAG](draft, action) {
+        draft.activeDocument.tags.isFetching = false;
+        draft.activeDocument.tags.didInvalidate = true;
+    },
+    [CorpusEditActions.RECEIVE_SAVE_TAG](draft, action) {
+        draft.activeDocument.tags.isFetching = false;
+        draft.activeDocument.tags.didInvalidate = false;
+        if (action.status === fetchStatusType.success) {
+            draft.activeDocument.tags.items.push(action.tag);
+            draft.activeDocument.tags.lastUpdated = action.receivedAt;
+            draft.activeDocument.tags.status = fetchStatusType.success;
+            draft.activeDocument.tags.error = null;
+        } else {
+            draft.activeDocument.tags.lastUpdated = action.receivedAt;
+            draft.activeDocument.tags.status = fetchStatusType.error;
+            draft.activeDocument.tags.error = action.error;
+        }
+    },
+    [CorpusEditActions.REQUEST_DELETE_TAG](draft, action) {
+        draft.activeDocument.tags.isFetching = false;
+        draft.activeDocument.tags.didInvalidate = true;
+    },
+    [CorpusEditActions.RECEIVE_DELETE_TAG](draft, action) {
+        draft.activeDocument.tags.isFetching = false;
+        draft.activeDocument.tags.didInvalidate = false;
+        if (action.status === fetchStatusType.success) {
+            draft.activeDocument.tags.items = draft.activeDocument.tags.items.filter(x => x.t_id !== action.tagId);
+            draft.activeDocument.tags.lastUpdated = action.receivedAt;
+            draft.activeDocument.tags.status = fetchStatusType.success;
+            draft.activeDocument.tags.error = null;
+        } else {
+            draft.activeDocument.tags.lastUpdated = action.receivedAt;
+            draft.activeDocument.tags.status = fetchStatusType.error;
+            draft.activeDocument.tags.error = action.error;
+        }
+    }
+
 });

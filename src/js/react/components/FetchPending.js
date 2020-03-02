@@ -18,8 +18,8 @@ class FetchPending extends Component {
     render() {
         if (this.props.isPending && !this.props.silent) {
             return (
-                <div className="d-flex justify-content-center align-items-center p-3" style={{
-                    height: (this.childNode.current && this.childNode.current.clientHeight) ? this.childNode.current.clientHeight : "inherit"
+                <div className="d-flex justify-content-center align-items-center p-3 w-100 h-100" style={{
+                    height: (this.props.inheritChildrenHeight && this.childNode.current && this.childNode.current.clientHeight) ? this.childNode.current.clientHeight : "auto"
                 }}>
                     <Spinner animation="border" variant="dark"/>
                 </div>
@@ -44,8 +44,10 @@ class FetchPending extends Component {
 
                 </Alert>
             );
+        if(!this.props.inheritChildrenHeight)
+            return this.props.children;
         return (
-            <div ref={this.childNode}>
+            <div ref={this.childNode} className="w-100 h-100">
                 {this.props.children}
             </div>
         );
@@ -56,11 +58,13 @@ FetchPending.propTypes = {
     isPending: PropTypes.bool.isRequired,
     silent: PropTypes.bool,
     success: PropTypes.bool.isRequired,
+    inheritChildrenHeight: PropTypes.bool.isRequired,
     retryCallback: PropTypes.func
 };
 
 FetchPending.defaultProps = {
-    silent: false
+    silent: false,
+    inheritChildrenHeight: true
 }
 
 export default FetchPending;

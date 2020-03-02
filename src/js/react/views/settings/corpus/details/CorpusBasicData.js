@@ -23,7 +23,6 @@ class CorpusBasicData extends Component {
     }
 
     componentDidMount() {
-        this.props.reloadCorpus();
     }
 
     handleSubmit(event) {
@@ -39,7 +38,7 @@ class CorpusBasicData extends Component {
     }
 
     isNewCorpus() {
-        return this.props.corpus.data.values.c_id <= 0;
+        return this.props.corpus.values.c_id <= 0;
     }
 
     render() {
@@ -53,8 +52,8 @@ class CorpusBasicData extends Component {
                                 Information
                             </Card.Title>
                             <FetchPending
-                                isPending={this.props.corpus.data.isFetching}
-                                success={this.props.corpus.data.status === fetchStatusType.success}
+                                isPending={this.props.corpus.isFetching}
+                                success={this.props.corpus.status === fetchStatusType.success}
                                 retryCallback={this.props.reloadCorpus}
                             >
                                 <Form.Group controlId="formName">
@@ -62,7 +61,7 @@ class CorpusBasicData extends Component {
                                     <Form.Control type="text" placeholder="Name of the corpus"
                                                   name="name"
                                                   onChange={(e) => this.props.updateCorpusField('name', e.target.value)}
-                                                  value={this.props.corpus.data.values.name || ""}
+                                                  value={this.props.corpus.values.name || ""}
                                                   required={true}
                                     />
                                     <Form.Control.Feedback type="invalid">
@@ -74,7 +73,7 @@ class CorpusBasicData extends Component {
                                     <Form.Control as="textarea" placeholder="Description of the corpus"
                                                   name="description"
                                                   onChange={(e) => this.props.updateCorpusField('description', e.target.value)}
-                                                  value={this.props.corpus.data.values.description || ""}/>
+                                                  value={this.props.corpus.values.description || ""}/>
                                 </Form.Group>
                                 <Button variant="success" className="mr-1" type="submit">Save</Button>
                                 {!this.isNewCorpus() && <Button variant="danger" className="mr-1" onClick={()=> this.props.reloadCorpus()}>Abort</Button> }

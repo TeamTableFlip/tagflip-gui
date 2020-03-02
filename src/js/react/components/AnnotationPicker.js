@@ -13,10 +13,10 @@ class AnnotationPicker extends Component {
     render() {
         return (
             <Modal show={this.props.textSelected} onHide={() => {
-
+                this.props.onCanceled();
             }}>
-                <Modal.Header>
-                    <Modal.Title>Pick the correct Annotation!</Modal.Title>
+                <Modal.Header closeButton>
+                    <Modal.Title>Pick your Annotation</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     {this._renderAnnotationsTable()}
@@ -27,9 +27,11 @@ class AnnotationPicker extends Component {
     }
 
     _renderAnnotationsTable() {
+        if(!this.props.annotations)
+            return null;
         return this.props.annotations.map((annotation, idx) => {
             return   <ListGroup horizontal={"sm"} key={idx}>
-                <ListGroup.Item action onClick={()=>{this.props.onPicked(annotation.a_id)}} sytle={{backgroundColor: annotation.color}}>{annotation.name}</ListGroup.Item>
+                <ListGroup.Item action onClick={()=>{this.props.onPicked(annotation)}} sytle={{backgroundColor: annotation.color}}>{annotation.name}</ListGroup.Item>
             </ListGroup>
 
         })
@@ -39,7 +41,8 @@ class AnnotationPicker extends Component {
 AnnotationPicker.propTypes = {
     textSelected: PropTypes.bool,
     annotations: PropTypes.array,
-    onPicked: PropTypes.func
+    onPicked: PropTypes.func,
+    onCanceled: PropTypes.func
 };
 
 export default AnnotationPicker

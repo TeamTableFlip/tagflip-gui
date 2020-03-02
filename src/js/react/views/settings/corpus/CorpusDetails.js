@@ -25,13 +25,13 @@ class CorpusDetails extends Component {
     }
 
     isNewCorpus() {
-        return this.props.corpus.data.values.c_id <= 0;
+        return this.props.corpus.values.c_id <= 0;
     }
 
     render() {
         return (
             <React.Fragment>
-                <h2>Edit Corpus ({!this.isNewCorpus() ? ("ID: " + this.props.corpus.data.values.c_id) : "New"})</h2>
+                <h2>Edit Corpus ({!this.isNewCorpus() ? ("ID: " + this.props.corpus.values.c_id) : "New"})</h2>
                 <Tabs id="corpustab" className="mb-3" activeKey={this.state.activeTab}
                       onSelect={k => this.setState({activeTab: k})}>
                     <Tab eventKey="basicdata" title="Basic Data">

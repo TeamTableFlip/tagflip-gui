@@ -58,6 +58,9 @@ class CorpusList extends Component {
                                 onAccept={() => {
                                     this.props.deleteCorpus(corpus.c_id);
                                     this.setState({ corpusIdToBeDeleted: undefined });
+                                    if(this.props.selectedCorpus.values.c_id === corpus.c_id) {
+                                        this.props.setEditableCorpus(this.props.emptyCorpus);
+                                    }
                                 }}
                                 onCancel={() => {
                                     this.setState({ corpusIdToBeDeleted: undefined });
@@ -119,7 +122,8 @@ class CorpusList extends Component {
 function mapStateToProps(state) {
     return {
         corpora: state.corpora,
-        emptyCorpus: state.emptyCorpus
+        emptyCorpus: state.emptyCorpus,
+        selectedCorpus: state.editableCorpus
     };
 }
 
