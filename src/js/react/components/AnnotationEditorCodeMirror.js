@@ -11,7 +11,6 @@ import AnnotationHighlight from "./AnnotationHighlight";
 
 
 const initialState = {
-    text: testvalue,
     textSelected: false,
 };
 
