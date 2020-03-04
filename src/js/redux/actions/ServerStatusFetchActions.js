@@ -1,8 +1,12 @@
 import client from '../../backend/RestApi';
 import fetchStatusType from "./FetchStatusTypes";
 
+
 export const REQUEST_SERVER_STATUS = "REQUEST_SERVER_STATUS";
 
+/**
+ * Action creator for action REQUEST_SERVER_STATUS
+ */
 export function requestServerStatus() {
     return {
         type: REQUEST_SERVER_STATUS,
@@ -11,14 +15,21 @@ export function requestServerStatus() {
 
 export const INVALIDATE_SERVER_STATUS = "INVALIDATE_SERVER_STATUS";
 
+/**
+ * Action creator for action INVALIDATE_SERVER_STATUS
+ */
 export function invalidateServerStatus() {
     return {
         type: INVALIDATE_SERVER_STATUS,
     }
 }
 
+
 export const RECEIVE_SERVER_STATUS = "RECEIVE_SERVER_STATUS";
 
+/**
+ * Action creator for action RECEIVE_SERVER_STATUS
+ */
 export function receiveServerStatus(status = fetchStatusType.success, error = null) {
     return {
         type: RECEIVE_SERVER_STATUS,
@@ -31,7 +42,7 @@ export function receiveServerStatus(status = fetchStatusType.success, error = nu
 
 
 /**
- * Fetch all corpora from the REST API.
+ * Action creator for async fetching current server status.
  * @returns {Function}
  */
 export function fetchServerStatus() {

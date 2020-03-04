@@ -1,7 +1,6 @@
 import createReducer from './CreateReducer'
 import * as CorpusEditActions from '../actions/CorpusActions'
 import fetchStatusType from "../actions/FetchStatusTypes";
-import * as CorpusFetchActions from "../actions/CorpusListActions";
 
 export const emptyCorpus = function (state = {}, action) {
     return {
