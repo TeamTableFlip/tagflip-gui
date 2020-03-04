@@ -77,7 +77,6 @@ AnnotationHighlight.propTypes = {
     text: PropTypes.string,
     tag: PropTypes.object,
     annotation: PropTypes.object,
-    tooltip: PropTypes.any,
     onDelete: PropTypes.any,
 };
 

@@ -170,7 +170,6 @@ class AnnotationEditorCodeMirror extends Component {
                                          tag={tag}
                                          annotation={annotation}
                                          text={text}
-                                         tooltip={"id: " + annotation.a_id}
                                          onDelete={() => this._onDelete(tag)}
                     />);
                 ReactDom.render(reactElement, replacementContainer);
