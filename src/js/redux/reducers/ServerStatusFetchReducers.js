@@ -2,14 +2,10 @@ import createReducer from './CreateReducer'
 import * as ServerStatusFetchActions from '../actions/ServerStatusFetchActions'
 import fetchStatusType from "../actions/FetchStatusTypes";
 
-export const emptyCorpus = function reducer(draft = {}, action) {
-    return {
-        c_id: 0,
-        description: "",
-        name: ""
-    };
-};
-
+/**
+ * The current connectivity status to the backend.
+ * @type {reducer}
+ */
 export const serverStatus = createReducer({
         isFetching: false,
         didInvalidate: false,

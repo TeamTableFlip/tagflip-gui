@@ -2,6 +2,12 @@ import createReducer from "./CreateReducer";
 import * as AnnotationSetEditActions from "../actions/AnnotationSetActions";
 import fetchStatusType from "../actions/FetchStatusTypes";
 
+/**
+ * An empty AnnotationSet.
+ * @param state The current redux state - does nothing here.
+ * @param action The executed action - does nothing here.
+ * @returns {{s_id: number, description: string, name: string}}
+ */
 export const emptyAnnotationSet = function (state = {}, action) {
     return {
         s_id: 0,
@@ -10,7 +16,12 @@ export const emptyAnnotationSet = function (state = {}, action) {
     };
 };
 
-
+/**
+ * An empty Annotation.
+ * @param state The current redux state - does nothing here.
+ * @param action The executed action - does nothing here.
+ * @returns {{a_id: number, s_id: number, name: string, color: string}}
+ */
 export const emptyAnnotation = function (state = {}, action) {
     return {
         a_id: 0,
@@ -20,6 +31,12 @@ export const emptyAnnotation = function (state = {}, action) {
     };
 };
 
+/**
+ * The currently selected/active AnnotationSet to be used for editing or annotating.
+ * Besides information about the AnnotationSet itself, it holds data about all its related annotations, and the
+ * currently selected Annotation to be edited.
+ * @type {reducer}
+ */
 export const activeAnnotationSet = createReducer({
     values: {
         s_id: 0,

@@ -2,6 +2,12 @@ import createReducer from './CreateReducer'
 import * as CorpusEditActions from '../actions/CorpusActions'
 import fetchStatusType from "../actions/FetchStatusTypes";
 
+/**
+ * An empty Corpus object.
+ * @param state The current redux state - does nothing here.
+ * @param action The executed action - does nothing here.
+ * @returns {{c_id: number, description: string, name: string}}
+ */
 export const emptyCorpus = function (state = {}, action) {
     return {
         c_id: 0,
@@ -11,6 +17,12 @@ export const emptyCorpus = function (state = {}, action) {
 };
 
 //@see https://www.pluralsight.com/guides/deeply-nested-objectives-redux
+/**
+ * The currently selected Corpus object to be edited.
+ * Besides information about the corpus itself, it holds information about its corresponding data, such as the
+ * associated AnnotaionSets, Documents, and the currently selected Document with all its Tags.
+ * @type {reducer}
+ */
 export const editableCorpus = createReducer({
     values: {
         c_id: 0,

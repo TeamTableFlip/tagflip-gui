@@ -2,6 +2,10 @@ import createReducer from './CreateReducer'
 import * as CorpusFetchActions from '../actions/CorpusListActions'
 import fetchStatusType from "../actions/FetchStatusTypes";
 
+/**
+ * All currently available corpora of the application.
+ * @type {reducer}
+ */
 export const corpora = createReducer({
         isFetching: false,
         didInvalidate: false,

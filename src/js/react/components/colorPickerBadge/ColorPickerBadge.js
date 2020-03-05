@@ -3,8 +3,14 @@ import Badge from "react-bootstrap/Badge";
 import {SketchPicker} from 'react-color';
 import PropTypes from "prop-types";
 
+/**
+ * A React Component for displaying a react.bootstrap Badge and a color picker next to it.
+ */
 class ColorPickerBadge extends Component {
-
+    /**
+     * Create a new ColorPickerBadge component.
+     * @param props The properties of the component.
+     */
     constructor(props) {
         super(props);
         this.state = {
@@ -14,6 +20,9 @@ class ColorPickerBadge extends Component {
         };
     }
 
+    /**
+     * React lifecycle method. Updates the color when mounted.
+     */
     componentDidMount() {
         if(this.props.color) {
             this.setState({
@@ -25,11 +34,19 @@ class ColorPickerBadge extends Component {
         }
     }
 
-    handleChangeComplete (color) {
+    /**
+     * Handle the successful selection of picking a color from the color picker.
+     * @param color The picked color.
+     */
+    handleChangeComplete(color) {
         this.setState({ color: color.hex });
         this.props.updateColorCallback(color.hex);
     };
 
+    /**
+     * Render the ColorPickerBadge component.
+     * @returns {*} The component to be rendered.
+     */
     render() {
         return (
             <React.Fragment>

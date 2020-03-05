@@ -3,11 +3,22 @@ import PropTypes from 'prop-types';
 import Modal from "react-bootstrap/Modal";
 import {Spinner} from "react-bootstrap";
 
+/**
+ * A React Component displaying a modal dialog prompting the Server being inaccessible.
+ */
 class ServerNotAvailableInfo extends Component {
+    /**
+     * Create a new ServerNotAvailableInfo.
+     * @param props The properties of the component.
+     */
     constructor(props) {
         super(props);
     }
 
+    /**
+     * Renders the ServerNotAvailableInfo.
+     * @returns {*} The component to be rendered.
+     */
     render() {
         return (
             <Modal show={!this.props.serverAvailable} onHide={() => {}}>

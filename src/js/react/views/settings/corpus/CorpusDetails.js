@@ -9,7 +9,6 @@ import CorpusDocuments from "./details/CorpusDocuments";
 import Button from "react-bootstrap/Button";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faChevronLeft, faChevronRight} from "@fortawesome/free-solid-svg-icons";
-import Form from "react-bootstrap/Form";
 import CorpusBasicData from "./details/CorpusBasicData";
 
 const initialState = {
@@ -17,17 +16,31 @@ const initialState = {
     validated: false,
 };
 
+/**
+ * The view for creating and editing single corpora with all their corresponding information.
+ */
 class CorpusDetails extends Component {
-
+    /**
+     * Create a new CorpusDetails component.
+     * @param props The properties of the component.
+     */
     constructor(props) {
         super(props);
         this.state = initialState;
     }
 
+    /**
+     * Determine whether the current Corpus is new or not.
+     * @returns {boolean} True if the selected Corpus is new, otherwise false.
+     */
     isNewCorpus() {
         return this.props.corpus.values.c_id <= 0;
     }
 
+    /**
+     * Render the CorpusDetails view.
+     * @returns {*} The component to be rendered.
+     */
     render() {
         return (
             <React.Fragment>

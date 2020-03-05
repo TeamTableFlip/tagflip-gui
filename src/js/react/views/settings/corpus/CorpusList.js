@@ -9,30 +9,48 @@ import {withRouter} from "react-router-dom";
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {ActionCreators} from '../../../../redux/actions/ActionCreators';
-import {Spinner} from "react-bootstrap";
-import Alert from "react-bootstrap/Alert";
 import fetchStatusType from "../../../../redux/actions/FetchStatusTypes";
 import FetchPending from "../../../components/FetchPending";
 import ConfirmationDialog from "../../../components/dialogs/ConfirmationDialog";
 
+/**
+ * The view for displaying and deleting Corpora.
+ */
 class CorpusList extends Component {
+    /**
+     * Create a new CorpusList.
+     * @param props The properties of the component.
+     */
     constructor(props) {
         super(props);
-        this.addNewCorpus = this.addNewCorpus.bind(this)
+        this.addNewCorpus = this.addNewCorpus.bind(this);
         this.state = {
             corpusIdToBeDeleted: undefined
         };
     }
 
+    /**
+     * React lifecycle method. Fetches all corpora.
+     */
     componentDidMount() {
         this.props.fetchCorpora();
     }
 
+    /**
+     * Add a new Corpus by redirecting to the corresponding edit view.
+     * @returns {*} The number of elements in the history property.
+     * @private
+     */
     addNewCorpus() {
         this.props.setEditableCorpus(this.props.emptyCorpus);
         return this.props.history.push(`${this.props.match.path}/edit`)
     }
 
+    /**
+     * Get the Table to be rendered containing all Corpora.
+     * @returns {*} The Table to be rendered.
+     * @private
+     */
     _renderCorpora() {
         let renderCorpusTableData = () => {
             return this.props.corpora.items.map(corpus => {
@@ -96,6 +114,10 @@ class CorpusList extends Component {
         )
     }
 
+    /**
+     * Render the CorpusList view.
+     * @returns {*} The component to be rendered.
+     */
     render() {
         return (
             <React.Fragment>

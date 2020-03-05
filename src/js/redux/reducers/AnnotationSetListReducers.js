@@ -2,6 +2,10 @@ import createReducer from './CreateReducer'
 import * as AnnotationSetFetchActions from '../actions/AnnotationSetListActions'
 import fetchStatusType from "../actions/FetchStatusTypes";
 
+/**
+ * All currently available AnnotationSets of the application.
+ * @type {reducer}
+ */
 export const annotationSets = createReducer({
         isFetching: false,
         didInvalidate: false,
