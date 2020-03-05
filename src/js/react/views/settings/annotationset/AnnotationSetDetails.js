@@ -33,8 +33,14 @@ const style = {
     }
 };
 
+/**
+ * The view for creating and updating single AnnotationSets with their list of Annotations.
+ */
 class AnnotationSetDetails extends Component {
-
+    /**
+     * Create a new AnnotationSetDetails component.
+     * @param props The properties of the component.
+     */
     constructor(props) {
         super(props);
         this.state = {
@@ -51,14 +57,22 @@ class AnnotationSetDetails extends Component {
         this._abortEditAnnotationSet = this._abortEditAnnotationSet.bind(this);
     }
 
+    /**
+     * React lifecycle method. Fetches the Annotations of the selected AnnotationSet.
+     */
     componentDidMount() {
         this.props.fetchAnnotations();
     }
 
+    /**
+     * Persist the AnnotationSet, with checking for validation of the inputs.
+     * @param event The Form-event which contains the fields to be validated before persisting.
+     * @private
+     */
     _saveAnnotationSet(event) {
         const form = event.currentTarget;
         event.preventDefault();
-        this.setState({validatedBasicInfo: false})
+        this.setState({validatedBasicInfo: false});
         if (form.checkValidity() === false) {
             event.stopPropagation();
             this.setState({validatedBasicInfo: true});
@@ -67,6 +81,10 @@ class AnnotationSetDetails extends Component {
         }
     }
 
+    /**
+     * Create a new Annotation, which can be edited and persisted later on.
+     * @private
+     */
     _addNewAnnotation() {
         this.setState({
             createNewAnnotation: true,
@@ -77,6 +95,10 @@ class AnnotationSetDetails extends Component {
         this.props.setEditableAnnotation(newAnnotation);
     }
 
+    /**
+     * Persist the selected/new Annotation after validating its information.
+     * @private
+     */
     _saveAnnotation() {
         let annotation = this.props.annotationSet.annotations.editableAnnotation.values;
         if(annotation.name && annotation.name.length > 0) {
@@ -95,6 +117,11 @@ class AnnotationSetDetails extends Component {
         }
     }
 
+    /**
+     * Handle selecting an Annotation for editing.
+     * @param annotation The Annotation to be selected for editing.
+     * @private
+     */
     _onClickEditAnnotation(annotation) {
         this.props.setEditableAnnotation(annotation);
         this.setState({
@@ -103,6 +130,11 @@ class AnnotationSetDetails extends Component {
         });
     }
 
+    /**
+     * Get the Table to be rendered for viewing, editing and creating Annotations.
+     * @returns {*} The table to be rendered.
+     * @private
+     */
     _renderAnnotationsTable() {
         let renderEditAnnotation = () => {
             return <tr key={this.props.annotationSet.annotations.editableAnnotation.values.a_id || 0}>
@@ -213,14 +245,28 @@ class AnnotationSetDetails extends Component {
         </FetchPending>
     }
 
+    /**
+     * Determine whether the selected AnnotationSet is new or not.
+     * @returns {boolean} True if the AnnotationSet is new, otherwise false.
+     * @private
+     */
     _isNewAnnotationSet() {
         return this.props.annotationSet.values.s_id <= 0;
     }
 
+    /**
+     * Determine whether the selected Annotation is new or not.
+     * @returns {boolean} True if the Annotation is new, otherwise false.
+     * @private
+     */
     _isNewAnnotation() {
         return this.props.annotationSet.annotations.editableAnnotation.values.a_id <= 0;
     }
 
+    /**
+     * Handle the abortion of editing the AnnotationSet, by reloading it.
+     * @private
+     */
     _abortEditAnnotationSet() {
         this.setState({
             validatedBasicInfo: false
@@ -228,6 +274,10 @@ class AnnotationSetDetails extends Component {
         this.props.reloadAnnotationSet();
     }
 
+    /**
+     * Render the AnnotationSetDetails view.
+     * @returns {*} The view to be rendered.
+     */
     render() {
         return (
             <React.Fragment>

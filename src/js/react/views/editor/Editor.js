@@ -8,8 +8,14 @@ import connect from "react-redux/es/connect/connect";
 import AnnotationEditorCodeMirror from "../../components/AnnotationEditorCodeMirror";
 import SearchableDropdown from "../../components/searchableDropdown/SearchableDropdown";
 
+/**
+ * The Editor view aws a React Component.
+ */
 class Editor extends Component {
-
+    /**
+     * Create a new Editor component.
+     * @param props The properties of the component.
+     */
     constructor(props) {
         super(props);
         this.state = {
@@ -18,10 +24,18 @@ class Editor extends Component {
         }
     }
 
+    /**
+     * React lifecycle method. Fetches all corpora.
+     */
     componentDidMount() {
         this.props.fetchCorpora();
     }
 
+    /**
+     * Get the Documents of the selected Corpus as ListGroupItems to be rendered.
+     * @returns {*[]} The documents to be rendered as ListGroupItems.
+     * @private
+     */
     _renderDocuments() {
         return this.props.selectedCorpus.documents.items
             .filter(document => document.filename.toLowerCase().includes(this.state.searchDocumentSubstring.toLowerCase()))
@@ -36,33 +50,71 @@ class Editor extends Component {
             });
     }
 
+    /**
+     * Persist a tag in the active document.
+     * @param tag The tag to be saved.
+     * @private
+     */
     _saveTag(tag) {
         this.props.saveTagForActiveDocument(tag);
     }
 
+    /**
+     * Delete a tag from the active document.
+     * @param tag The tag to be deleted.
+     * @private
+     */
     _deleteTag(tag) {
         this.props.deleteTagForActiveDocument(tag);
     }
 
+    /**
+     * Determines whether the selected corpus is new (non-existent) or not.
+     * @returns {boolean} True if the selected corpus is new, otherwise false.
+     * @private
+     */
     _isSelectedCorpusNew() {
         return this.props.selectedCorpus.values.c_id <= 0;
     }
 
+    /**
+     * Determines whether the selected annotation set is valid or not.
+     * @returns {boolean} True if the selected annotation set is valid, otherwise false.
+     * @private
+     */
     _isAnnotationSetValid() {
         return this.props.selectedCorpus.annotationSets.items.length > 0
             && this.props.selectedCorpus.annotationSets.items.filter(x => x.s_id === this.props.selectedAnnotationSet.values.s_id).length > 0;
     }
 
+    /**
+     * Determines whether the selected document is valid or not.
+     * @returns {boolean|null}
+     *          True if the selected document exists and is not new.
+     *          False if the selected document exists, but is a new one.
+     *          null if the selected document is invalid.
+     * @private
+     */
     _isDocumentValid() {
         return this.props.selectedCorpus.documents.items.length > 0 && this.props.selectedDocument.item && this.props.selectedDocument.item.d_id >= 0;
     }
 
+    /**
+     * Get all tags from the selected annotation set.
+     * @returns {*[]} A list of all tags from the selected annotation set.
+     * @private
+     */
     _tagsBySet() {
         let tags = this.props.selectedDocument.tags.items;
         let annotations = new Set(this.props.selectedAnnotationSet.annotations.items.map(x => x.a_id));
         return tags.filter(x => annotations.has(x.a_id));
     }
 
+    /**
+     * The editor view to be rendered.
+     * @returns {*} A div if the selected AnnotationSet or Document is invalid; otherwise the Editor for tagging.
+     * @private
+     */
     _renderEditor() {
         if (!this._isAnnotationSetValid() || !this._isDocumentValid())
             return (
@@ -79,6 +131,10 @@ class Editor extends Component {
                 document={this.props.selectedDocument.item}/>);
     }
 
+    /**
+     * Renders the Editor view for tagging Documents, and a side nav containing a Corpus-, AnnotationSet- and Document-Selection.
+     * @returns {*} The view to be rendered.
+     */
     render() {
         return (
             <React.Fragment>

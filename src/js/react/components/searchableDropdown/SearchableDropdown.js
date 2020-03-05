@@ -5,7 +5,14 @@ import PropTypes from "prop-types";
 
 import './SearchableDropdown.scss'
 
+/**
+ * A React Component which renders a Dropdown from react-bootstrap, containing a search field for filtering the entries.
+ */
 class SearchableDropdown extends Component {
+    /**
+     * Create a new SearchableDropdown component.
+     * @param props The properties of the component.
+     */
     constructor(props) {
         super(props);
         this.state = {
@@ -18,6 +25,9 @@ class SearchableDropdown extends Component {
         this.inputRef = React.createRef();
     }
 
+    /**
+     * React lifecycle method. Selects an option after the component did mount and the prop for it is set.
+     */
     componentDidMount() {
         if (this.props.selected) {
             this.setState({
@@ -27,12 +37,23 @@ class SearchableDropdown extends Component {
         }
     }
 
+    /**
+     * React lifecycle method. Selects an option after the component did update and the prop for it is set.
+     * @param prevProps The properties of this component before updating.
+     * @param prevState The state of this component before updating.
+     * @param snapshot The snapshot of the component before the update occurred.
+     */
     componentDidUpdate(prevProps, prevState, snapshot) {
         if(prevProps.selected && prevProps.selected[this.props.optionKey] !== this.props.selected[this.props.optionKey]) {
             this.setState({selectedOption: this.props.selected})
         }
     }
 
+    /**
+     * Render the items of the Dropdown by filtering from the search field's input.
+     * @returns {*[]} The DropdownItems to be rendered.
+     * @private
+     */
     _renderItems() {
         return this.props.options
             .filter(option => {
@@ -77,6 +98,12 @@ class SearchableDropdown extends Component {
             });
     }
 
+    /**
+     * Get the text to be displayed, using the given option and set properties of the component.
+     * @param option The option to get the text from.
+     * @returns {*} The text to be displayed from the option. Uses props.buttonText if option is not set.
+     * @private
+     */
     _getDropdownText(option) {
         if (option) {
             if (this.props.getText)
@@ -88,6 +115,11 @@ class SearchableDropdown extends Component {
         return this.props.buttonText;
     }
 
+    /**
+     * Get the search field to be rendered for filtering the DropdownItems.
+     * @returns {*} A react-bootsrap FormControl for filtering the Dropdown data.
+     * @private
+     */
     _renderSearchField() {
         return <FormControl placeholder={this.props.searchPlaceholder}
                             autoFocus
@@ -96,11 +128,16 @@ class SearchableDropdown extends Component {
                             onChange={e => this.setState({searchSubstring: e.target.value})}/>
     }
 
+    /**
+     * Renders the SearchableDropdown component.
+     * @returns {*} The SearchableDropdown component.
+     */
     render() {
-        return <Dropdown disabled>
+        return <Dropdown>
             <Dropdown.Toggle id={this.props.toggleId}
                              variant={this.props.variant || "outline-primary"}
                              className="dropdownToggle"
+                             disabled={this.props.disabled}
             >
                 {this._getDropdownText(this.state.selectedOption)}
             </Dropdown.Toggle>

@@ -13,7 +13,14 @@ import fetchStatusType from "../../../../redux/actions/FetchStatusTypes";
 import ConfirmationDialog from "../../../components/dialogs/ConfirmationDialog";
 import FetchPending from "../../../components/FetchPending";
 
+/**
+ * The view for displaying and deleting all available AnnotationSets of the application.
+ */
 class AnnotationSetList extends Component {
+    /**
+     * Create a new AnnotaionSetList component.
+     * @param props The properties of the component.
+     */
     constructor(props) {
         super(props);
         this._addNewAnnotationSet = this._addNewAnnotationSet.bind(this);
@@ -24,15 +31,28 @@ class AnnotationSetList extends Component {
         };
     }
 
+    /**
+     * React lifecycle method. Fetches all available AnnotationSets.
+     */
     componentDidMount() {
         this.props.fetchAnnotationSets();
     }
 
+    /**
+     * Add a new AnnotationSet by redirecting to the edit view.
+     * @returns {*} The number of elements in the history property.
+     * @private
+     */
     _addNewAnnotationSet() {
         this.props.setActiveAnnotationSet(this.props.emptyAnnotationSet);
         return this.props.history.push(`${this.props.match.path}/edit`)
     }
 
+    /**
+     * Get the Table to be rendered containing all AnnotationSets.
+     * @returns {*} The Table to be rendered.
+     * @private
+     */
     _renderAnnotationSets() {
         let renderAnnotationSetTableData = () => {
             return this.props.annotationSets.items.map(annotationSet => {
@@ -103,6 +123,10 @@ class AnnotationSetList extends Component {
         )
     }
 
+    /**
+     * Render the AnnotationSetList view.
+     * @returns {*} The component to be rendered.
+     */
     render() {
         return (
             <React.Fragment>
