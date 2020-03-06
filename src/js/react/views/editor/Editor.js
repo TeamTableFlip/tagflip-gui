@@ -78,12 +78,21 @@ class Editor extends Component {
     }
 
     /**
+     * Determine whether the selected corpus has an annotation set assigned.
+     * @returns {boolean} True if there is at least one AnnotationSet in the selected Corpus, optherwise false.
+     * @private
+     */
+    _hasCorpusAnnotationSets() {
+        return this.props.selectedCorpus.annotationSets.items.length > 0;
+    }
+
+    /**
      * Determines whether the selected annotation set is valid or not.
      * @returns {boolean} True if the selected annotation set is valid, otherwise false.
      * @private
      */
     _isAnnotationSetValid() {
-        return this.props.selectedCorpus.annotationSets.items.length > 0
+        return this._hasCorpusAnnotationSets()
             && this.props.selectedCorpus.annotationSets.items.filter(x => x.s_id === this.props.selectedAnnotationSet.values.s_id).length > 0;
     }
 
@@ -160,7 +169,15 @@ class Editor extends Component {
                                             searchPlaceholder={"Find Corpus..."}/>
                     </FetchPending>
 
-                    {!this._isSelectedCorpusNew() &&
+                    {!this._isSelectedCorpusNew() && !this._hasCorpusAnnotationSets() &&
+                    <React.Fragment>
+                        <hr/>
+                        <p>The selected Corpus has no Annotation Set assigned.</p>
+                        <p>Please go to the Settings to add an Annotation Set to the selected Corpus.</p>
+                    </React.Fragment>
+                    }
+
+                    {!this._isSelectedCorpusNew() && this._hasCorpusAnnotationSets() &&
                     <React.Fragment>
                         <hr/>
                         <h6>Select Annotation Set</h6>
