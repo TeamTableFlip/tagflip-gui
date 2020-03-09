@@ -16,11 +16,16 @@ import ServerNotAvailableInfo from "./components/dialogs/ServerNotAvailableInfo"
  * The root React Component representing the TagFlip Application. Does NOT contain the redux store.
  */
 class App extends Component {
-
+    /**
+     * React lifecycle method. Check the Server availability.
+     */
     componentDidMount() {
         this.checkServerAvailability();
     }
 
+    /**
+     * Check the server availability. Will be called every 5 seconds.
+     */
     checkServerAvailability() {
         let timeOut = config.backend.checkAvailabilityTimeout;
         if(!this.props.serverStatus.available) {
@@ -30,6 +35,10 @@ class App extends Component {
         setTimeout(() => this.checkServerAvailability(), timeOut);
     }
 
+    /**
+     * Render the Application.
+     * @returns {*} The component to be rendered, representing the Application.
+     */
     render() {
         return (
             <div id="page">
