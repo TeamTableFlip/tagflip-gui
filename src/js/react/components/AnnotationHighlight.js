@@ -9,7 +9,16 @@ import Container from "react-bootstrap/Container";
 import Col from "react-bootstrap/Col";
 import Overlay from "react-bootstrap/Overlay";
 
+/**
+ * A React Component for rendering an annotated text.
+ * The text to be rendered will have the background color of the corresponding Annotation. Furthermore there will be a
+ * react-bootstrap Tooltip, for displaying the Tag's details.
+ */
 class AnnotationHighlight extends React.Component {
+    /**
+     * Create a new AnnotationHighlight component.
+     * @param props The properties of the component.
+     */
     constructor(props) {
         super(props);
         this._handleClick = this._handleClick.bind(this);
@@ -17,30 +26,50 @@ class AnnotationHighlight extends React.Component {
         this.popupTargetRef = React.createRef();
         this.state = {
             showPopup: false
-        }
+        };
     }
 
+    /**
+     * Handle the click event of the AnnotationHighlight.
+     * @private
+     */
     _handleClick() {
-        this.setState({showPopup: !this.state.showPopup})
+        this.setState({showPopup: !this.state.showPopup});
     }
 
+    /**
+     * Hide the Tooltip when it's visible.
+     * @param showPopup A bool to determine whether the Tooltip is currently shown or not.
+     * @private
+     */
     _hideIfVisible(showPopup) {
         const isVisible = elem => !!elem && !!( elem.offsetWidth || elem.offsetHeight || elem.getClientRects().length);
         if(this.state.showPopup && isVisible(ReactDom.findDOMNode(this.popupTargetRef.current))) {
-            this.setState({showPopup: false})
+            this.setState({showPopup: false});
         }
     }
 
+    /**
+     * Delete the annotated text, by calling props#onDelete().
+     * @private
+     */
     _onDelete() {
-        this.setState({showPopup: !this.state.showPopup})
+        this.setState({showPopup: !this.state.showPopup});
         this.props.onDelete();
     }
 
+    /**
+     * React lifecycle method. Toggles the visibility of the react-bootstrap Tooltip.
+     */
     componentWillUnmount() {
         // alert("help, i die")
-        this.setState({showPopup: !this.state.showPopup})
+        this.setState({showPopup: !this.state.showPopup});
     }
 
+    /**
+     * Render the AnnotationHighlight component.
+     * @returns {*} The component to be rendered.
+     */
     render() {
         return (
             <React.Fragment>
@@ -70,14 +99,13 @@ class AnnotationHighlight extends React.Component {
                 </Overlay>
             </React.Fragment>);
     }
-
-
 }
+
 AnnotationHighlight.propTypes = {
-    text: PropTypes.string,
-    tag: PropTypes.object,
-    annotation: PropTypes.object,
-    onDelete: PropTypes.any,
+    text: PropTypes.string,         // The annotated text to be displayed
+    tag: PropTypes.object,          // The Tag information to be displayed in the Tooltip
+    annotation: PropTypes.object,   // The Annotation information to shown next to the text
+    onDelete: PropTypes.any         // Is called when deleting the Tag - 0 params
 };
 
 export default AnnotationHighlight

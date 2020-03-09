@@ -4,9 +4,7 @@ import AceEditor from "react-ace";
 import "ace-builds/src-noconflict/mode-text";
 import "ace-builds/src-noconflict/theme-github";
 import PropTypes from "prop-types";
-import FetchPending from "./FetchPending";
-import {BrowserRouter as Router} from "react-router-dom";
-import AnnotationPicker from "./AnnotationPicker";
+import AnnotationPicker from "./dialogs/AnnotationPicker";
 
 import "./temp-maker.css"
 
@@ -21,8 +19,15 @@ const initialState = {
     markers: []
 };
 
+/**
+ * A React component for displaying a working Editor for annotating documents, using the AceEditor component.
+ * @deprecated
+ */
 class AnnotationEditor extends Component {
-
+    /**
+     * Create a new AnnotationEditor component.
+     * @param props The properties of the component.
+     */
     constructor(props) {
         super(props);
         this.state = initialState;
@@ -37,10 +42,19 @@ class AnnotationEditor extends Component {
         // let endIndex =  this.state.aceEditor.session.doc.positionToIndex(this.currentSelectionEndIndex);
     }
 
+    /**
+     * Handle timeouts. Will be called each props#timerIntervalMSec milliseconds.
+     * @private
+     */
     _onTimeout() {
 
     }
 
+    /**
+     * Handle selecting an Annotation for the currently selected text.
+     * @param a The picked annotation for the selected text.
+     * @private
+     */
     _onPicked(a) {
         console.log("done");
         console.log(this.currentSelectionRange);
@@ -57,6 +71,11 @@ class AnnotationEditor extends Component {
         console.log(this.state.markers)
     }
 
+    /**
+     * Handle the load event of the AceEditor, by adding functionality to certain events such as "mouseup".
+     * @param editorRef The instance of the AceEditor.
+     * @private
+     */
     _onLoad(editorRef) {
         editorRef.on("mouseup", () => {
             console.log("mouse release");
@@ -66,8 +85,13 @@ class AnnotationEditor extends Component {
         });
     }
 
+    /**
+     * Handle the selection of a text area from the AceEditor.
+     * @param aceSelection The Selection-object from the AceEditor instance
+     * @see https://ace.c9.io/#nav=api&api=selection
+     * @private
+     */
     _onSelection(aceSelection) {
-
         this.hasCurrentSelectedText = this.editorRef.current.editor.getSelectedText().length > 0;
         if (this.hasCurrentSelectedText)
             this.currentSelectionRange = aceSelection.getRange();
@@ -75,10 +99,17 @@ class AnnotationEditor extends Component {
         console.log(this.editorRef.current.editor.getSelectedText());
     }
 
+    /**
+     * React lifecycle method. Hooks up the _onTimeout method to be called every props#timerIntervalMSec seconds.
+     */
     componentDidMount() {
         this.setState({timerId: setInterval(this._onTimeout, this.props.timerIntervalMSec)})
     }
 
+    /**
+     * Render the AnnotationEditor component.
+     * @returns {*} The component to be rendered.
+     */
     render() {
         return (
             <React.Fragment>

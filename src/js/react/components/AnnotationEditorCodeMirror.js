@@ -2,21 +2,23 @@ import React, {Component} from "react";
 import ReactDom from "react-dom";
 import * as CodeMirrorReact from "react-codemirror";
 import PropTypes from "prop-types";
-import AnnotationPicker from "./AnnotationPicker";
+import AnnotationPicker from "./dialogs/AnnotationPicker";
 import "./AnnotationEditorCodeMirror.scss"
 import "./temp-maker.css"
 import AnnotationHighlight from "./AnnotationHighlight";
-
-
-
 
 const initialState = {
     textSelected: false,
 };
 
-
+/**
+ * A React Component for displaying the CodeMirror Web-Editor in React, with the extension of annotating text within it.
+ */
 class AnnotationEditorCodeMirror extends Component {
-
+    /**
+     * Create a new AnnotationEditorCodeMirror component.
+     * @param props The properties of the component.
+     */
     constructor(props) {
         super(props);
         this.state = initialState;
@@ -33,13 +35,22 @@ class AnnotationEditorCodeMirror extends Component {
         this.activeMarkers = new Map();
     }
 
+    /**
+     * React lifecycle method. Unmounts all currently active markers to hide them.
+     */
     componentWillUnmount() {
         // unmounting custom mount components
         for (let [t_id, marker] of this.activeMarkers.entries()) {
-            ReactDom.unmountComponentAtNode(marker.container)
+            ReactDom.unmountComponentAtNode(marker.container);
         }
     }
 
+    /**
+     * React lifecycle method. Determines which Tags shall be rendered, due to adding/removing Tags in the document.
+     * @param prevProps The properties of this component before updating.
+     * @param prevState The state of this component before updating.
+     * @param snapshot The snapshot of the component before the update occurred.
+     */
     componentDidUpdate(prevProps, prevState, snapshot) {
         let deletedTags = new Set();
         let newTags = new Set();
@@ -58,17 +69,21 @@ class AnnotationEditorCodeMirror extends Component {
             let prevTags = new Set(prevProps.tags.map(t => t.t_id));
             let currentTags = new Set(this.props.tags.map(t => t.t_id));
             // console.log("prev: ", prevTags, "current:", currentTags)
-            newTags = new Set([...currentTags].filter(x => !prevTags.has(x)))
-            deletedTags = new Set([...prevTags].filter(x => !currentTags.has(x)))
+            newTags = new Set([...currentTags].filter(x => !prevTags.has(x)));
+            deletedTags = new Set([...prevTags].filter(x => !currentTags.has(x)));
         }
 
-        newTags = this.props.tags.filter(x => newTags.has(x.t_id))
-        deletedTags = prevProps.tags.filter(x => deletedTags.has(x.t_id))
-        console.log("New: ", newTags, "Deleted:", deletedTags)
+        newTags = this.props.tags.filter(x => newTags.has(x.t_id));
+        deletedTags = prevProps.tags.filter(x => deletedTags.has(x.t_id));
+        console.log("New: ", newTags, "Deleted:", deletedTags);
 
-        this._renderTags(newTags, deletedTags)
+        this._renderTags(newTags, deletedTags);
     }
 
+    /**
+     * Handle CodeMirror's mouse up event, which is used for selecting text.
+     * @private
+     */
     _onMouseUp() {
         let codeMirror = this.editorRef.codeMirror;
         // console.log("_onMouseUp");
@@ -79,16 +94,26 @@ class AnnotationEditorCodeMirror extends Component {
                 this.setState({
                     textSelected: true,
                     selectionFromIndex: codeMirror.indexFromPos(selections[0].anchor),
-                    selectionToIndex: codeMirror.indexFromPos(selections[0].head),
+                    selectionToIndex: codeMirror.indexFromPos(selections[0].head)
                 });
             }
         }
     }
 
+    /**
+     * Handle the deletion of a selected Tag. Is called by AnnotationHighlight#onDelete.
+     * @param tag The Tag to be deleted.
+     * @private
+     */
     _onDelete(tag) {
-        this.props.onDeleteTag(tag)
+        this.props.onDeleteTag(tag);
     }
 
+    /**
+     * Handle the picking/selection of an Annotation for a selected text from CodeMirror.
+     * @param annotation The picked Annotation to be assigned to the selected text.
+     * @private
+     */
     _onAnnotationPicked(annotation) { //annotation  has .a_id .color .name .s_id
         let codeMirror = this.editorRef.codeMirror;
 
@@ -112,12 +137,22 @@ class AnnotationEditorCodeMirror extends Component {
         this.setState({textSelected: false});
     }
 
+    /**
+     * Handle the Abort-Action of picking an Annotation.
+     * @private
+     */
     _cancelSelection() {
         let codeMirror = this.editorRef.codeMirror;
         codeMirror.setCursor(0, 0);
         this.setState({textSelected: ""})
     }
 
+    /**
+     * Render all Tags of the current document.
+     * @param newTags The new added Tags to be added for rendering.
+     * @param deletedTags The deleted Tags to be ignored for rendering.
+     * @private
+     */
     _renderTags(newTags, deletedTags = new Set()) {
         if (!this.editorRef)
             return;
@@ -126,18 +161,18 @@ class AnnotationEditorCodeMirror extends Component {
 
         if (deletedTags && deletedTags.length > 0) {
             for (let tag of deletedTags) {
-                let marker = this.activeMarkers.get(tag.t_id)
+                let marker = this.activeMarkers.get(tag.t_id);
                 ReactDom.unmountComponentAtNode(marker.container);
                 marker.marker.clear();
-                this.activeMarkers.delete(tag.t_id)
+                this.activeMarkers.delete(tag.t_id);
             }
         }
 
         if (newTags && newTags.length > 0) {
 
             for (let tag of newTags) {
-                let anchor = codeMirror.posFromIndex(tag.start_index)
-                let head = codeMirror.posFromIndex(tag.end_index)
+                let anchor = codeMirror.posFromIndex(tag.start_index);
+                let head = codeMirror.posFromIndex(tag.end_index);
 
                 let annotation = undefined;
                 for (let a of this.props.annotations) {
@@ -154,10 +189,10 @@ class AnnotationEditorCodeMirror extends Component {
                     replacedWith: replacementContainer,
                     handleMouseEvents: true
                 });
-                codeMirror.setSelection(anchor, head)
+                codeMirror.setSelection(anchor, head);
                 let text = codeMirror.getSelection();
                 codeMirror.setCursor(0, 0);
-                codeMirror.setSelection(codeMirror.posFromIndex(0), codeMirror.posFromIndex(0))
+                codeMirror.setSelection(codeMirror.posFromIndex(0), codeMirror.posFromIndex(0));
 
                 this.activeMarkers.set(tag.t_id, {
                     marker: textMarker,
@@ -177,10 +212,17 @@ class AnnotationEditorCodeMirror extends Component {
         }
     }
 
+    /**
+     * React lifecycle method. Renders all Tags of the component when loaded.
+     */
     componentDidMount() {
-        this._renderTags(this.props.tags)
+        this._renderTags(this.props.tags);
     }
 
+    /**
+     * Render the AnnotationEditorCodeMirror component.
+     * @returns {*} The component to be rendered.
+     */
     render() {
         return (
             <React.Fragment>
@@ -206,11 +248,13 @@ class AnnotationEditorCodeMirror extends Component {
 }
 
 AnnotationEditorCodeMirror.propTypes = {
-    annotations: PropTypes.array,
-    document: PropTypes.object,
-    tags: PropTypes.array,
-    onSaveTag: PropTypes.func,
-    onDeleteTag: PropTypes.func,
+    annotations: PropTypes.array,       // The list of all available Annotations to be used for tagging.
+    document: PropTypes.object,         // The Document to be displayed in the Editor.
+    tags: PropTypes.array,              // The list of the existing Tags to be rendered.
+    onSaveTag: PropTypes.func,          // Is called when a new Annotation is being picked
+                                        //  - 1 param: newTag (The Tag to be saved)
+    onDeleteTag: PropTypes.func         // Is called when an existing Tag will be deleted
+                                        //  - 1 param: tag (The Tag to be deleted)
 };
 
 export default AnnotationEditorCodeMirror;

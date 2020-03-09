@@ -12,20 +12,30 @@ import FetchPending from "../../../../components/FetchPending";
 import {Alert} from "react-bootstrap";
 import ShowMoreText from 'react-show-more-text';
 import ConfirmationDialog from "../../../../components/dialogs/ConfirmationDialog";
-import ShowDocument from "../../../../components/ShowDocument";
+import ShowDocument from "../../../../components/dialogs/ShowDocument";
 
-
+/**
+ * A React view for displaying all Documents of the Corpus. Provides the functionality to upload and remove Documents.
+ */
 class CorpusDocuments extends Component {
-
+    /**
+     * Create a new CorpusDocuments component.
+     * @param props The properties of the component.
+     */
     constructor(props) {
         super(props);
         this.state = {
             uploadWarningShowMore: false,
             documentIdToBeDeleted: undefined,
-            documentToBeShown: undefined,
+            documentToBeShown: undefined
         }
     }
 
+    /**
+     * Get a Table containing all Documents assigned to the current Corpus.
+     * @returns {*} The HTML-Table to be rendered, containing a list of all Documents of the Corpus.
+     * @private
+     */
     _renderDocuments() {
         let renderDocumentTableData = () => {
             return this.props.corpus.documents.items.map(document => {
@@ -36,8 +46,8 @@ class CorpusDocuments extends Component {
                         <div className="float-right">
                             <Button size="sm"
                                 onClick={() => {
-                                    this.props.fetchCorpusDocument(document.d_id)
-                                    this.setState({documentToBeShown: document.d_id})
+                                    this.props.fetchCorpusDocument(document.d_id);
+                                    this.setState({documentToBeShown: document.d_id});
                                 }}><FontAwesomeIcon
                                 icon={faSearch}/></Button>
                             <Button size="sm" variant="danger"
@@ -93,6 +103,10 @@ class CorpusDocuments extends Component {
         )
     }
 
+    /**
+     * Render the CorpusDocuments component.
+     * @returns {*} The component to be rendered.
+     */
     render() {
         return (
             <React.Fragment>

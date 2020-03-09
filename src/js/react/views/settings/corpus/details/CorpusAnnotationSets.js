@@ -4,18 +4,13 @@ import Form from "react-bootstrap/Form";
 import ListGroup from "react-bootstrap/ListGroup";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-import Button from "react-bootstrap/Button";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faChevronLeft, faChevronRight} from "@fortawesome/free-solid-svg-icons";
 import Tooltip from "react-bootstrap/Tooltip";
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {ActionCreators} from '../../../../../redux/actions/ActionCreators';
 import fetchStatusType from "../../../../../redux/actions/FetchStatusTypes";
 import FetchPending from "../../../../components/FetchPending";
-import Overlay from "react-bootstrap/Overlay";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
-import Popover from "react-bootstrap/Popover";
 
 const popover = (
     <Tooltip id="annotationSetSaveInfo">
@@ -23,17 +18,29 @@ const popover = (
     </Tooltip>
 );
 
-
+/**
+ * The view for displaying all available AnnotationSets and selecting them for the current Corpus to be edited.
+ */
 class CorpusAnnotationSets extends Component {
-
+    /**
+     * Create a new CorpusAnnotationSets component.
+     * @param props The properties of the component.
+     */
     constructor(props) {
         super(props);
     }
 
+    /**
+     * React lifecycle method. Fetch all Annotation Sets.
+     */
     componentDidMount() {
         this.props.fetchAnnotationSets();
     }
 
+    /**
+     * Get all available Annotation Sets to be rendered in a ListGroup.
+     * @returns {*} The AnnotationSets to be rendered with a selection option.
+     */
     renderAnnotationSetSelection() {
         const selectedAnnotationSetIds = new Set(this.props.corpus.annotationSets.items.map(annotationSet => annotationSet.s_id));
         let renderAnnotationSetList = () => {
@@ -67,6 +74,10 @@ class CorpusAnnotationSets extends Component {
         )
     }
 
+    /**
+     * Render the CorpusAnnotationSets view component.
+     * @returns {*} The component to be rendered.
+     */
     render() {
         return (
             <React.Fragment>

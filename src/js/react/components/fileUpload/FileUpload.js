@@ -8,9 +8,14 @@ import Button from "react-bootstrap/Button";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faTrash} from "@fortawesome/free-solid-svg-icons";
 
-
+/**
+ * A React Component for displaying a drop zone in which files can be uploaded.
+ */
 class FileUpload extends Component {
-
+    /**
+     * Create a new FileUpload component.
+     * @param props The properties of the component.
+     */
     constructor(props) {
         super(props);
         this.state = {
@@ -20,13 +25,11 @@ class FileUpload extends Component {
         }
     }
 
-    _onDrop(files) {
-        this.setState({
-            files: files
-        });
-        this.props.onSelect(files);
-    }
-
+    /**
+     * Determine which CSS classes to use for the react-dropzone component.
+     * @returns {string} The CSS class names to be used.
+     * @private
+     */
     _activeClasses() {
         let activeClasses = ["dropzone"];
         if (this.state.dragOver) {
@@ -36,6 +39,10 @@ class FileUpload extends Component {
         return activeClasses.join(" ")
     }
 
+    /**
+     * Handle the event of dropping accepted files to the react-dropzone component.
+     * @param files The dropped in files to be added for upload.
+     */
     acceptDrop(files) {
         let filtered_files = files.filter(x => this.state.files.filter(y => x.name === y.name ).length === 0);
         this.setState({
@@ -43,6 +50,10 @@ class FileUpload extends Component {
         })
     }
 
+    /**
+     * Reset the current state to default, so new files can be uploaded.
+     * @private
+     */
     _reset() {
         this.setState({
             files: [],
@@ -51,6 +62,11 @@ class FileUpload extends Component {
         })
     }
 
+    /**
+     * Create a Table which displays all selected files to be uploaded.
+     * @returns {*} The HTML-Table to be rendered, containing all files to be uploaded.
+     * @private
+     */
     _renderFileList() {
         return (<table className="table">
                 <thead>
@@ -78,6 +94,10 @@ class FileUpload extends Component {
         );
     }
 
+    /**
+     * Render the FileUpload component.
+     * @returns {*} The component to be rendered.
+     */
     render() {
         return (
             <div>
@@ -159,11 +179,11 @@ class FileUpload extends Component {
 
 
 FileUpload.propTypes = {
-    onUpload: PropTypes.func.isRequired,
-    acceptMimeTypes: PropTypes.string.isRequired,
-    uploadText: PropTypes.string.isRequired,
-    isUploading: PropTypes.bool.isRequired,
-    maxCount: PropTypes.number.isRequired,
+    onUpload: PropTypes.func.isRequired,            // Is called when uploading the files - 1 param: files
+    acceptMimeTypes: PropTypes.string.isRequired,   // The accepted mime types for upload
+    uploadText: PropTypes.string.isRequired,        // The text to display in the Dropzone
+    isUploading: PropTypes.bool.isRequired,         // If true, the Upload-Button will be disabled
+    maxCount: PropTypes.number.isRequired           // Determine the maximum amount of files to upload
 };
 
 export default FileUpload;

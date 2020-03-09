@@ -2,8 +2,6 @@ import React, {Component} from "react";
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faChevronRight} from "@fortawesome/free-solid-svg-icons";
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {ActionCreators} from '../../../../../redux/actions/ActionCreators';
@@ -14,33 +12,48 @@ const initialState = {
     validated: false,
 };
 
+/**
+ * A React view for displaying and editing basic information of a Corpus.
+ */
 class CorpusBasicData extends Component {
-
+    /**
+     * Create a new CorpusBasicData component.
+     * @param props The properties of the component.
+     */
     constructor(props) {
         super(props);
         this.state = initialState;
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
-    componentDidMount() {
-    }
-
+    /**
+     * Handle the submit/save of editing the basic Corpus information. Validates the Form input.
+     * @param event The triggered Form-Event.
+     */
     handleSubmit(event) {
         const form = event.currentTarget;
         event.preventDefault();
-        this.setState({validated: false})
+        this.setState({validated: false});
         if (form.checkValidity() === false) {
             event.stopPropagation();
-            this.setState({validated: true})
+            this.setState({validated: true});
         } else {
-            this.props.saveCorpus()
+            this.props.saveCorpus();
         }
     }
 
+    /**
+     * Determine whether the currently selected Corpus is a new one or not.
+     * @returns {boolean} True if the Corpus is new, otherwise false.
+     */
     isNewCorpus() {
         return this.props.corpus.values.c_id <= 0;
     }
 
+    /**
+     * Render the CorpusBasicData component.
+     * @returns {*} The component to be rendered.
+     */
     render() {
         return (
             <React.Fragment>
@@ -93,7 +106,7 @@ class CorpusBasicData extends Component {
 function mapStateToProps(state) {
     return {
         corpus: state.editableCorpus,
-        annotationSets: state.annotationSets,
+        annotationSets: state.annotationSets
     };
 }
 

@@ -3,8 +3,14 @@ import Navbar from "react-bootstrap/Navbar";
 import Nav from "react-bootstrap/Nav";
 import {withRouter} from "react-router-dom";
 
+/**
+ * A React view for displaying the upper navigation bar.
+ */
 class Navigation extends Component {
-
+    /**
+     * Create a new Navigation component.
+     * @param props The properties of the component.
+     */
     constructor(props) {
         super(props);
         this.state = {
@@ -12,7 +18,10 @@ class Navigation extends Component {
         }
     }
 
-
+    /**
+     * Render the Navigation component.
+     * @returns {*} The component to be rendered.
+     */
     render() {
         return (
             <Navbar id="topNav" bg="dark" variant="dark" expand="lg">

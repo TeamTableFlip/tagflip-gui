@@ -1,20 +1,34 @@
 import React, {Component} from "react";
-import ReactDOM from "react-dom";
 import PropTypes from 'prop-types';
 import Button from "react-bootstrap/Button";
 import {Spinner} from "react-bootstrap";
 import Alert from "react-bootstrap/Alert";
 
+/**
+ * A React Component to be used as a parent for Components, which require data to be fetched from a backend.
+ *
+ * This component will display a react-bootstrap Spinner, as long as data is being fetched. When the data is received
+ * successfully, the child nodes will be rendered. If the data could not be fetched properly, a react-bootstrap Alert
+ * will be shown with a warning, to inform the user about the failure. When failing to fetch, the user has the chance to
+ * retry the fetching process, if the corresponding callback function is defined in the properties.
+ */
 class FetchPending extends Component {
-
+    /**
+     * Create a new FetchPending component.
+     * @param props The properties of the component.
+     */
     constructor(props) {
         super(props);
         this.childNode = React.createRef();
         this.state = {
             childrensHeight: undefined
-        }
+        };
     }
 
+    /**
+     * Render the FetchPending component, by rendering a Spinner, a warning message, or all its child Components.
+     * @returns {*} The component to be rendered.
+     */
     render() {
         if (this.props.isPending && !this.props.silent) {
             return (
@@ -55,16 +69,17 @@ class FetchPending extends Component {
 }
 
 FetchPending.propTypes = {
-    isPending: PropTypes.bool.isRequired,
-    silent: PropTypes.bool,
-    success: PropTypes.bool.isRequired,
-    inheritChildrenHeight: PropTypes.bool.isRequired,
-    retryCallback: PropTypes.func
+    isPending: PropTypes.bool.isRequired,               // Determine whether the data is still being fetched or not
+    silent: PropTypes.bool,                             // If silent, the Spinner won't be shown
+    success: PropTypes.bool.isRequired,                 // When not pending anymore: Determine whether the fetch process
+                                                        // was successful or not. If it was, render all the child nodes
+    inheritChildrenHeight: PropTypes.bool.isRequired,   // The height of the inherited child components
+    retryCallback: PropTypes.func                       // Is called by onClick, when trying to refetch data - No params
 };
 
 FetchPending.defaultProps = {
     silent: false,
     inheritChildrenHeight: true
-}
+};
 
 export default FetchPending;

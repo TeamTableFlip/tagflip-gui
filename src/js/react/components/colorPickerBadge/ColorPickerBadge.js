@@ -4,7 +4,7 @@ import {SketchPicker} from 'react-color';
 import PropTypes from "prop-types";
 
 /**
- * A React Component for displaying a react.bootstrap Badge and a color picker next to it.
+ * A React Component for displaying a react-bootstrap Badge and a color picker next to it.
  */
 class ColorPickerBadge extends Component {
     /**
@@ -61,8 +61,8 @@ class ColorPickerBadge extends Component {
 }
 
 ColorPickerBadge.propTypes = {
-    updateColorCallback: PropTypes.func.isRequired,
-    color: PropTypes.string
+    updateColorCallback: PropTypes.func.isRequired, // Is called when the color is being picked - 1 param: color
+    color: PropTypes.string                         // The initial color
 };
 
 export default ColorPickerBadge

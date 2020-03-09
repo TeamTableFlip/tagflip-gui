@@ -2,7 +2,7 @@ import React, {Component} from "react";
 import Navigation from "./views/Navigation";
 import Footer from "./views/Footer";
 
-import {BrowserRouter as Router, Redirect, Route, Switch, withRouter} from "react-router-dom";
+import {BrowserRouter as Router, Redirect, Route, Switch} from "react-router-dom";
 import Settings from "./views/settings/Settings";
 import Editor from "./views/editor/Editor";
 import {ActionCreators} from "../redux/actions/ActionCreators";
@@ -12,6 +12,9 @@ import {bindActionCreators} from "redux";
 import config from '../config/config';
 import ServerNotAvailableInfo from "./components/dialogs/ServerNotAvailableInfo";
 
+/**
+ * The root React Component representing the TagFlip Application. Does NOT contain the redux store.
+ */
 class App extends Component {
 
     componentDidMount() {
