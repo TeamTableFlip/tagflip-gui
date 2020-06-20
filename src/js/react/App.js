@@ -1,16 +1,19 @@
-import React, {Component} from "react";
+import React, { Component } from "react";
 import Navigation from "./views/Navigation";
 import Footer from "./views/Footer";
 
-import {BrowserRouter as Router, Redirect, Route, Switch} from "react-router-dom";
+import { BrowserRouter as Router, Redirect, Route, Switch } from "react-router-dom";
+
 import Settings from "./views/settings/Settings";
 import Editor from "./views/editor/Editor";
-import {ActionCreators} from "../redux/actions/ActionCreators";
-import {connect} from "react-redux";
-import {bindActionCreators} from "redux";
+import { ActionCreators } from "../redux/actions/ActionCreators";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
 
 import config from '../config/config';
 import ServerNotAvailableInfo from "./components/dialogs/ServerNotAvailableInfo";
+
+__webpack_public_path__ = process.env.ASSET_PATH;
 
 /**
  * The root React Component representing the TagFlip Application. Does NOT contain the redux store.
@@ -28,7 +31,7 @@ class App extends Component {
      */
     checkServerAvailability() {
         let timeOut = config.backend.checkAvailabilityTimeout;
-        if(!this.props.serverStatus.available) {
+        if (!this.props.serverStatus.available) {
             timeOut = 5000;
         }
         this.props.fetchServerStatus();
@@ -42,7 +45,7 @@ class App extends Component {
     render() {
         return (
             <div id="page">
-                <Router>
+                <Router basename={process.env.ASSET_PATH}>
                     <Navigation />
                     <ServerNotAvailableInfo serverAvailable={this.props.serverStatus.available} />
                     <main>
@@ -60,7 +63,7 @@ class App extends Component {
                     </main>
                     <Footer />
                 </Router>
-            </div>);
+            </div >);
     }
 }
 
