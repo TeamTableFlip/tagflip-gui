@@ -1,6 +1,8 @@
-import React, {Component} from "react";
+import React, { Component } from "react";
 import ReactDom from "react-dom";
-import * as CodeMirrorReact from "react-codemirror";
+import { EditorView, Decoration, DecorationSet } from "@codemirror/next/view"
+import { EditorState } from "@codemirror/next/state"
+import { Range } from "@codemirror/next/rangeset"
 import PropTypes from "prop-types";
 import AnnotationPicker from "./dialogs/AnnotationPicker";
 import "./AnnotationEditorCodeMirror.scss"
@@ -120,7 +122,7 @@ class AnnotationEditorCodeMirror extends Component {
         let startIndex = this.state.selectionFromIndex;
         let endIndex = this.state.selectionToIndex;
 
-        if(endIndex < startIndex) {
+        if (endIndex < startIndex) {
             let helpIndex = startIndex;
             startIndex = endIndex;
             endIndex = helpIndex;
@@ -134,7 +136,7 @@ class AnnotationEditorCodeMirror extends Component {
         };
 
         this.props.onSaveTag(newTag);
-        this.setState({textSelected: false});
+        this.setState({ textSelected: false });
     }
 
     /**
@@ -144,7 +146,7 @@ class AnnotationEditorCodeMirror extends Component {
     _cancelSelection() {
         let codeMirror = this.editorRef.codeMirror;
         codeMirror.setCursor(0, 0);
-        this.setState({textSelected: ""})
+        this.setState({ textSelected: "" })
     }
 
     /**
@@ -157,6 +159,35 @@ class AnnotationEditorCodeMirror extends Component {
         if (!this.editorRef)
             return;
 
+        if (newTags && newTags.length > 0) {
+
+            let mark = Decoration.mark({
+                attributes: { style: 'background-color: rgba(20, 100, 200, 0.5)' },
+                tagName: 'span'
+            })
+
+            let decorations = []
+            for (let tag of newTags) {
+                let annotation = undefined;
+                for (let a of this.props.annotations) {
+                    if (a.a_id === tag.a_id) {
+                        annotation = a;
+                    }
+                }
+                if (!annotation) {
+                    return;
+                }
+
+                if (tag.start_index < tag.end_index) {
+                    decorations.push(mark.range(tag.start_index, tag.end_index));
+                }
+
+            }
+            let decorationSet = DecorationSet.of(decorations, true);
+            this.editorRef.decorations.of(decorationSet);
+        }
+
+        /*
         let codeMirror = this.editorRef.codeMirror;
 
         if (deletedTags && deletedTags.length > 0) {
@@ -202,20 +233,28 @@ class AnnotationEditorCodeMirror extends Component {
 
                 let reactElement = (
                     <AnnotationHighlight id={`hightlight-${tag.t_id}`}
-                                         tag={tag}
-                                         annotation={annotation}
-                                         text={text}
-                                         onDelete={() => this._onDelete(tag)}
+                        tag={tag}
+                        annotation={annotation}
+                        text={text}
+                        onDelete={() => this._onDelete(tag)}
                     />);
                 ReactDom.render(reactElement, replacementContainer);
             }
-        }
+            */
     }
+
 
     /**
      * React lifecycle method. Renders all Tags of the component when loaded.
      */
     componentDidMount() {
+        const state = EditorState.create({
+            doc: this.props.document && this.props.document.text || "",
+            //extensions: [keymap(baseKeymap)]
+        })
+
+        this.editorRef = new EditorView({ state });
+        this.componentRef.appendChild(this.editorRef.dom);
         this._renderTags(this.props.tags);
     }
 
@@ -224,23 +263,11 @@ class AnnotationEditorCodeMirror extends Component {
      * @returns {*} The component to be rendered.
      */
     render() {
+
         return (
             <React.Fragment>
-                <AnnotationPicker textSelected={this.state.textSelected}
-                                  annotations={this.props.annotations}
-                                  onPicked={this._onAnnotationPicked}
-                                  onCanceled={() => this._cancelSelection()}
-                />
-                <CodeMirrorReact
-                    className="w-100 h-100"
-                    ref={this.editorRefCallback}
-                    value={this.props.document && this.props.document.text || ""}
-                    options={{
-                        lineNumbers: true,
-                        readOnly: true,
-                        lineWrapping: true
-                    }}
-                />
+                <div ref={(DOMNodeRef) => { this.componentRef = DOMNodeRef; }}>
+                </div>
             </React.Fragment>
         );
     }
@@ -252,9 +279,9 @@ AnnotationEditorCodeMirror.propTypes = {
     document: PropTypes.object,         // The Document to be displayed in the Editor.
     tags: PropTypes.array,              // The list of the existing Tags to be rendered.
     onSaveTag: PropTypes.func,          // Is called when a new Annotation is being picked
-                                        //  - 1 param: newTag (The Tag to be saved)
+    //  - 1 param: newTag (The Tag to be saved)
     onDeleteTag: PropTypes.func         // Is called when an existing Tag will be deleted
-                                        //  - 1 param: tag (The Tag to be deleted)
+    //  - 1 param: tag (The Tag to be deleted)
 };
 
 export default AnnotationEditorCodeMirror;
