@@ -1,8 +1,11 @@
 import React, { Component } from "react";
 import ReactDom from "react-dom";
-import { EditorView, Decoration, DecorationSet } from "@codemirror/next/view"
+
+import { EditorView, Decoration } from "@codemirror/next/view"
+import { DecorationSet, RangeSet } from "@codemirror/next/rangeset"
 import { EditorState } from "@codemirror/next/state"
 import { Range } from "@codemirror/next/rangeset"
+
 import PropTypes from "prop-types";
 import AnnotationPicker from "./dialogs/AnnotationPicker";
 import "./AnnotationEditorCodeMirror.scss"
@@ -179,12 +182,18 @@ class AnnotationEditorCodeMirror extends Component {
                 }
 
                 if (tag.start_index < tag.end_index) {
-                    decorations.push(mark.range(tag.start_index, tag.end_index));
+                    const decoration = mark.range(tag.start_index, tag.end_index);
+                    decorations.push(decoration);
+                    this.editorRef.docView.decorations.push(decoration);
                 }
 
             }
-            let decorationSet = DecorationSet.of(decorations, true);
-            this.editorRef.decorations.of(decorationSet);
+            console.log('view: %o', this.editorRef.docView.decorations)
+            console.log('decorations: %o', decorations);
+
+            // let decorationSet = RangeSet.of(decorations, true);
+            // console.log('decoSet: %o', decorationSet);
+            console.log('view: %o', this.editorRef)
         }
 
         /*
@@ -253,6 +262,7 @@ class AnnotationEditorCodeMirror extends Component {
             //extensions: [keymap(baseKeymap)]
         })
 
+        this.editorState = state;
         this.editorRef = new EditorView({ state });
         this.componentRef.appendChild(this.editorRef.dom);
         this._renderTags(this.props.tags);
