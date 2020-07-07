@@ -34,7 +34,7 @@ class AnnotationHighlight extends React.Component {
      * @private
      */
     _handleClick() {
-        this.setState({showPopup: !this.state.showPopup});
+        this.setState({ showPopup: !this.state.showPopup });
     }
 
     /**
@@ -43,9 +43,9 @@ class AnnotationHighlight extends React.Component {
      * @private
      */
     _hideIfVisible(showPopup) {
-        const isVisible = elem => !!elem && !!( elem.offsetWidth || elem.offsetHeight || elem.getClientRects().length);
-        if(this.state.showPopup && isVisible(ReactDom.findDOMNode(this.popupTargetRef.current))) {
-            this.setState({showPopup: false});
+        const isVisible = elem => !!elem && !!(elem.offsetWidth || elem.offsetHeight || elem.getClientRects().length);
+        if (this.state.showPopup && isVisible(ReactDom.findDOMNode(this.popupTargetRef.current))) {
+            this.setState({ showPopup: false });
         }
     }
 
@@ -54,7 +54,7 @@ class AnnotationHighlight extends React.Component {
      * @private
      */
     _onDelete() {
-        this.setState({showPopup: !this.state.showPopup});
+        this.setState({ showPopup: !this.state.showPopup });
         this.props.onDelete();
     }
 
@@ -63,7 +63,7 @@ class AnnotationHighlight extends React.Component {
      */
     componentWillUnmount() {
         // alert("help, i die")
-        this.setState({showPopup: !this.state.showPopup});
+        this.setState({ showPopup: !this.state.showPopup });
     }
 
     /**
@@ -73,22 +73,21 @@ class AnnotationHighlight extends React.Component {
     render() {
         return (
             <React.Fragment>
-                <span ref={ this.popupTargetRef} onClick={this._handleClick}
+                <Button ref={this.popupTargetRef} onClick={this._handleClick}
                     className="annotation"
-                    style={{background: this.props.annotation.color}}>
-                    <span className="annotationType">{this.props.annotation.name}</span>
-                    <span className="annotationText">
-                        {this.props.text}
-                    </span>
-                </span>
+                    style={{ background: this.props.annotation.color }}>
+                    {this.props.annotation.name}
+                </Button>
+
                 <Overlay
                     show={this.state.showPopup}
                     target={this.popupTargetRef}
                     placement="top"
                     containerPadding={20}
                 >
-                    <Tooltip  id={`tooltip-${this.props.tag.t_id}`}>
+                    <Tooltip id={`tooltip-${this.props.tag.t_id}`}>
                         <Container className="mb-2">
+                            <Row><Col className="text-left">Text:</Col><Col className="text-left">{this.props.text}</Col></Row>
                             <Row><Col className="text-left">ID:</Col><Col className="text-right">{this.props.tag.t_id}</Col></Row>
                             <Row><Col className="text-left">From:</Col><Col className="text-right">{this.props.tag.start_index}</Col></Row>
                             <Row><Col className="text-left">To:</Col><Col className="text-right">{this.props.tag.end_index}</Col></Row>

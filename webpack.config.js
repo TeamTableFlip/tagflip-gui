@@ -4,20 +4,57 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const ASSET_PATH = process.env.ASSET_PATH || '/';
 
+const babelOptions = {
+    "presets": [
+        "@babel/react",
+        "@babel/preset-env"
+    ]
+};
+
 module.exports = {
+    cache: true,
+    entry: {
+        main: './src/index.tsx',
+        vendor: [
+            'babel-polyfill',
+            'events',
+            'react',
+            'react-dom',
+            'react-redux'
+        ]
+    },
     output: {
         publicPath: ASSET_PATH
     },
     devServer: {
         historyApiFallback: true,
     },
+    devtool: 'cheap-source-map',
+    resolve: {
+        // Add '.ts' and '.tsx' as resolvable extensions.
+        extensions: [".ts", ".tsx", ".js"]
+    },
     module: {
         rules: [
+            {
+                test: /\.ts(x?)$/,
+                exclude: /node_modules/,
+                use: [
+                    {
+                        loader: 'babel-loader',
+                        options: babelOptions
+                    },
+                    {
+                        loader: 'ts-loader'
+                    }
+                ]
+            },
             {
                 test: /\.(js|jsx)$/,
                 exclude: /node_modules/,
                 use: {
-                    loader: "babel-loader"
+                    loader: "babel-loader",
+                    options: babelOptions
                 }
             },
             {
@@ -44,6 +81,11 @@ module.exports = {
             }
         ]
     },
+    /*  externals: {
+          "react": "React",
+          "react-dom": "ReactDOM"
+      },
+      */
     plugins: [
         new Webpack.DefinePlugin({
             'process.env.ASSET_PATH': JSON.stringify(ASSET_PATH),
