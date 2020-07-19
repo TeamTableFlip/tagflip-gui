@@ -31,7 +31,7 @@
     "webpack": "~4.41.5",
     "webpack-cli": "~3.3.10",
     "webpack-dev-server": "~3.10.2",
-    "lodash": "~4.17.15"
+    "lodash": "~4.17.19"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "~5.12.0",
