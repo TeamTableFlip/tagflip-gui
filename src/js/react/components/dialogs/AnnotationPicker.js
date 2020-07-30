@@ -1,4 +1,4 @@
-import React, {Component} from "react";
+import React, { Component } from "react";
 import Modal from "react-bootstrap/Modal";
 import PropTypes from "prop-types";
 import ListGroup from "react-bootstrap/ListGroup";
@@ -22,7 +22,7 @@ class AnnotationPicker extends Component {
      */
     render() {
         return (
-            <Modal show={this.props.textSelected} onHide={() => {
+            <Modal show={this.props.show} onHide={() => {
                 this.props.onCanceled();
             }}>
                 <Modal.Header closeButton>
@@ -42,11 +42,11 @@ class AnnotationPicker extends Component {
      * @private
      */
     _renderAnnotationsList() {
-        if(!this.props.annotations)
+        if (!this.props.annotations)
             return null;
         return this.props.annotations.map((annotation, idx) => {
             return <ListGroup horizontal={"sm"} key={idx}>
-                <ListGroup.Item action onClick={()=>{this.props.onPicked(annotation)}} sytle={{backgroundColor: annotation.color}}>{annotation.name}</ListGroup.Item>
+                <ListGroup.Item action onClick={() => { this.props.onPicked(annotation) }} sytle={{ backgroundColor: annotation.color }}>{annotation.name}</ListGroup.Item>
             </ListGroup>
 
         })
@@ -54,7 +54,7 @@ class AnnotationPicker extends Component {
 }
 
 AnnotationPicker.propTypes = {
-    textSelected: PropTypes.bool,   // If true, this component will be visible; otherwise not
+    show: PropTypes.bool,   // If true, this component will be visible; otherwise not
     annotations: PropTypes.array,   // The list of all pickable Annotations available
     onPicked: PropTypes.func,       // Is called picking an Annotation - 1 param: annotation
     onCanceled: PropTypes.func      // Is called when hiding the Modal Dialog - No param

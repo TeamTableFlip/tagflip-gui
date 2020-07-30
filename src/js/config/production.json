@@ -1,0 +1,6 @@
+{
+    "backend": {
+        "endpoint": "https://jupiter.fh-swf.de/tagflip/api/v1",
+        "checkAvailabilityTimeout": 30000
+    }
+}
