@@ -53,7 +53,7 @@ class AnnotationHighlight extends React.Component {
      * Delete the annotated text, by calling props#onDelete().
      * @private
      */
-    _onDelete() {
+    onDelete() {
         this.setState({ showPopup: !this.state.showPopup });
         this.props.onDelete();
     }
@@ -92,7 +92,7 @@ class AnnotationHighlight extends React.Component {
                             <Row><Col className="text-left">From:</Col><Col className="text-right">{this.props.tag.start_index}</Col></Row>
                             <Row><Col className="text-left">To:</Col><Col className="text-right">{this.props.tag.end_index}</Col></Row>
                         </Container>
-                        {this.props.onDelete && <Button variant="danger" size="sm" onClick={() => this._onDelete()}>Delete</Button>}
+                        {this.props.onDelete && <Button variant="danger" size="sm" onClick={() => this.onDelete()}>Delete</Button>}
 
                     </Tooltip>
                 </Overlay>
