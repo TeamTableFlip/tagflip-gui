@@ -1,4 +1,4 @@
-import {fetchCorpora, deleteCorpus} from "./CorpusListActions";
+import { fetchCorpora, deleteCorpus } from "./CorpusListActions";
 import {
     setEditableCorpus,
     fetchCorpusAnnotationSets,
@@ -11,10 +11,11 @@ import {
     deleteCorpusDocument,
     fetchCorpusDocument,
     saveTagForActiveDocument,
-    deleteTagForActiveDocument
+    deleteTagForActiveDocument,
+    uploadCorpus,
 } from './CorpusActions';
-import {fetchServerStatus} from './ServerStatusFetchActions';
-import {fetchAnnotationSets, deleteAnnotationSet} from "./AnnotationSetListActions";
+import { fetchServerStatus } from './ServerStatusFetchActions';
+import { fetchAnnotationSets, deleteAnnotationSet } from "./AnnotationSetListActions";
 import {
     setActiveAnnotationSet,
     saveAnnotationSet,
@@ -58,6 +59,7 @@ export const ActionCreators = Object.assign({},
         deleteAnnotation,
         saveTagForActiveDocument,
         deleteTagForActiveDocument,
-        setActiveAnnotationSet
+        setActiveAnnotationSet,
+        uploadCorpus
     }
 );

@@ -1,15 +1,15 @@
-import React, {Component} from "react";
+import React, { Component } from "react";
 import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faSearch, faTrash} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSearch, faTrash } from "@fortawesome/free-solid-svg-icons";
 import FileUpload from "../../../../components/fileUpload/FileUpload";
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
-import {ActionCreators} from '../../../../../redux/actions/ActionCreators';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { ActionCreators } from '../../../../../redux/actions/ActionCreators';
 import fetchStatusType from "../../../../../redux/actions/FetchStatusTypes";
 import FetchPending from "../../../../components/FetchPending";
-import {Alert} from "react-bootstrap";
+import { Alert } from "react-bootstrap";
 import ShowMoreText from 'react-show-more-text';
 import ConfirmationDialog from "../../../../components/dialogs/ConfirmationDialog";
 import ShowDocument from "../../../../components/dialogs/ShowDocument";
@@ -39,7 +39,7 @@ class CorpusDocuments extends Component {
     _renderDocuments() {
         let renderDocumentTableData = () => {
             return this.props.corpus.documents.items.map(document => {
-                return <tr key={document.d_id}>
+                return (<tr key={document.d_id}>
                     <td scope="row">{document.d_id}</td>
                     <td>{document.filename}</td>
                     <td>
@@ -47,13 +47,13 @@ class CorpusDocuments extends Component {
                             <Button size="sm"
                                 onClick={() => {
                                     this.props.fetchCorpusDocument(document.d_id);
-                                    this.setState({documentToBeShown: document.d_id});
+                                    this.setState({ documentToBeShown: document.d_id });
                                 }}><FontAwesomeIcon
-                                icon={faSearch}/></Button>
+                                    icon={faSearch} /></Button>
                             <Button size="sm" variant="danger"
-                                    onClick={() => this.setState({documentIdToBeDeleted: document.d_id})}
+                                onClick={() => this.setState({ documentIdToBeDeleted: document.d_id })}
                             ><FontAwesomeIcon
-                                icon={faTrash}/></Button>
+                                    icon={faTrash} /></Button>
                             <ConfirmationDialog
                                 acceptVariant="danger"
                                 show={this.state.documentIdToBeDeleted === document.d_id}
@@ -66,33 +66,33 @@ class CorpusDocuments extends Component {
                                     this.setState({ documentIdToBeDeleted: undefined });
                                 }}
                                 acceptText="Delete" />
-                                <ShowDocument
-                                    show={this.state.documentToBeShown > 0}
-                                    onHide={() => this.setState({documentToBeShown: undefined})}
-                                    isLoading={this.props.corpus.activeDocument.isFetching}
-                                    success={this.props.corpus.activeDocument.status === fetchStatusType.success}
-                                    title={this.props.corpus.activeDocument.item ? this.props.corpus.activeDocument.item.filename : ""}
-                                    text={this.props.corpus.activeDocument.item ? this.props.corpus.activeDocument.item.text : ""}
-                                />
+                            <ShowDocument
+                                show={this.state.documentToBeShown > 0}
+                                onHide={() => this.setState({ documentToBeShown: undefined })}
+                                isLoading={this.props.corpus.activeDocument.isFetching}
+                                success={this.props.corpus.activeDocument.status === fetchStatusType.success}
+                                title={this.props.corpus.activeDocument.item ? this.props.corpus.activeDocument.item.filename : ""}
+                                text={this.props.corpus.activeDocument.item ? this.props.corpus.activeDocument.item.text : ""}
+                            />
                         </div>
                     </td>
-                </tr>
+                </tr>)
             })
         };
 
         return (
             <div className="table-responsive">
                 <FetchPending isPending={this.props.corpus.documents.isFetching}
-                              success={this.props.corpus.documents.status !== fetchStatusType.error}
-                              retryCallback={() => this.props.fetchCorpusDocuments(this.props.corpus.values.c_id)}
+                    success={this.props.corpus.documents.status !== fetchStatusType.error}
+                    retryCallback={() => this.props.fetchCorpusDocuments(this.props.corpus.values.c_id)}
                 >
                     <table className="table">
                         <thead>
-                        <tr>
-                            <th scope="col">ID</th>
-                            <th scope="col">Datei</th>
-                            <th scope="col"></th>
-                        </tr>
+                            <tr>
+                                <th scope="col">ID</th>
+                                <th scope="col">Datei</th>
+                                <th scope="col"></th>
+                            </tr>
                         </thead>
                         <tbody>
                             {renderDocumentTableData()}
@@ -115,17 +115,17 @@ class CorpusDocuments extends Component {
                     <Card.Body>
                         <Card.Title>Upload</Card.Title>
                         <FetchPending isPending={this.props.corpus.documents.isFetching}
-                                      success={this.props.corpus.documents.status !== fetchStatusType.error}
+                            success={this.props.corpus.documents.status !== fetchStatusType.error}
                         >
                             {
                                 this.props.corpus.documents.status === fetchStatusType.warning &&
-                                <Alert variant="warning" style={{whiteSpace: "pre-wrap"}}>
+                                <Alert variant="warning" style={{ whiteSpace: "pre-wrap" }}>
                                     <ShowMoreText
                                         lines={5}
                                         more={<span className="ml-3">More ...</span>}
                                         less={<span className="ml-3">Less ...</span>}
                                         anchorClass=''
-                                        onClick={() => this.setState({uploadWarningShowMore: !this.state.uploadWarningShowMore})}
+                                        onClick={() => this.setState({ uploadWarningShowMore: !this.state.uploadWarningShowMore })}
                                         expanded={false}
                                     >
                                         {this.props.corpus.documents.error}

@@ -1,20 +1,15 @@
 import createReducer from './CreateReducer'
 import * as CorpusEditActions from '../actions/CorpusActions'
 import fetchStatusType from "../actions/FetchStatusTypes";
+import { Corpus } from '../../Corpus';
 
 /**
  * An empty Corpus object.
  * @param state The current redux state - does nothing here.
  * @param action The executed action - does nothing here.
- * @returns {{c_id: number, description: string, name: string}}
+ * @returns Corpus
  */
-export const emptyCorpus = function (state = {}, action) {
-    return {
-        c_id: 0,
-        description: "",
-        name: ""
-    };
-};
+export const emptyCorpus = (state = {}, action) => Corpus.EMPTY;
 
 //@see https://www.pluralsight.com/guides/deeply-nested-objectives-redux
 /**
@@ -60,14 +55,14 @@ export const editableCorpus = createReducer({
         tags: {
             isFetching: false,
             didInvalidate: true,
-            items:[],
+            items: [],
             lastUpdated: undefined,
             status: fetchStatusType.success,
             error: null,
         }
     }
 }, {
-    [CorpusEditActions.SET_EDITABLE_CORPUS](draft, action) {
+    [CorpusEditActions.SET_EDITABLE_CORPUS]: (draft, action) => {
         draft.values = action.corpus;
         draft.didInvalidate = true;
         draft.annotationSets.didInvalidate = true;
@@ -75,13 +70,13 @@ export const editableCorpus = createReducer({
         draft.activeDocument.didInvalidate = true;
         draft.activeDocument.tags.didInvalidate = true;
     },
-    [CorpusEditActions.UPDATE_CORPUS_FIELD](draft, action) {
+    [CorpusEditActions.UPDATE_CORPUS_FIELD]: (draft, action) => {
         draft.values[action.field] = action.value;
     },
-    [CorpusEditActions.ADD_CORPUS_ANNOTATION_SET](draft, action) {
+    [CorpusEditActions.ADD_CORPUS_ANNOTATION_SET]: (draft, action) => {
         draft.annotationSets.items.push(action.annotationSet); // add
     },
-    [CorpusEditActions.REMOVE_CORPUS_ANNOTATION_SET](draft, action) {
+    [CorpusEditActions.REMOVE_CORPUS_ANNOTATION_SET]: (draft, action) => {
         if (draft.annotationSets.items.map(a => a.s_id).includes(action.annotationSet.s_id)) { // set is selected
             draft.annotationSets.items = draft.annotationSets.items.filter(a => a.s_id !== action.annotationSet.s_id)        // remove
         }
@@ -146,6 +141,10 @@ export const editableCorpus = createReducer({
             draft.documents.status = fetchStatusType.error;
             draft.documents.error = action.error;
         }
+    },
+
+    [CorpusEditActions.REQUEST_CORPUS_IMPORT](draft, action) {
+        draft.isFetching = true;
     },
 
     [CorpusEditActions.REQUEST_CORPUS_UPLOAD_DOCUMENTS](draft, action) {

@@ -1,6 +1,7 @@
 import fetchStatusType from "./FetchStatusTypes";
 import client from "../../backend/RestApi";
-import {fetchCorpusAnnotationSets, fetchCorpusDocuments, reloadCorpus, SET_EDITABLE_CORPUS} from "./CorpusActions";
+import { AnnotationSet } from "../../AnnotationSet";
+import { fetchCorpusAnnotationSets, fetchCorpusDocuments, reloadCorpus, SET_EDITABLE_CORPUS } from "./CorpusActions";
 
 export const SET_ACTIVE_ANNOTATION_SET = "SET_ACTIVE_ANNOTATION_SET";
 
@@ -10,7 +11,7 @@ export const SET_ACTIVE_ANNOTATION_SET = "SET_ACTIVE_ANNOTATION_SET";
  * @param corpus
  * @returns {{type: string, annotationSet: *}}
  */
-export function setActiveAnnotationSet(annotationSet) {
+export function setActiveAnnotationSet(annotationSet: AnnotationSet) {
     return (dispatch, getState) => {
         dispatch({
             type: SET_ACTIVE_ANNOTATION_SET,
@@ -62,9 +63,9 @@ export const RECEIVE_ACTIVE_ANNOTATION_SET = "RECEIVE_ACTIVE_ANNOTATION_SET";
  * @param annotationSet the annotation Set
  * @param status status of response
  * @param error error of response
- * @returns {{annotationSet: *, type: *, receivedAt: *, error: *, status: *}}
+ * @returns {{annotationSet: AnnotationSet, type: *, receivedAt: *, error: *, status: *}}
  */
-export function receiveActiveAnnotationSet(annotationSet, status = fetchStatusType.success, error = null) {
+export function receiveActiveAnnotationSet(annotationSet: AnnotationSet, status = fetchStatusType.success, error = null) {
     return {
         type: RECEIVE_ACTIVE_ANNOTATION_SET,
         annotationSet: annotationSet,
@@ -90,7 +91,7 @@ export function saveAnnotationSet() {
                     dispatch(receiveActiveAnnotationSet(result));
                 })
                 .catch(err => {
-                    dispatch(receiveActiveAnnotationSet({}, fetchStatusType.error, err))
+                    dispatch(receiveActiveAnnotationSet(AnnotationSet.EMPTY, fetchStatusType.error, err))
                 });
         } else {
             client.httpPut(`/annotationset/${annotationSet.s_id}`, annotationSet)
@@ -98,7 +99,7 @@ export function saveAnnotationSet() {
                     dispatch(receiveActiveAnnotationSet(result));
                 })
                 .catch(err => {
-                    dispatch(receiveActiveAnnotationSet({}, fetchStatusType.error, err))
+                    dispatch(receiveActiveAnnotationSet(AnnotationSet.EMPTY, fetchStatusType.error, err))
                 });
         }
     }
@@ -117,12 +118,12 @@ export function reloadAnnotationSet() {
             dispatch(requestActiveAnnotationSet());
             client.httpGet(`/annotationset/${annotationSet.s_id}`)
                 .then(result => {
-                        dispatch(receiveActiveAnnotationSet(result));
-                        dispatch(fetchAnnotations());
-                    }
+                    dispatch(receiveActiveAnnotationSet(result));
+                    dispatch(fetchAnnotations());
+                }
                 )
                 .catch(error => {
-                    dispatch(receiveActiveAnnotationSet({}, fetchStatusType.error, error))
+                    dispatch(receiveActiveAnnotationSet(AnnotationSet.EMPTY, fetchStatusType.error, error))
                 });
         } else {
             dispatch(receiveActiveAnnotationSet(getState().emptyAnnotationSet));
@@ -166,9 +167,9 @@ export const RECEIVE_ANNOTATIONS = "RECEIVE_ANNOTATIONS";
  * @param annotations the annotations
  * @param status reponse status
  * @param error reponse error
- * @returns {{annotations: *, type: *, receivedAt: *, error: *, status: *}}
+ * @returns {{annotations: AnnotationSet, type: *, receivedAt: *, error: *, status: *}}
  */
-export function receiveAnnotations(annotations, status = fetchStatusType.success, error = null) {
+export function receiveAnnotations(annotations: AnnotationSet | AnnotationSet[], status = fetchStatusType.success, error = null) {
     return {
         type: RECEIVE_ANNOTATIONS,
         annotations: annotations,
@@ -220,7 +221,7 @@ export function deleteAnnotation(annotationId) {
                 });
             })
             .catch(err => {
-                dispatch(receiveEditableAnnotation({}, fetchStatusType.error, err))
+                dispatch(receiveSaveAnnotation({}, fetchStatusType.error, err))
             });
     }
 }
@@ -336,11 +337,11 @@ export function reloadAnnotation() {
             dispatch(requestEditableAnnotation());
             client.httpGet(`/corpus/${annotation.c_id}`)
                 .then(result => {
-                    dispatch(receiveEditableAnnotation(result));
+                    dispatch(receiveSaveAnnotation(result));
                 })
-                .catch(error => dispatch(receiveEditableAnnotation({}, fetchStatusType.error, error)));
+                .catch(error => dispatch(receiveSaveAnnotation({}, fetchStatusType.error, error)));
         } else {
-            dispatch(receiveEditableAnnotation(getState().emptyAnnotation));
+            dispatch(receiveSaveAnnotation(getState().emptyAnnotation));
         }
     }
 }

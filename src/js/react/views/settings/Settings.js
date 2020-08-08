@@ -1,10 +1,13 @@
-import React, {Component} from "react";
+import React, { Component } from "react";
 import Nav from "react-bootstrap/Nav";
 import CorporaList from "./corpus/CorpusList";
 import CorpusDetails from "./corpus/CorpusDetails";
-import {Redirect, Route, withRouter} from "react-router-dom";
+import CorpusImport from "./corpus/CorpusImport";
+import { Redirect, Route, withRouter } from "react-router-dom";
 import AnnotationSetList from "./annotationset/AnnotationSetList";
 import AnnotationSetDetails from "./annotationset/AnnotationSetDetails";
+import { AnnotationSet } from "../../../AnnotationSet";
+import { Corpus } from "../../../Corpus";
 
 /**
  * The Settings view containing Routes for Corpus- and Annotation-Setup.
@@ -26,35 +29,38 @@ class Settings extends Component {
      * @returns {*} The component to be rendered.
      */
     render() {
-        const {match} = this.props;
+        const { match } = this.props;
         return (
             <React.Fragment>
                 <div className="leftNav">
                     <Nav variant="pills" activeKey={this.state.activeLink} className="mt-4 flex-column"
-                         onSelect={(k) => this.setState({activeLink: k})}>
+                        onSelect={(k) => this.setState({ activeLink: k })}>
                         <Nav.Link onSelect={() => this.props.history.push(`${match.path}/corpus`)}
-                                  eventKey="0">Corpora</Nav.Link>
+                            eventKey="0">Corpora</Nav.Link>
                         <Nav.Link onSelect={() => this.props.history.push(`${match.path}/annotationset`)} eventKey="1">Annotation
                             Sets</Nav.Link>
                     </Nav>
                 </div>
                 <div className="content">
                     <Route exact={true} path={`${match.path}/corpus`}>
-                        <CorporaList/>
+                        <CorporaList />
                     </Route>
                     <Route path={`${match.path}/corpus/edit`}>
-                        <CorpusDetails/>
+                        <CorpusDetails />
+                    </Route>
+                    <Route path={`${match.path}/corpus/import`}>
+                        <CorpusImport corpus={Corpus.EMPTY} annotationSet={AnnotationSet.EMPTY} />
                     </Route>
                     <Route exact={true} path={`${match.path}/annotationset`}>
-                        <AnnotationSetList/>
+                        <AnnotationSetList />
                     </Route>
                     <Route path={`${match.path}/annotationset/edit`}>
-                        <AnnotationSetDetails/>
+                        <AnnotationSetDetails />
                     </Route>
                     <Route exact={true} path={`${match.path}`} render={props => {
-                        this.setState({activeLink: "0"});
-                        return <Redirect to={`${match.path}/corpus`}/>
-                    }}/>
+                        this.setState({ activeLink: "0" });
+                        return <Redirect to={`${match.path}/corpus`} />
+                    }} />
 
 
                 </div>

@@ -133,12 +133,12 @@ export function toggleCorpusAnnotationSet(annotationSet) {
             // add
             client.httpPut(`/corpus/${corpusId}/annotationset/${annotationSet.s_id}`)
                 .then(result => {
-                        console.log("lol")
-                        dispatch({
-                            type: ADD_CORPUS_ANNOTATION_SET,
-                            annotationSet
-                        })
-                    }
+                    console.log("lol")
+                    dispatch({
+                        type: ADD_CORPUS_ANNOTATION_SET,
+                        annotationSet
+                    })
+                }
                 )
                 .catch(error => dispatch(receiveCorpusAnnotationSet([], fetchStatusType.error, error)))
         }
@@ -222,8 +222,8 @@ export function reloadCorpus() {
             dispatch(requestUpdateCorpus());
             client.httpGet(`/corpus/${corpus.c_id}`)
                 .then(result => {
-                        dispatch(receiveUpdateCorpus(result));
-                    }
+                    dispatch(receiveUpdateCorpus(result));
+                }
                 )
                 .catch(error => dispatch(receiveUpdateCorpus({}, fetchStatusType.error, error)))
             dispatch(fetchCorpusAnnotationSets(corpus.c_id));
@@ -353,14 +353,73 @@ export function uploadCorpusDocuments(corpusId, files) {
 
             client.httpPost(`/corpus/${corpusId}/import`, formData, {}, false)
                 .then(result => {
-                        dispatch(receiveCorpusUploadDocuments(result))
-                    }
+                    dispatch(receiveCorpusUploadDocuments(result))
+                }
                 )
                 .catch(error => dispatch(receiveCorpusDocuments([], fetchStatusType.error, error)))
         }
     }
 }
 
+export const REQUEST_CORPUS_IMPORT = "REQUEST_CORPUS_IMPORT";
+
+/**
+ * Action creator for action REQUEST_CORPUS_UPLOAD
+ * @returns {{type: *}}
+ */
+export function requestCorpusUpload() {
+    return {
+        type: REQUEST_CORPUS_IMPORT,
+    }
+}
+
+
+export const RECEIVE_CORPUS_IMPORT = "RECEIVE_CORPUS_IMPORT";
+
+/**
+ * Action creator for action RECEIVE_CORPUS_UPLOAD_DOCUMENTS
+ * @param result the documents
+ * @param status response status
+ * @param error response error
+ * @returns {{skippedDocuments: *, documents: *, type: *, receivedAt: *, error: *, status: *}}
+ */
+export function receiveCorpusUpload(result, status = fetchStatusType.success, error = null) {
+    return {
+        type: RECEIVE_CORPUS_IMPORT,
+        corpus: result.corpus,
+        receivedAt: Date.now(),
+        status: status,
+        error: error
+    }
+}
+
+/**
+ * Action creator for async uploading given files to given corpus.
+ * @param corpusId the id of the corpus the file belong to
+ * @param files the files
+ * @returns {Function}
+ */
+export function uploadCorpus(files) {
+    return (dispatch, getState) => {
+        dispatch(requestCorpusUpload())
+        let corpus = getState().editableCorpus.values;
+        let annotationSets = getState().editableCorpus.annotationSets.items;
+        let formData = new FormData()
+        for (let file of files) {
+            formData.append("file", file, file.name);
+            formData.append("name", corpus.name)
+            // TODO: allow multiple annotation sets
+            formData.append("annotationSet", annotationSets[0].name)
+        }
+
+        client.httpPost(`/import`, formData, {}, false)
+            .then(result => {
+                dispatch(receiveCorpusUpload(result))
+            }
+            )
+            .catch(error => dispatch(receiveCorpusUpload(null, fetchStatusType.error, error)))
+    }
+}
 
 // Actions for deleting documents
 
@@ -376,11 +435,11 @@ export function deleteCorpusDocument(documentId) {
     return (dispatch, getState) => {
         client.httpDelete(`/document/${documentId}`)
             .then(result => {
-                    dispatch({
-                        type: CORPUS_DELETE_DOCUMENT,
-                        documentId
-                    });
-                }
+                dispatch({
+                    type: CORPUS_DELETE_DOCUMENT,
+                    documentId
+                });
+            }
             )
             .catch(error => dispatch(receiveCorpusDocuments([], fetchStatusType.error, error)))
     }
@@ -435,11 +494,11 @@ export function fetchCorpusDocument(documentId, withTags = false) {
             dispatch(requestCorpusDocument());
             client.httpGet(`/document/${documentId}`)
                 .then(result => {
-                        dispatch(receiveCorpusDocument(result));
-                        if (withTags) {
-                            dispatch(fetchTagsForActiveDocument())
-                        }
+                    dispatch(receiveCorpusDocument(result));
+                    if (withTags) {
+                        dispatch(fetchTagsForActiveDocument())
                     }
+                }
                 )
                 .catch(error => dispatch(receiveCorpusDocument(null, fetchStatusType.error, error)))
         }
@@ -500,15 +559,15 @@ export function receiveTagsForActiveDocument(tags, status = fetchStatusType.succ
  */
 export function fetchTagsForActiveDocument() {
     return (dispatch, getState) => {
-        let documentId = getState().editableCorpus.activeDocument.item.d_id
+        let documentId = getState().editableCorpus.activeDocument.item.d_id;
         dispatch(requestTagsForActiveDocument());
         dispatch(invalidateTagsForActiveDocument());
         client.httpGet(`/document/${documentId}/tag`)
             .then(result =>
                 dispatch(receiveTagsForActiveDocument(result))
             )
-            .catch(error => dispatch(receiveTagsForActiveDocument([], fetchStatusType.error, error)))
-    }
+            .catch(error => dispatch(receiveTagsForActiveDocument([], fetchStatusType.error, error)));
+    };
 }
 
 
@@ -521,7 +580,7 @@ export const REQUEST_SAVE_TAG = "REQUEST_SAVE_TAG";
 export function requestSaveTag() {
     return {
         type: REQUEST_SAVE_TAG,
-    }
+    };
 }
 
 export const RECEIVE_SAVE_TAG = "RECEIVE_SAVE_TAG";
@@ -540,7 +599,7 @@ export function receiveSaveTag(tag, status = fetchStatusType.success, error = nu
         receivedAt: Date.now(),
         status: status,
         error: error
-    }
+    };
 }
 
 /**
@@ -557,7 +616,7 @@ export function saveTagForActiveDocument(newTag) {
             })
         } else {
             if (newTag.d_id !== document.d_id) {
-                console.log("New tag does not relate current selected document id")
+                console.log("New tag does not relate current selected document id");
                 return;
             }
         }
