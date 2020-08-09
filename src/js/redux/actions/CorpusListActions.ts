@@ -1,5 +1,5 @@
 import client from '../../backend/RestApi';
-import fetchStatusType from "./FetchStatusTypes";
+import FetchStatusType from "./FetchStatusTypes";
 
 
 export const REQUEST_CORPORA = "REQUEST_CORPORA";
@@ -37,7 +37,7 @@ export const RECEIVE_CORPORA = "RECEIVE_CORPORA";
  * @param error response error
  * @returns {{corpora: *, type: *, receivedAt: *, error: *, status: *}}
  */
-export function receiveCorpora(corpora, status = fetchStatusType.success, error = null) {
+export function receiveCorpora(corpora, status = FetchStatusType.success, error = null) {
     return {
         type: RECEIVE_CORPORA,
         corpora: corpora,
@@ -59,7 +59,7 @@ export function fetchCorpora() {
             .then(result =>
                 dispatch(receiveCorpora(result))
             )
-            .catch(error => dispatch(receiveCorpora([], fetchStatusType.error, error)))
+            .catch(error => dispatch(receiveCorpora([], FetchStatusType.error, error)))
     }
 }
 
@@ -70,17 +70,17 @@ export const DELETE_CORPUS = "DELETE_CORPUS";
  * @param corpusId the id of the deletable corpus.
  * @returns {Function}
  */
-export function deleteCorpus(corpusId) {
+export function deleteCorpus(corpusId: number) {
     return (dispatch, getState) => {
-        client.httpDelete(`/corpus/${corpusId}`)
+        client.httpDelete(`/corpus/${corpusId}`, {})
             .then(result => {
-                    dispatch({
-                        type: DELETE_CORPUS,
-                        corpusId
-                    });
-                }
+                dispatch({
+                    type: DELETE_CORPUS,
+                    corpusId
+                });
+            }
             )
-            .catch(error => dispatch(receiveCorpora([], fetchStatusType.error, error)))
+            .catch(error => dispatch(receiveCorpora([], FetchStatusType.error, error)))
     }
 }
 

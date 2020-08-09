@@ -1,6 +1,6 @@
 import createReducer from './CreateReducer'
 import * as CorpusFetchActions from '../actions/CorpusListActions'
-import fetchStatusType from "../actions/FetchStatusTypes";
+import FetchStatusType from "../actions/FetchStatusTypes";
 import { CorpusListState } from '../types';
 
 const initialState: CorpusListState = {
@@ -8,7 +8,7 @@ const initialState: CorpusListState = {
     didInvalidate: false,
     items: [],
     lastUpdated: undefined,
-    status: fetchStatusType.success,
+    status: FetchStatusType.success,
     error: null
 };
 
@@ -27,13 +27,13 @@ export const corpora = createReducer(initialState,
         [CorpusFetchActions.RECEIVE_CORPORA](draft, action) {
             draft.isFetching = false;
             draft.didInvalidate = false;
-            if (action.status === fetchStatusType.success) {
+            if (action.status === FetchStatusType.success) {
                 draft.items = action.corpora;
                 draft.lastUpdated = action.receivedAt;
-                draft.status = fetchStatusType.success;
+                draft.status = FetchStatusType.success;
                 draft.error = null;
             } else {
-                draft.status = fetchStatusType.error;
+                draft.status = FetchStatusType.error;
                 draft.error = action.error;
             }
         },

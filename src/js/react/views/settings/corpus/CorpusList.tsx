@@ -5,18 +5,52 @@ import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPen, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons'
-import { withRouter } from "react-router-dom";
-import { connect } from 'react-redux';
+import { RouteComponentProps, withRouter } from "react-router-dom";
+import { connect, ConnectedProps } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { ActionCreators } from '../../../../redux/actions/ActionCreators';
 import fetchStatusType from "../../../../redux/actions/FetchStatusTypes";
 import FetchPending from "../../../components/FetchPending";
 import ConfirmationDialog from "../../../components/dialogs/ConfirmationDialog";
+import { RootState } from "../../../../redux/reducers/Reducers";
+
+/**
+ * Maps redux state to component's props.
+ * @param state The redux state (reducers).
+ */
+function mapStateToProps(state: RootState) {
+    return {
+        corpora: state.corpora,
+        //emptyCorpus: state.emptyCorpus,
+        selectedCorpus: state.editableCorpus
+    };
+}
+
+/**
+ * Maps action creator functions to component's props.
+ * @param dispatch
+ */
+function mapDispatchToProps(dispatch) {
+    return bindActionCreators(ActionCreators, dispatch);
+}
+
+const connector = connect(mapStateToProps, mapDispatchToProps);
+type PropsFromRedux = ConnectedProps<typeof connector>
+
+type Props = PropsFromRedux & RouteComponentProps;
+
+interface State {
+    corpusIdToBeDeleted: number;
+}
+
+const initialState = {
+    corpusIdToBeDeleted: undefined
+};
 
 /**
  * The view for displaying and deleting Corpora.
  */
-class CorpusList extends Component {
+class CorpusList extends Component<Props, State> {
     /**
      * Create a new CorpusList.
      * @param props The properties of the component.
@@ -25,9 +59,7 @@ class CorpusList extends Component {
         super(props);
         this.addNewCorpus = this.addNewCorpus.bind(this);
         this.importNewCorpus = this.importNewCorpus.bind(this);
-        this.state = {
-            corpusIdToBeDeleted: undefined
-        };
+        this.state = initialState;
     }
 
     /**
@@ -155,24 +187,4 @@ class CorpusList extends Component {
     }
 }
 
-/**
- * Maps redux state to component's props.
- * @param state The redux state (reducers).
- */
-function mapStateToProps(state) {
-    return {
-        corpora: state.corpora,
-        emptyCorpus: state.emptyCorpus,
-        selectedCorpus: state.editableCorpus
-    };
-}
-
-/**
- * Maps action creator functions to component's props.
- * @param dispatch
- */
-function mapDispatchToProps(dispatch) {
-    return bindActionCreators(ActionCreators, dispatch);
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(withRouter(CorpusList));
+export default connector(withRouter(CorpusList));

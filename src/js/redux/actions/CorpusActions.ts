@@ -1,7 +1,17 @@
-import fetchStatusType from "./FetchStatusTypes";
+import FetchStatusType from "./FetchStatusTypes";
 import client from "../../backend/RestApi";
+import { Corpus } from "../../Corpus";
 
 // Actions for editing a corpus
+
+/**
+ * An empty Corpus object.
+ * @param state The current redux state - does nothing here.
+ * @param action The executed action - does nothing here.
+ * @returns Corpus
+ */
+export const emptyCorpus = (state = {}, action) => Corpus.EMPTY;
+
 
 export const SET_EDITABLE_CORPUS = "SET_EDITABLE_CORPUS";
 
@@ -74,7 +84,7 @@ export const RECEIVE_CORPUS_ANNOTATION_SETS = "RECEIVE_CORPUS_ANNOTATION_SETS";
  * @param error response error
  * @returns {{annotationSets: *, type: *, receivedAt: *, error: *, status: *}}
  */
-export function receiveCorpusAnnotationSet(annotationSets, status = fetchStatusType.success, error = null) {
+export function receiveCorpusAnnotationSet(annotationSets, status = FetchStatusType.success, error = null) {
     return {
         type: RECEIVE_CORPUS_ANNOTATION_SETS,
         annotationSets: annotationSets,
@@ -98,7 +108,7 @@ export function fetchCorpusAnnotationSets(corpusId) {
                 .then(result =>
                     dispatch(receiveCorpusAnnotationSet(result))
                 )
-                .catch(error => dispatch(receiveCorpusAnnotationSet([], fetchStatusType.error, error)))
+                .catch(error => dispatch(receiveCorpusAnnotationSet([], FetchStatusType.error, error)))
         }
     }
 }
@@ -128,7 +138,7 @@ export function toggleCorpusAnnotationSet(annotationSet) {
                         annotationSet
                     })
                 )
-                .catch(error => dispatch(receiveCorpusAnnotationSet([], fetchStatusType.error, error)))
+                .catch(error => dispatch(receiveCorpusAnnotationSet([], FetchStatusType.error, error)))
         } else {
             // add
             client.httpPut(`/corpus/${corpusId}/annotationset/${annotationSet.s_id}`)
@@ -140,7 +150,7 @@ export function toggleCorpusAnnotationSet(annotationSet) {
                     })
                 }
                 )
-                .catch(error => dispatch(receiveCorpusAnnotationSet([], fetchStatusType.error, error)))
+                .catch(error => dispatch(receiveCorpusAnnotationSet([], FetchStatusType.error, error)))
         }
     }
 }
@@ -169,7 +179,7 @@ export const RECEIVE_UPDATE_CORPUS = "RECEIVE_UPDATE_CORPUS";
  * @param error response error
  * @returns {{corpus: *, type: *, receivedAt: *, error: *, status: *}}
  */
-export function receiveUpdateCorpus(corpus, status = fetchStatusType.success, error = null) {
+export function receiveUpdateCorpus(corpus, status = FetchStatusType.success, error = null) {
     return {
         type: RECEIVE_UPDATE_CORPUS,
         corpus: corpus,
@@ -196,7 +206,7 @@ export function saveCorpus() {
                     dispatch(reloadCorpus())
                 })
                 .catch(err =>
-                    dispatch(receiveUpdateCorpus({}, fetchStatusType.error, err))
+                    dispatch(receiveUpdateCorpus({}, FetchStatusType.error, err))
                 );
         } else {
             client.httpPut(`/corpus/${corpus.c_id}`, corpus)
@@ -204,7 +214,7 @@ export function saveCorpus() {
                     dispatch(receiveUpdateCorpus(result));
                 })
                 .catch(err =>
-                    dispatch(receiveUpdateCorpus({}, fetchStatusType.error, err))
+                    dispatch(receiveUpdateCorpus({}, FetchStatusType.error, err))
                 );
         }
     }
@@ -225,7 +235,7 @@ export function reloadCorpus() {
                     dispatch(receiveUpdateCorpus(result));
                 }
                 )
-                .catch(error => dispatch(receiveUpdateCorpus({}, fetchStatusType.error, error)))
+                .catch(error => dispatch(receiveUpdateCorpus({}, FetchStatusType.error, error)))
             dispatch(fetchCorpusAnnotationSets(corpus.c_id));
             dispatch(fetchCorpusDocuments(corpus.c_id));
         }
@@ -269,7 +279,7 @@ export const RECEIVE_CORPUS_DOCUMENTS = "RECEIVE_CORPUS_DOCUMENTS";
  * @param error response error
  * @returns {{documents: *, type: *, receivedAt: *, error: *, status: *}}
  */
-export function receiveCorpusDocuments(documents, status = fetchStatusType.success, error = null) {
+export function receiveCorpusDocuments(documents, status = FetchStatusType.success, error = null) {
     return {
         type: RECEIVE_CORPUS_DOCUMENTS,
         documents: documents,
@@ -294,7 +304,7 @@ export function fetchCorpusDocuments(corpusId) {
                 .then(result =>
                     dispatch(receiveCorpusDocuments(result))
                 )
-                .catch(error => dispatch(receiveCorpusDocuments([], fetchStatusType.error, error)))
+                .catch(error => dispatch(receiveCorpusDocuments([], FetchStatusType.error, error)))
         }
     }
 }
@@ -324,7 +334,7 @@ export const RECEIVE_CORPUS_UPLOAD_DOCUMENTS = "RECEIVE_CORPUS_UPLOAD_DOCUMENTS"
  * @param error response error
  * @returns {{skippedDocuments: *, documents: *, type: *, receivedAt: *, error: *, status: *}}
  */
-export function receiveCorpusUploadDocuments(result, status = fetchStatusType.success, error = null) {
+export function receiveCorpusUploadDocuments(result, status = FetchStatusType.success, error = null) {
     return {
         type: RECEIVE_CORPUS_UPLOAD_DOCUMENTS,
         documents: result.items,
@@ -356,7 +366,7 @@ export function uploadCorpusDocuments(corpusId, files) {
                     dispatch(receiveCorpusUploadDocuments(result))
                 }
                 )
-                .catch(error => dispatch(receiveCorpusDocuments([], fetchStatusType.error, error)))
+                .catch(error => dispatch(receiveCorpusDocuments([], FetchStatusType.error, error)))
         }
     }
 }
@@ -383,7 +393,7 @@ export const RECEIVE_CORPUS_IMPORT = "RECEIVE_CORPUS_IMPORT";
  * @param error response error
  * @returns {{skippedDocuments: *, documents: *, type: *, receivedAt: *, error: *, status: *}}
  */
-export function receiveCorpusUpload(result, status = fetchStatusType.success, error = null) {
+export function receiveCorpusUpload(result, status = FetchStatusType.success, error = null) {
     return {
         type: RECEIVE_CORPUS_IMPORT,
         corpus: result.corpus,
@@ -417,7 +427,7 @@ export function uploadCorpus(files) {
                 dispatch(receiveCorpusUpload(result))
             }
             )
-            .catch(error => dispatch(receiveCorpusUpload(null, fetchStatusType.error, error)))
+            .catch(error => dispatch(receiveCorpusUpload(null, FetchStatusType.error, error)))
     }
 }
 
@@ -441,7 +451,7 @@ export function deleteCorpusDocument(documentId) {
                 });
             }
             )
-            .catch(error => dispatch(receiveCorpusDocuments([], fetchStatusType.error, error)))
+            .catch(error => dispatch(receiveCorpusDocuments([], FetchStatusType.error, error)))
     }
 }
 
@@ -471,7 +481,7 @@ export const RECEIVE_CORPUS_DOCUMENT = "RECEIVE_CORPUS_DOCUMENT";
  * @param error response error
  * @returns {{document: *, type: *, receivedAt: *, error: *, status: *}}
  */
-export function receiveCorpusDocument(result, status = fetchStatusType.success, error = null) {
+export function receiveCorpusDocument(result, status = FetchStatusType.success, error = null) {
     return {
         type: RECEIVE_CORPUS_DOCUMENT,
         document: result,
@@ -500,7 +510,7 @@ export function fetchCorpusDocument(documentId, withTags = false) {
                     }
                 }
                 )
-                .catch(error => dispatch(receiveCorpusDocument(null, fetchStatusType.error, error)))
+                .catch(error => dispatch(receiveCorpusDocument(null, FetchStatusType.error, error)))
         }
     }
 }
@@ -541,7 +551,7 @@ export const RECEIVE_TAGS_FOR_ACTIVE_DOCUMENT = "RECEIVE_TAGS_FOR_ACTIVE_DOCUMEN
  * @param error response error
  * @returns {{type: *, receivedAt: *, error: *, tags: *, status: *}}
  */
-export function receiveTagsForActiveDocument(tags, status = fetchStatusType.success, error = null) {
+export function receiveTagsForActiveDocument(tags, status = FetchStatusType.success, error = null) {
     return {
         type: RECEIVE_TAGS_FOR_ACTIVE_DOCUMENT,
         tags: tags,
@@ -566,7 +576,7 @@ export function fetchTagsForActiveDocument() {
             .then(result =>
                 dispatch(receiveTagsForActiveDocument(result))
             )
-            .catch(error => dispatch(receiveTagsForActiveDocument([], fetchStatusType.error, error)));
+            .catch(error => dispatch(receiveTagsForActiveDocument([], FetchStatusType.error, error)));
     };
 }
 
@@ -592,7 +602,7 @@ export const RECEIVE_SAVE_TAG = "RECEIVE_SAVE_TAG";
  * @param error the error
  * @returns {{tag: *, type: *, receivedAt: *, error: *, status: *}}
  */
-export function receiveSaveTag(tag, status = fetchStatusType.success, error = null) {
+export function receiveSaveTag(tag, status = FetchStatusType.success, error = null) {
     return {
         type: RECEIVE_SAVE_TAG,
         tag: tag,
@@ -626,7 +636,7 @@ export function saveTagForActiveDocument(newTag) {
                 dispatch(receiveSaveTag(result));
             })
             .catch(err =>
-                dispatch(receiveSaveTag([], fetchStatusType.error, err))
+                dispatch(receiveSaveTag([], FetchStatusType.error, err))
             );
     }
 }
@@ -654,7 +664,7 @@ export const RECEIVE_DELETE_TAG = "RECEIVE_DELETE_TAG";
  * @param error response error
  * @returns {{tagId: *, type: *, receivedAt: *, error: *, status: *}}
  */
-export function receiveDeleteTag(tagId, status = fetchStatusType.success, error = null) {
+export function receiveDeleteTag(tagId, status = FetchStatusType.success, error = null) {
     return {
         type: RECEIVE_DELETE_TAG,
         tagId: tagId,
@@ -688,7 +698,7 @@ export function deleteTagForActiveDocument(tag) {
                 dispatch(receiveDeleteTag(tag.t_id));
             })
             .catch(err =>
-                dispatch(receiveDeleteTag(tag.t_id, fetchStatusType.error, err))
+                dispatch(receiveDeleteTag(tag.t_id, FetchStatusType.error, err))
             );
     }
 }

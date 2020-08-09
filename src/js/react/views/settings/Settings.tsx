@@ -3,25 +3,33 @@ import Nav from "react-bootstrap/Nav";
 import CorporaList from "./corpus/CorpusList";
 import CorpusDetails from "./corpus/CorpusDetails";
 import CorpusImport from "./corpus/CorpusImport";
-import { Redirect, Route, withRouter } from "react-router-dom";
+import { Redirect, Route, RouteComponentProps, withRouter } from "react-router-dom";
 import AnnotationSetList from "./annotationset/AnnotationSetList";
 import AnnotationSetDetails from "./annotationset/AnnotationSetDetails";
 import { AnnotationSet } from "../../../AnnotationSet";
 import { Corpus } from "../../../Corpus";
 
+interface State {
+    activeLink: string
+}
+
+type Props = RouteComponentProps;
+
+const initialState = {
+    activeLink: "0"
+}
+
 /**
  * The Settings view containing Routes for Corpus- and Annotation-Setup.
  */
-class Settings extends Component {
+class Settings extends Component<Props, State> {
     /**
      * Create a new Settings component.
      * @param props The properties of the pomponent.
      */
     constructor(props) {
         super(props);
-        this.state = {
-            activeLink: "0"
-        }
+        this.state = initialState;
     }
 
     /**
@@ -49,7 +57,7 @@ class Settings extends Component {
                         <CorpusDetails />
                     </Route>
                     <Route path={`${match.path}/corpus/import`}>
-                        <CorpusImport corpus={Corpus.EMPTY} annotationSet={AnnotationSet.EMPTY} />
+                        <CorpusImport />
                     </Route>
                     <Route exact={true} path={`${match.path}/annotationset`}>
                         <AnnotationSetList />

@@ -1,22 +1,57 @@
-import React, {Component} from "react";
+import React, { Component } from "react";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
-import {faPen, faTrash, faPlus} from '@fortawesome/free-solid-svg-icons'
-import {withRouter} from "react-router-dom";
-import {bindActionCreators} from "redux";
-import {ActionCreators} from "../../../../redux/actions/ActionCreators";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faPen, faTrash, faPlus } from '@fortawesome/free-solid-svg-icons'
+import { RouteComponentProps, withRouter } from "react-router-dom";
+import { bindActionCreators } from "redux";
+import { ActionCreators } from "../../../../redux/actions/ActionCreators";
 import connect from "react-redux/es/connect/connect";
 import fetchStatusType from "../../../../redux/actions/FetchStatusTypes";
 import ConfirmationDialog from "../../../components/dialogs/ConfirmationDialog";
 import FetchPending from "../../../components/FetchPending";
+import { ConnectedProps } from "react-redux";
+import { RootState } from "../../../../redux/reducers/Reducers";
+
+/**
+ * Maps redux state to component's props.
+ * @param state The redux state (reducers).
+ */
+function mapStateToProps(state: RootState) {
+    return {
+        annotationSets: state.annotationSets,
+        //emptyAnnotationSet: state.emptyAnnotationSet
+    };
+}
+
+/**
+ * Maps action creator functions to component's props.
+ * @param dispatch
+ */
+function mapDispatchToProps(dispatch) {
+    return bindActionCreators(ActionCreators, dispatch);
+}
+
+const connector = connect(mapStateToProps, mapDispatchToProps);
+
+type PropsFromRedux = ConnectedProps<typeof connector>
+
+type Props = PropsFromRedux & RouteComponentProps;
+
+interface State {
+    annotationSetIdToBeDeleted: number;
+}
+
+const initialState = {
+    annotationSetIdToBeDeleted: undefined
+};
 
 /**
  * The view for displaying and deleting all available AnnotationSets of the application.
  */
-class AnnotationSetList extends Component {
+class AnnotationSetList extends Component<Props, State> {
     /**
      * Create a new AnnotaionSetList component.
      * @param props The properties of the component.
@@ -26,9 +61,7 @@ class AnnotationSetList extends Component {
         this._addNewAnnotationSet = this._addNewAnnotationSet.bind(this);
         this._renderAnnotationSets = this._renderAnnotationSets.bind(this);
         this.render = this.render.bind(this);
-        this.state = {
-            annotationSetIdToBeDeleted: undefined
-        };
+        this.state = initialState;
     }
 
     /**
@@ -62,17 +95,17 @@ class AnnotationSetList extends Component {
                     <td>
                         <div className="float-right">
                             <Button size="sm"
-                                    onClick={() => {
-                                        this.props.setActiveAnnotationSet(annotationSet);
-                                        return this.props.history.push(`${this.props.match.path}/edit`)
-                                    }}><FontAwesomeIcon
-                                icon={faPen}/></Button>
+                                onClick={() => {
+                                    this.props.setActiveAnnotationSet(annotationSet);
+                                    return this.props.history.push(`${this.props.match.path}/edit`)
+                                }}><FontAwesomeIcon
+                                    icon={faPen} /></Button>
                             <Button size="sm" variant="danger" onClick={() => {
                                 this.setState({
                                     annotationSetIdToBeDeleted: annotationSet.s_id
                                 });
                             }}>
-                                <FontAwesomeIcon icon={faTrash}/>
+                                <FontAwesomeIcon icon={faTrash} />
                             </Button>
                             <ConfirmationDialog
                                 show={this.state.annotationSetIdToBeDeleted === annotationSet.s_id}
@@ -107,14 +140,14 @@ class AnnotationSetList extends Component {
                 >
                     <table className="table">
                         <thead>
-                        <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">Name</th>
-                            <th scope="col"></th>
-                        </tr>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Name</th>
+                                <th scope="col"></th>
+                            </tr>
                         </thead>
                         <tbody>
-                        {renderAnnotationSetTableData()}
+                            {renderAnnotationSetTableData()}
                         </tbody>
                     </table>
                 </FetchPending>
@@ -147,23 +180,4 @@ class AnnotationSetList extends Component {
     }
 }
 
-/**
- * Maps redux state to component's props.
- * @param state The redux state (reducers).
- */
-function mapStateToProps(state) {
-    return {
-        annotationSets: state.annotationSets,
-        emptyAnnotationSet: state.emptyAnnotationSet
-    };
-}
-
-/**
- * Maps action creator functions to component's props.
- * @param dispatch
- */
-function mapDispatchToProps(dispatch) {
-    return bindActionCreators(ActionCreators, dispatch);
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(withRouter(AnnotationSetList));
+export default connector(withRouter(AnnotationSetList));
