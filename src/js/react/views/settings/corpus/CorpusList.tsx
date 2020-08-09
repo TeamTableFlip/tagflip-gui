@@ -13,6 +13,7 @@ import fetchStatusType from "../../../../redux/actions/FetchStatusTypes";
 import FetchPending from "../../../components/FetchPending";
 import ConfirmationDialog from "../../../components/dialogs/ConfirmationDialog";
 import { RootState } from "../../../../redux/reducers/Reducers";
+import { Corpus } from "../../../../Corpus";
 
 /**
  * Maps redux state to component's props.
@@ -75,7 +76,7 @@ class CorpusList extends Component<Props, State> {
      * @private
      */
     addNewCorpus() {
-        this.props.setEditableCorpus(this.props.emptyCorpus);
+        this.props.setEditableCorpus(Corpus.EMPTY);
         return this.props.history.push(`${this.props.match.path}/edit`)
     }
 
@@ -85,7 +86,7 @@ class CorpusList extends Component<Props, State> {
      * @private
      */
     importNewCorpus() {
-        this.props.setEditableCorpus(this.props.emptyCorpus);
+        this.props.setEditableCorpus(Corpus.EMPTY);
         return this.props.history.push(`${this.props.match.path}/import`)
     }
 

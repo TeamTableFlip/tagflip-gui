@@ -15,7 +15,7 @@ import { connect, ConnectedProps } from "react-redux";
  * Maps redux state to component's props.
  * @param state The redux state (reducers).
  */
-function mapStateToProps(state) {
+function mapStateToProps(state: RootState) {
     return {
         corpora: state.corpora,
         selectedCorpus: state.editableCorpus,

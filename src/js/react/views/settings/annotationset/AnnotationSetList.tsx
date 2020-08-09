@@ -14,6 +14,7 @@ import ConfirmationDialog from "../../../components/dialogs/ConfirmationDialog";
 import FetchPending from "../../../components/FetchPending";
 import { ConnectedProps } from "react-redux";
 import { RootState } from "../../../../redux/reducers/Reducers";
+import { AnnotationSet } from "../../../../AnnotationSet";
 
 /**
  * Maps redux state to component's props.
@@ -77,7 +78,7 @@ class AnnotationSetList extends Component<Props, State> {
      * @private
      */
     _addNewAnnotationSet() {
-        this.props.setActiveAnnotationSet(this.props.emptyAnnotationSet);
+        this.props.setActiveAnnotationSet(AnnotationSet.EMPTY);
         return this.props.history.push(`${this.props.match.path}/edit`)
     }
 

@@ -1,6 +1,7 @@
 import { applyMiddleware, createStore } from 'redux';
 import { persistStore, persistReducer } from 'redux-persist'
 import storage from 'redux-persist/lib/storage/session' // defaults to localStorage for web
+import autoMergeLevel2 from "redux-persist/lib/stateReconciler/autoMergeLevel2";
 import thunk from 'redux-thunk'
 import { createLogger } from 'redux-logger'
 import reducers from "./reducers/Reducers";
@@ -8,7 +9,8 @@ import reducers from "./reducers/Reducers";
 const persistConfig = {
     key: 'TagFlip',
     storage,
-    blacklist: ['editableCorpus']
+    blacklist: ['editableCorpus'],
+    stateReconciler: autoMergeLevel2
 };
 
 const persistedReducer = persistReducer(persistConfig, reducers)

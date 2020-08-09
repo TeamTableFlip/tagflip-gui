@@ -1,6 +1,7 @@
 import FetchStatusType from "./actions/FetchStatusTypes";
 import { Corpus } from '../Corpus';
 import { AnnotationSet } from '../AnnotationSet';
+import { Annotation } from '../Annotation';
 
 export interface FetchState {
     didInvalidate: boolean;
@@ -10,8 +11,18 @@ export interface FetchState {
     error: any;
 }
 
-export interface AnnotationSetValue {
+export interface AnnotationSetListValue {
     items: AnnotationSet[];
+}
+
+export interface AnnotationSetValue {
+    values: AnnotationSet;
+    annotations: FetchState & {
+        items: Annotation[];
+        editableAnnotation: FetchState & {
+            values: Annotation;
+        }
+    }
 }
 
 export interface DocumentListValue {
@@ -29,7 +40,7 @@ export interface TagValue {
 
 export interface CorpusValue {
     values: Corpus;
-    annotationSets: AnnotationSetState;
+    annotationSets: AnnotationSetListState;
     documents: DocumentListState;
     activeDocument: DocumentState;
 }
@@ -43,6 +54,7 @@ export interface ServerValue {
 }
 
 export type AnnotationSetState = AnnotationSetValue & FetchState;
+export type AnnotationSetListState = AnnotationSetListValue & FetchState;
 export type DocumentListState = DocumentListValue & FetchState;
 export type DocumentState = DocumentValue & FetchState;
 export type TagState = TagValue & FetchState;

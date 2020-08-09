@@ -1,9 +1,10 @@
 import createReducer from "./CreateReducer";
 import * as AnnotationSetEditActions from "../actions/AnnotationSetActions";
 import FetchStatusType from "../actions/FetchStatusTypes";
+import { AnnotationSetState } from "../types";
 
 
-const initialState = {
+const initialState: AnnotationSetState = {
     values: {
         s_id: 0,
         name: "",
@@ -28,6 +29,7 @@ const initialState = {
                 name: "",
                 color: "#bbbbbb"
             },
+            didInvalidate: false,
             isFetching: false,
             lastUpdated: undefined,
             status: FetchStatusType.success,

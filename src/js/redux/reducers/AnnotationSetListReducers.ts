@@ -1,8 +1,9 @@
 import createReducer from './CreateReducer'
 import * as AnnotationSetFetchActions from '../actions/AnnotationSetListActions'
 import FetchStatusType from "../actions/FetchStatusTypes";
+import { AnnotationSetListState } from '../types';
 
-const initialState = {
+const initialState: AnnotationSetListState = {
     isFetching: false,
     didInvalidate: false,
     items: [],
