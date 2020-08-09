@@ -1,19 +1,22 @@
 import createReducer from './CreateReducer'
 import * as CorpusFetchActions from '../actions/CorpusListActions'
 import fetchStatusType from "../actions/FetchStatusTypes";
+import { CorpusListState } from '../types';
+
+const initialState: CorpusListState = {
+    isFetching: false,
+    didInvalidate: false,
+    items: [],
+    lastUpdated: undefined,
+    status: fetchStatusType.success,
+    error: null
+};
 
 /**
  * All currently available corpora of the application.
  * @type {reducer}
  */
-export const corpora = createReducer({
-        isFetching: false,
-        didInvalidate: false,
-        items: [],
-        lastUpdated: undefined,
-        status: fetchStatusType.success,
-        error: null
-    },
+export const corpora = createReducer(initialState,
     {
         [CorpusFetchActions.REQUEST_CORPORA](draft, action) {
             draft.isFetching = true;

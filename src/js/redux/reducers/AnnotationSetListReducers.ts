@@ -1,19 +1,21 @@
 import createReducer from './CreateReducer'
 import * as AnnotationSetFetchActions from '../actions/AnnotationSetListActions'
-import fetchStatusType from "../actions/FetchStatusTypes";
+import FetchStatusType from "../actions/FetchStatusTypes";
+
+const initialState = {
+    isFetching: false,
+    didInvalidate: false,
+    items: [],
+    lastUpdated: undefined,
+    status: FetchStatusType.success,
+    error: null
+}
 
 /**
  * All currently available AnnotationSets of the application.
  * @type {reducer}
  */
-export const annotationSets = createReducer({
-        isFetching: false,
-        didInvalidate: false,
-        items: [],
-        lastUpdated: undefined,
-        status: fetchStatusType.success,
-        error: null
-    },
+export const annotationSets = createReducer(initialState,
     {
         [AnnotationSetFetchActions.REQUEST_ANNOTATION_SETS](draft, action) {
             draft.isFetching = true;
@@ -24,13 +26,13 @@ export const annotationSets = createReducer({
         [AnnotationSetFetchActions.RECEIVE_ANNOTATION_SETS](draft, action) {
             draft.isFetching = false;
             draft.didInvalidate = false;
-            if (action.status === fetchStatusType.success) {
+            if (action.status === FetchStatusType.success) {
                 draft.items = action.annotationSets;
                 draft.lastUpdated = action.receivedAt;
-                draft.status = fetchStatusType.success;
+                draft.status = FetchStatusType.success;
                 draft.error = null;
             } else {
-                draft.status = fetchStatusType.error;
+                draft.status = FetchStatusType.error;
                 draft.error = action.error;
             }
         },

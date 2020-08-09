@@ -1,4 +1,5 @@
 const Webpack = require("webpack");
+const dotenv = require('dotenv').config({ path: '.webpack.env' });
 const HtmlWebPackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
@@ -90,6 +91,9 @@ module.exports = {
         new Webpack.DefinePlugin({
             'process.env.ASSET_PATH': JSON.stringify(ASSET_PATH),
             BASENAME: JSON.stringify(ASSET_PATH)
+        }),
+        new Webpack.DefinePlugin({
+            "process.env": dotenv.parsed
         }),
         new HtmlWebPackPlugin({
             template: "./src/index.html",

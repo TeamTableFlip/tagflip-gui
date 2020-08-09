@@ -1,4 +1,5 @@
 import produce from "immer";
+import { Produced, Draft } from "immer/dist/types-external";
 
 /**
  * Creates a reducer which is capable for handling multiple actions.
@@ -13,8 +14,8 @@ import produce from "immer";
  *        }
  * @returns {reducer} A reducer which can handle multiple action types.
  */
-export default function createReducer(initialState, handlers) {
-    return (state = initialState, action) => {
+export default function createReducer<State>(initialState: State, handlers) {
+    return (state = initialState, action): Produced<State, Draft<State>> => {
         return produce(state, draft => {
             if (handlers.hasOwnProperty(action.type)) {
                 handlers[action.type](draft, action)
