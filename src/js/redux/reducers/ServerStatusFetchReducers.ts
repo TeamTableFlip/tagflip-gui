@@ -1,19 +1,22 @@
 import createReducer from './CreateReducer'
 import * as ServerStatusFetchActions from '../actions/ServerStatusFetchActions'
-import fetchStatusType from "../actions/FetchStatusTypes";
+import { ServerState } from "../types"
+import FetchStatusType from '../actions/FetchStatusTypes';
+
+const initialState: ServerState = {
+    isFetching: false,
+    didInvalidate: false,
+    available: true,
+    lastUpdated: undefined,
+    status: FetchStatusType.success,
+    error: null
+}
 
 /**
  * The current connectivity status to the backend.
  * @type {reducer}
  */
-export const serverStatus = createReducer({
-        isFetching: false,
-        didInvalidate: false,
-        available: true,
-        lastUpdated: undefined,
-        status: fetchStatusType.success,
-        error: null
-    },
+export const serverStatus = createReducer(initialState,
     {
         [ServerStatusFetchActions.REQUEST_SERVER_STATUS](draft, action) {
             draft.isFetching = true;
