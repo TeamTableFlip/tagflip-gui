@@ -1,30 +1,7 @@
 import createReducer from "./CreateReducer";
 import * as AnnotationSetEditActions from "../actions/AnnotationSetActions";
 import FetchStatusType from "../actions/FetchStatusTypes";
-import { AnnotationSet } from "../../AnnotationSet";
 
-/**
- * An empty AnnotationSet.
- * @param state The current redux state - does nothing here.
- * @param action The executed action - does nothing here.
- * @returns AnnotationSet
- */
-export const emptyAnnotationSet = (state = {}, action) => AnnotationSet.EMPTY;
-
-/**
- * An empty Annotation.
- * @param state The current redux state - does nothing here.
- * @param action The executed action - does nothing here.
- * @returns {{a_id: number, s_id: number, name: string, color: string}}
- */
-export const emptyAnnotation = function (state = {}, action) {
-    return {
-        a_id: 0,
-        s_id: 0,
-        name: "",
-        color: "#bbbbbb"
-    };
-};
 
 const initialState = {
     values: {

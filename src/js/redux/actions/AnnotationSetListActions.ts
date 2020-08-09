@@ -1,5 +1,5 @@
 import client from '../../backend/RestApi';
-import fetchStatusType from "./FetchStatusTypes";
+import FetchStatusType from "./FetchStatusTypes";
 
 export const REQUEST_ANNOTATION_SETS = "REQUEST_ANNOTATION_SETS";
 
@@ -35,7 +35,7 @@ export const RECEIVE_ANNOTATION_SETS = "RECEIVE_ANNOTATION_SETS";
  * @param error response error
  * @returns {{annotationSets: *, type: *, receivedAt: *, error: *, status: *}}
  */
-export function receiveAnnotationSets(annotationSets, status = fetchStatusType.success, error = null) {
+export function receiveAnnotationSets(annotationSets, status = FetchStatusType.success, error = null) {
     return {
         type: RECEIVE_ANNOTATION_SETS,
         annotationSets: annotationSets,
@@ -57,7 +57,7 @@ export function fetchAnnotationSets() {
                 dispatch(receiveAnnotationSets(result))
             )
             .catch(error =>
-                dispatch(receiveAnnotationSets([], fetchStatusType.error, error))
+                dispatch(receiveAnnotationSets([], FetchStatusType.error, error))
             );
     }
 }
@@ -82,7 +82,7 @@ export function deleteAnnotationSet(annotationSetId) {
                 });
             })
             .catch(err => {
-                dispatch(receiveAnnotationSets([], fetchStatusType.error, err))
+                dispatch(receiveAnnotationSets([], FetchStatusType.error, err))
             });
     }
 }

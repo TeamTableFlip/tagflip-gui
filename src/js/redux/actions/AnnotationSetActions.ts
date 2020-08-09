@@ -1,7 +1,29 @@
-import fetchStatusType from "./FetchStatusTypes";
+import FetchStatusType from "./FetchStatusTypes";
 import client from "../../backend/RestApi";
 import { AnnotationSet } from "../../AnnotationSet";
-import { fetchCorpusAnnotationSets, fetchCorpusDocuments, reloadCorpus, SET_EDITABLE_CORPUS } from "./CorpusActions";
+
+/**
+ * An empty AnnotationSet.
+ * @param state The current redux state - does nothing here.
+ * @param action The executed action - does nothing here.
+ * @returns AnnotationSet
+ */
+export const emptyAnnotationSet = (state = {}, action) => AnnotationSet.EMPTY;
+
+/**
+ * An empty Annotation.
+ * @param state The current redux state - does nothing here.
+ * @param action The executed action - does nothing here.
+ * @returns {{a_id: number, s_id: number, name: string, color: string}}
+ */
+export const emptyAnnotation = function (state = {}, action) {
+    return {
+        a_id: 0,
+        s_id: 0,
+        name: "",
+        color: "#bbbbbb"
+    };
+};
 
 export const SET_ACTIVE_ANNOTATION_SET = "SET_ACTIVE_ANNOTATION_SET";
 
@@ -65,7 +87,7 @@ export const RECEIVE_ACTIVE_ANNOTATION_SET = "RECEIVE_ACTIVE_ANNOTATION_SET";
  * @param error error of response
  * @returns {{annotationSet: AnnotationSet, type: *, receivedAt: *, error: *, status: *}}
  */
-export function receiveActiveAnnotationSet(annotationSet: AnnotationSet, status = fetchStatusType.success, error = null) {
+export function receiveActiveAnnotationSet(annotationSet: AnnotationSet, status = FetchStatusType.success, error = null) {
     return {
         type: RECEIVE_ACTIVE_ANNOTATION_SET,
         annotationSet: annotationSet,
@@ -91,7 +113,7 @@ export function saveAnnotationSet() {
                     dispatch(receiveActiveAnnotationSet(result));
                 })
                 .catch(err => {
-                    dispatch(receiveActiveAnnotationSet(AnnotationSet.EMPTY, fetchStatusType.error, err))
+                    dispatch(receiveActiveAnnotationSet(AnnotationSet.EMPTY, FetchStatusType.error, err))
                 });
         } else {
             client.httpPut(`/annotationset/${annotationSet.s_id}`, annotationSet)
@@ -99,7 +121,7 @@ export function saveAnnotationSet() {
                     dispatch(receiveActiveAnnotationSet(result));
                 })
                 .catch(err => {
-                    dispatch(receiveActiveAnnotationSet(AnnotationSet.EMPTY, fetchStatusType.error, err))
+                    dispatch(receiveActiveAnnotationSet(AnnotationSet.EMPTY, FetchStatusType.error, err))
                 });
         }
     }
@@ -123,7 +145,7 @@ export function reloadAnnotationSet() {
                 }
                 )
                 .catch(error => {
-                    dispatch(receiveActiveAnnotationSet(AnnotationSet.EMPTY, fetchStatusType.error, error))
+                    dispatch(receiveActiveAnnotationSet(AnnotationSet.EMPTY, FetchStatusType.error, error))
                 });
         } else {
             dispatch(receiveActiveAnnotationSet(getState().emptyAnnotationSet));
@@ -169,7 +191,7 @@ export const RECEIVE_ANNOTATIONS = "RECEIVE_ANNOTATIONS";
  * @param error reponse error
  * @returns {{annotations: AnnotationSet, type: *, receivedAt: *, error: *, status: *}}
  */
-export function receiveAnnotations(annotations: AnnotationSet | AnnotationSet[], status = fetchStatusType.success, error = null) {
+export function receiveAnnotations(annotations: AnnotationSet | AnnotationSet[], status = FetchStatusType.success, error = null) {
     return {
         type: RECEIVE_ANNOTATIONS,
         annotations: annotations,
@@ -193,7 +215,7 @@ export function fetchAnnotations() {
                     dispatch(receiveAnnotations(result))
                 )
                 .catch(error =>
-                    dispatch(receiveAnnotations([], fetchStatusType.error, error))
+                    dispatch(receiveAnnotations([], FetchStatusType.error, error))
                 );
         } else {
             dispatch(receiveAnnotations([]));
@@ -221,7 +243,7 @@ export function deleteAnnotation(annotationId) {
                 });
             })
             .catch(err => {
-                dispatch(receiveSaveAnnotation({}, fetchStatusType.error, err))
+                dispatch(receiveSaveAnnotation({}, FetchStatusType.error, err))
             });
     }
 }
@@ -284,7 +306,7 @@ export const RECEIVE_SAVE_ANNOTATION = "RECEIVE_SAVE_ANNOTATION";
  * @param error response error
  * @returns {{annotation: *, type: *, receivedAt: *, error: *, status: *}}
  */
-export function receiveSaveAnnotation(annotation, status = fetchStatusType.success, error = null) {
+export function receiveSaveAnnotation(annotation, status = FetchStatusType.success, error = null) {
     return {
         type: RECEIVE_SAVE_ANNOTATION,
         annotation: annotation,
@@ -310,7 +332,7 @@ export function saveAnnotation() {
                     dispatch(receiveSaveAnnotation(result))
                 })
                 .catch(err => {
-                    dispatch(receiveSaveAnnotation({}, fetchStatusType.error, err))
+                    dispatch(receiveSaveAnnotation({}, FetchStatusType.error, err))
                 });
         } else {
             client.httpPut(`/annotation/${annotation.a_id}`, annotation)
@@ -318,7 +340,7 @@ export function saveAnnotation() {
                     dispatch(receiveSaveAnnotation(result));
                 })
                 .catch(err => {
-                    dispatch(receiveSaveAnnotation({}, fetchStatusType.error, err))
+                    dispatch(receiveSaveAnnotation({}, FetchStatusType.error, err))
                 });
         }
     }
@@ -339,7 +361,7 @@ export function reloadAnnotation() {
                 .then(result => {
                     dispatch(receiveSaveAnnotation(result));
                 })
-                .catch(error => dispatch(receiveSaveAnnotation({}, fetchStatusType.error, error)));
+                .catch(error => dispatch(receiveSaveAnnotation({}, FetchStatusType.error, error)));
         } else {
             dispatch(receiveSaveAnnotation(getState().emptyAnnotation));
         }

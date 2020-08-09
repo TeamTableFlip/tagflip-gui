@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
 import ListGroup from "react-bootstrap/ListGroup";
-import { connect } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import { bindActionCreators, ActionCreator } from 'redux';
 import { ActionCreators } from '../../../../redux/actions/ActionCreators';
 import FileUpload from "../../../components/fileUpload/FileUpload";
@@ -11,40 +11,53 @@ import fetchStatusType from "../../../../redux/actions/FetchStatusTypes";
 import { AnnotationSet } from "../../../../AnnotationSet";
 import { Corpus } from "../../../../Corpus";
 import { uploadCorpus } from "../../../../redux/actions/CorpusActions"
+import { RootState } from "../../../../redux/reducers/Reducers";
 
+type State = RootState;
 
 const initialState = {
     validated: false,
 };
 
-class ImportProps {
-    annotationSets: {
-        items: AnnotationSet[];
-        status: any;
-        isFetching: boolean;
+
+/**
+ * Maps redux state to component's props.
+ * @param state The redux state (reducers).
+ */
+function mapStateToProps(state: State) {
+    return {
+        corpus: state.editableCorpus.values,
+        isFetching: state.editableCorpus.isFetching,
+        annotationSets: state.editableCorpus.annotationSets,
     };
+}
 
-    corpus: Corpus;
+/**
+ * Maps action creator functions to component's props.
+ * @param dispatch
+ */
+function mapDispatchToProps(dispatch) {
+    return bindActionCreators(ActionCreators, dispatch);
+}
 
-    isFetching: boolean;
+const connector = connect(mapStateToProps, mapDispatchToProps);
 
-    toggleCorpusAnnotationSet: (annotationSet: AnnotationSet) => {};
-    fetchAnnotationSets: () => {};
-    updateCorpusField: (name: string, value: any) => {};
-    uploadCorpus: (files) => any;
+type PropsFromRedux = ConnectedProps<typeof connector>
+
+type Props = PropsFromRedux & {
 }
 
 /**
  * The view for creating and editing single corpora with all their corresponding information.
  */
-class CorpusImport extends Component<ImportProps> {
+class CorpusImport extends Component<Props, State> {
     /**
      * Create a new CorpusImport component.
      * @param props The properties of the component.
      */
-    constructor(props: ImportProps) {
+    constructor(props: Props) {
         super(props);
-        this.state = initialState;
+        //this.state = initialState;
     }
 
     /**
@@ -140,24 +153,4 @@ class CorpusImport extends Component<ImportProps> {
     }
 }
 
-/**
- * Maps redux state to component's props.
- * @param state The redux state (reducers).
- */
-function mapStateToProps(state) {
-    return {
-        corpus: state.editableCorpus.values,
-        isFetching: state.editableCorpus.isFetching,
-        annotationSets: state.annotationSets,
-    };
-}
-
-/**
- * Maps action creator functions to component's props.
- * @param dispatch
- */
-function mapDispatchToProps(dispatch) {
-    return bindActionCreators(ActionCreators, dispatch);
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(CorpusImport);
+export default connector(CorpusImport);

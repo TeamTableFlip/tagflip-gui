@@ -1,14 +1,14 @@
-import React, {Component} from "react";
+import React, { Component } from "react";
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
 import ListGroup from "react-bootstrap/ListGroup";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Tooltip from "react-bootstrap/Tooltip";
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
-import {ActionCreators} from '../../../../../redux/actions/ActionCreators';
-import fetchStatusType from "../../../../../redux/actions/FetchStatusTypes";
+import { connect, ConnectedProps } from "react-redux";
+import { bindActionCreators } from 'redux';
+import { ActionCreators } from '../../../../../redux/actions/ActionCreators';
+import FetchStatusType from "../../../../../redux/actions/FetchStatusTypes";
 import FetchPending from "../../../../components/FetchPending";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 
@@ -19,9 +19,33 @@ const popover = (
 );
 
 /**
+ * Maps redux state to component's props.
+ * @param state The redux state (reducers).
+ */
+function mapStateToProps(state) {
+    return {
+        corpus: state.editableCorpus,
+        annotationSets: state.annotationSets,
+    };
+}
+
+/**
+ * Maps action creator functions to component's props.
+ * @param dispatch
+ */
+function mapDispatchToProps(dispatch) {
+    return bindActionCreators(ActionCreators, dispatch);
+}
+
+const connector = connect(mapStateToProps, mapDispatchToProps);
+type PropsFromRedux = ConnectedProps<typeof connector>
+
+type Props = PropsFromRedux;
+
+/**
  * The view for displaying all available AnnotationSets and selecting them for the current Corpus to be edited.
  */
-class CorpusAnnotationSets extends Component {
+class CorpusAnnotationSets extends Component<Props> {
     /**
      * Create a new CorpusAnnotationSets component.
      * @param props The properties of the component.
@@ -49,9 +73,9 @@ class CorpusAnnotationSets extends Component {
 
                     <ListGroup.Item key={annotationSet.s_id}>
                         <Form.Check type="checkbox"
-                                    checked={selectedAnnotationSetIds.has(annotationSet.s_id)}
-                                    onChange={() => this.props.toggleCorpusAnnotationSet(annotationSet)}
-                                    label={annotationSet.name}/>
+                            checked={selectedAnnotationSetIds.has(annotationSet.s_id)}
+                            onChange={() => this.props.toggleCorpusAnnotationSet(annotationSet)}
+                            label={annotationSet.name} />
                     </ListGroup.Item>
 
                 )
@@ -61,7 +85,7 @@ class CorpusAnnotationSets extends Component {
         return (
             <FetchPending
                 isPending={this.props.annotationSets.isFetching || this.props.corpus.annotationSets.isFetching}
-                success={this.props.annotationSets.status === fetchStatusType.success && this.props.corpus.annotationSets.status === fetchStatusType.success}
+                success={this.props.annotationSets.status === FetchStatusType.success && this.props.corpus.annotationSets.status === FetchStatusType.success}
                 retryCallback={() => {
                     this.props.fetchAnnotationSets();
                     this.props.fetchCorpusAnnotationSets(this.props.corpus.values.c_id);
@@ -103,23 +127,5 @@ class CorpusAnnotationSets extends Component {
     }
 }
 
-/**
- * Maps redux state to component's props.
- * @param state The redux state (reducers).
- */
-function mapStateToProps(state) {
-    return {
-        corpus: state.editableCorpus,
-        annotationSets: state.annotationSets,
-    };
-}
 
-/**
- * Maps action creator functions to component's props.
- * @param dispatch
- */
-function mapDispatchToProps(dispatch) {
-    return bindActionCreators(ActionCreators, dispatch);
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(CorpusAnnotationSets);
+export default connector(CorpusAnnotationSets);

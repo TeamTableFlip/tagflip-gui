@@ -4,14 +4,6 @@ import FetchStatusType from "../actions/FetchStatusTypes";
 import { Corpus } from '../../Corpus';
 import { CorpusState } from '../types';
 
-/**
- * An empty Corpus object.
- * @param state The current redux state - does nothing here.
- * @param action The executed action - does nothing here.
- * @returns Corpus
- */
-export const emptyCorpus = (state = {}, action) => Corpus.EMPTY;
-
 const initialState: CorpusState = {
     values: {
         c_id: 0,

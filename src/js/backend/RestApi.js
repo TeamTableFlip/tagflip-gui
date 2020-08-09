@@ -30,7 +30,7 @@ export class RestApi {
      * @param headers
      * @returns {*} a Promise
      */
-    httpGet(path, urlParams, headers=RestApi._headers()) {
+    httpGet(path, urlParams = null, headers = RestApi._headers()) {
         if (!urlParams)
             return this._httpRequest(path, GET, null);
         return this._httpRequest(`${path}?${urlParams.join('&')}`, GET, null, headers);
@@ -44,7 +44,7 @@ export class RestApi {
      * @param headers Custom headers.
      * @returns {*} a Promise
      */
-    httpPost(path, body, headers=RestApi._headers()) {
+    httpPost(path, body, headers = RestApi._headers()) {
         return this._httpRequest(path, POST, body, headers);
     }
 
@@ -56,7 +56,7 @@ export class RestApi {
      * @param headers Custom headers.
      * @returns {*} a Promise
      */
-    httpPut(path, body, headers=RestApi._headers()) {
+    httpPut(path, body, headers = RestApi._headers()) {
         return this._httpRequest(path, PUT, body, headers);
     }
 
@@ -68,7 +68,7 @@ export class RestApi {
      * @param headers Custom headers.
      * @returns {*} a Promise
      */
-    httpDelete(path, body, headers=RestApi._headers()) {
+    httpDelete(path, body, headers = RestApi._headers()) {
         return this._httpRequest(path, DELETE, body, headers);
     }
 
@@ -82,12 +82,12 @@ export class RestApi {
      * @returns {Promise<Response | never>}
      * @private
      */
-    _httpRequest(path, method, params, headers= RestApi._headers()) {
+    _httpRequest(path, method, params, headers = RestApi._headers()) {
         let url = this._buildUrl(path);
         console.log("Requesting", url);
 
         let body = (params) ? params : null;
-        if(typeof body === 'object' && !(body instanceof FormData) && body !== null) {
+        if (typeof body === 'object' && !(body instanceof FormData) && body !== null) {
             body = JSON.stringify(body)
         }
 
