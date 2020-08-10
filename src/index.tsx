@@ -7,6 +7,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './css/app.scss'
 import App from "./js/react/App";
 import { store, persistor } from "./js/redux/Store";
+import { Auth0Provider } from '@auth0/auth0-react';
+import { OidcSettings } from '../.oidcsettings';
 
 const wrapper = document.getElementById("app");
 

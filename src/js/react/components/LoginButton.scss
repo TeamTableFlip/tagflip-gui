@@ -1,0 +1,16 @@
+img.user-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+div.dropdown-menu {
+    width: 350px;
+}
+
+div.user-info {
+    display: flex;
+    column-gap: 10px;
+    padding: 24px;
+    align-items: center;
+}
