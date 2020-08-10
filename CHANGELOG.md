@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/fhswf/tagflip-gui/compare/v1.1.0...v1.1.1) (2020-08-10)
+
+
+### Bug Fixes
+
+* make CorpusDetails type safe ([2cf0b2d](https://github.com/fhswf/tagflip-gui/commit/2cf0b2d94b1c758afd06b3baec803680134fec4b))
+
 # 1.0.0 (2020-08-09)
 
 
