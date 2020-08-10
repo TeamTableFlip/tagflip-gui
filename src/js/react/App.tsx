@@ -84,6 +84,7 @@ class App extends Component<PropsFromRedux> {
                         domain={OidcSettings.domain}
                         clientId={OidcSettings.client_id}
                         redirectUri={OidcSettings.redirect_uri}
+                        audience={OidcSettings.audience}
                     >
 
 
