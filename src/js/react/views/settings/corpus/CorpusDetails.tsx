@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { connect } from 'react-redux';
+import { connect, ConnectedProps } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { ActionCreators } from '../../../../redux/actions/ActionCreators';
 import Tabs from "react-bootstrap/Tabs";
@@ -11,15 +11,46 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import CorpusBasicData from "./details/CorpusBasicData";
 
-const initialState = {
+interface State {
+    validated: boolean;
+    activeTab: string;
+}
+
+const initialState: State = {
     activeTab: "basicdata",
     validated: false,
 };
 
 /**
+ * Maps redux state to component's props.
+ * @param state The redux state (reducers).
+ */
+function mapStateToProps(state) {
+    return {
+        corpus: state.editableCorpus,
+        annotationSets: state.annotationSets,
+    };
+}
+
+/**
+ * Maps action creator functions to component's props.
+ * @param dispatch
+ */
+function mapDispatchToProps(dispatch) {
+    return bindActionCreators(ActionCreators, dispatch);
+}
+
+const connector = connect(mapStateToProps, mapDispatchToProps);
+
+type PropsFromRedux = ConnectedProps<typeof connector>
+
+type Props = PropsFromRedux & {
+}
+
+/**
  * The view for creating and editing single corpora with all their corresponding information.
  */
-class CorpusDetails extends Component {
+class CorpusDetails extends Component<Props, State> {
     /**
      * Create a new CorpusDetails component.
      * @param props The properties of the component.
@@ -96,23 +127,4 @@ class CorpusDetails extends Component {
     }
 }
 
-/**
- * Maps redux state to component's props.
- * @param state The redux state (reducers).
- */
-function mapStateToProps(state) {
-    return {
-        corpus: state.editableCorpus,
-        annotationSets: state.annotationSets,
-    };
-}
-
-/**
- * Maps action creator functions to component's props.
- * @param dispatch
- */
-function mapDispatchToProps(dispatch) {
-    return bindActionCreators(ActionCreators, dispatch);
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(CorpusDetails);
+export default connector(CorpusDetails);
