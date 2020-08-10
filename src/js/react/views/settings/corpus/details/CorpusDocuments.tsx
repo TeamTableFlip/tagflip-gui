@@ -4,7 +4,7 @@ import Button from "react-bootstrap/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch, faTrash } from "@fortawesome/free-solid-svg-icons";
 import FileUpload from "../../../../components/fileUpload/FileUpload";
-import { connect } from 'react-redux';
+import { connect, ConnectedProps } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { ActionCreators } from '../../../../../redux/actions/ActionCreators';
 import fetchStatusType from "../../../../../redux/actions/FetchStatusTypes";
@@ -15,20 +15,53 @@ import ConfirmationDialog from "../../../../components/dialogs/ConfirmationDialo
 import ShowDocument from "../../../../components/dialogs/ShowDocument";
 
 /**
+ * Maps redux state to component's props.
+ * @param state The redux state (reducers).
+ */
+function mapStateToProps(state) {
+    return {
+        corpus: state.editableCorpus,
+    };
+}
+
+/**
+ * Maps action creator functions to component's props.
+ * @param dispatch
+ */
+function mapDispatchToProps(dispatch) {
+    return bindActionCreators(ActionCreators, dispatch);
+}
+
+const connector = connect(mapStateToProps, mapDispatchToProps);
+
+type PropsFromRedux = ConnectedProps<typeof connector>
+
+type Props = PropsFromRedux & {
+}
+
+interface State {
+    uploadWarningShowMore: boolean;
+    documentIdToBeDeleted: number;
+    documentToBeShown: number;
+}
+
+const initialState = {
+    uploadWarningShowMore: false,
+    documentIdToBeDeleted: undefined,
+    documentToBeShown: undefined
+}
+
+/**
  * A React view for displaying all Documents of the Corpus. Provides the functionality to upload and remove Documents.
  */
-class CorpusDocuments extends Component {
+class CorpusDocuments extends Component<Props, State> {
     /**
      * Create a new CorpusDocuments component.
      * @param props The properties of the component.
      */
     constructor(props) {
         super(props);
-        this.state = {
-            uploadWarningShowMore: false,
-            documentIdToBeDeleted: undefined,
-            documentToBeShown: undefined
-        }
+        this.state = initialState;
     }
 
     /**
@@ -151,22 +184,4 @@ class CorpusDocuments extends Component {
     }
 }
 
-/**
- * Maps redux state to component's props.
- * @param state The redux state (reducers).
- */
-function mapStateToProps(state) {
-    return {
-        corpus: state.editableCorpus,
-    };
-}
-
-/**
- * Maps action creator functions to component's props.
- * @param dispatch
- */
-function mapDispatchToProps(dispatch) {
-    return bindActionCreators(ActionCreators, dispatch);
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(CorpusDocuments);
+export default connector(CorpusDocuments);

@@ -1,21 +1,51 @@
-import React, {Component} from "react";
+import React, { Component } from "react";
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
-import {ActionCreators} from '../../../../../redux/actions/ActionCreators';
+import { connect, ConnectedProps } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { ActionCreators } from '../../../../../redux/actions/ActionCreators';
 import fetchStatusType from "../../../../../redux/actions/FetchStatusTypes";
 import FetchPending from "../../../../components/FetchPending";
 
-const initialState = {
+interface State {
+    validated: boolean;
+}
+
+const initialState: State = {
     validated: false,
 };
 
 /**
+ * Maps redux state to component's props.
+ * @param state The redux state (reducers).
+ */
+function mapStateToProps(state) {
+    return {
+        corpus: state.editableCorpus,
+        annotationSets: state.annotationSets
+    };
+}
+
+/**
+ * Maps action creator functions to component's props.
+ * @param dispatch
+ */
+function mapDispatchToProps(dispatch) {
+    return bindActionCreators(ActionCreators, dispatch);
+}
+
+const connector = connect(mapStateToProps, mapDispatchToProps);
+
+type PropsFromRedux = ConnectedProps<typeof connector>
+
+type Props = PropsFromRedux & {
+}
+
+/**
  * A React view for displaying and editing basic information of a Corpus.
  */
-class CorpusBasicData extends Component {
+class CorpusBasicData extends Component<Props, State> {
     /**
      * Create a new CorpusBasicData component.
      * @param props The properties of the component.
@@ -33,10 +63,10 @@ class CorpusBasicData extends Component {
     handleSubmit(event) {
         const form = event.currentTarget;
         event.preventDefault();
-        this.setState({validated: false});
+        this.setState({ validated: false });
         if (form.checkValidity() === false) {
             event.stopPropagation();
-            this.setState({validated: true});
+            this.setState({ validated: true });
         } else {
             this.props.saveCorpus();
         }
@@ -72,10 +102,10 @@ class CorpusBasicData extends Component {
                                 <Form.Group controlId="formName">
                                     <Form.Label>Name</Form.Label>
                                     <Form.Control type="text" placeholder="Name of the corpus"
-                                                  name="name"
-                                                  onChange={(e) => this.props.updateCorpusField('name', e.target.value)}
-                                                  value={this.props.corpus.values.name || ""}
-                                                  required={true}
+                                        name="name"
+                                        onChange={(e) => this.props.updateCorpusField('name', e.target.value)}
+                                        value={this.props.corpus.values.name || ""}
+                                        required={true}
                                     />
                                     <Form.Control.Feedback type="invalid">
                                         Please choose a name.
@@ -84,12 +114,12 @@ class CorpusBasicData extends Component {
                                 < Form.Group controlId="formDescription">
                                     <Form.Label>Description</Form.Label>
                                     <Form.Control as="textarea" placeholder="Description of the corpus"
-                                                  name="description"
-                                                  onChange={(e) => this.props.updateCorpusField('description', e.target.value)}
-                                                  value={this.props.corpus.values.description || ""}/>
+                                        name="description"
+                                        onChange={(e) => this.props.updateCorpusField('description', e.target.value)}
+                                        value={this.props.corpus.values.description || ""} />
                                 </Form.Group>
                                 <Button variant="success" className="mr-1" type="submit">Save</Button>
-                                {!this.isNewCorpus() && <Button variant="danger" className="mr-1" onClick={()=> this.props.reloadCorpus()}>Abort</Button> }
+                                {!this.isNewCorpus() && <Button variant="danger" className="mr-1" onClick={() => this.props.reloadCorpus()}>Abort</Button>}
                             </FetchPending>
                         </Card.Body>
                     </Card>
@@ -99,23 +129,4 @@ class CorpusBasicData extends Component {
     }
 }
 
-/**
- * Maps redux state to component's props.
- * @param state The redux state (reducers).
- */
-function mapStateToProps(state) {
-    return {
-        corpus: state.editableCorpus,
-        annotationSets: state.annotationSets
-    };
-}
-
-/**
- * Maps action creator functions to component's props.
- * @param dispatch
- */
-function mapDispatchToProps(dispatch) {
-    return bindActionCreators(ActionCreators, dispatch);
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(CorpusBasicData);
+export default connector(CorpusBasicData);
