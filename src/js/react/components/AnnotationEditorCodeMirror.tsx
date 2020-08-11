@@ -63,7 +63,7 @@ class TagWidget extends WidgetType<TagDecoration> {
 
         let annotation = {
             name: this.decoration.label,
-            //color: 'rgba(10, 40, 100, 0.6)'
+            color: 'rgba(10, 40, 100, 0.6)'
         }
 
         let reactElement = (

@@ -1,30 +1,42 @@
-import React, {Component} from "react";
+import React, { Component } from "react";
 import Badge from "react-bootstrap/Badge";
-import {SketchPicker} from 'react-color';
+import { SketchPicker } from 'react-color';
 import PropTypes from "prop-types";
+
+
+const propTypes = {
+    updateColorCallback: PropTypes.func.isRequired, // Is called when the color is being picked - 1 param: color
+    color: PropTypes.string                         // The initial color
+};
+
+type Props = PropTypes.InferProps<typeof propTypes>;
+
+const initialState = {
+    color: "#000000".replace(/0/g, function () {
+        return (~~(Math.random() * 16)).toString(16);
+    })
+};
+
+type State = typeof initialState;
 
 /**
  * A React Component for displaying a react-bootstrap Badge and a color picker next to it.
  */
-class ColorPickerBadge extends Component {
+class ColorPickerBadge extends Component<Props, State> {
     /**
      * Create a new ColorPickerBadge component.
      * @param props The properties of the component.
      */
     constructor(props) {
         super(props);
-        this.state = {
-            color: "#000000".replace(/0/g, function () {
-                return (~~(Math.random() * 16)).toString(16);
-            })
-        };
+        this.state = initialState
     }
 
     /**
      * React lifecycle method. Updates the color when mounted.
      */
     componentDidMount() {
-        if(this.props.color) {
+        if (this.props.color) {
             this.setState({
                 color: this.props.color
             });
@@ -50,19 +62,14 @@ class ColorPickerBadge extends Component {
     render() {
         return (
             <React.Fragment>
-                <Badge variant="primary" style={{backgroundColor: this.state.color}}>{this.state.color}</Badge>
+                <Badge variant="primary" style={{ backgroundColor: this.state.color }}>{this.state.color}</Badge>
                 <SketchPicker
-                    color={ this.state.color }
-                    onChange={ (color) => this.handleChangeComplete(color) } />
+                    color={this.state.color}
+                    onChange={(color) => this.handleChangeComplete(color)} />
             </React.Fragment>
         );
     }
 
 }
-
-ColorPickerBadge.propTypes = {
-    updateColorCallback: PropTypes.func.isRequired, // Is called when the color is being picked - 1 param: color
-    color: PropTypes.string                         // The initial color
-};
 
 export default ColorPickerBadge

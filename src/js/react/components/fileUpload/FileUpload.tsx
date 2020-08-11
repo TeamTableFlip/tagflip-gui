@@ -1,28 +1,42 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from "prop-types";
 import Dropzone from 'react-dropzone'
 import './FileUpload.css';
 import Card from "react-bootstrap/Card";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faTrash} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
+
+const propTypes = {
+    onUpload: PropTypes.func.isRequired,            // Is called when uploading the files - 1 param: files
+    acceptMimeTypes: PropTypes.string.isRequired,   // The accepted mime types for upload
+    uploadText: PropTypes.string.isRequired,        // The text to display in the Dropzone
+    isUploading: PropTypes.bool.isRequired,         // If true, the Upload-Button will be disabled
+    maxCount: PropTypes.number.isRequired           // Determine the maximum amount of files to upload
+};
+
+const initialState = {
+    files: [],
+    dragOver: false,
+    rejected: false
+}
+
+type Props = PropTypes.InferProps<typeof propTypes>;
+
+type State = typeof initialState;
 
 /**
  * A React Component for displaying a drop zone in which files can be uploaded.
  */
-class FileUpload extends Component {
+class FileUpload extends Component<Props, State> {
     /**
      * Create a new FileUpload component.
      * @param props The properties of the component.
      */
     constructor(props) {
         super(props);
-        this.state = {
-            files: [],
-            dragOver: false,
-            rejected: false
-        }
+        this.state = initialState;
     }
 
     /**
@@ -44,7 +58,7 @@ class FileUpload extends Component {
      * @param files The dropped in files to be added for upload.
      */
     acceptDrop(files) {
-        let filtered_files = files.filter(x => this.state.files.filter(y => x.name === y.name ).length === 0);
+        let filtered_files = files.filter(x => this.state.files.filter(y => x.name === y.name).length === 0);
         this.setState({
             files: [...this.state.files, ...filtered_files]
         })
@@ -69,28 +83,28 @@ class FileUpload extends Component {
      */
     _renderFileList() {
         return (<table className="table">
-                <thead>
+            <thead>
                 <tr>
                     <th scope="col">File</th>
                     <th scope="col"></th>
                 </tr>
-                </thead>
-                <tbody>
+            </thead>
+            <tbody>
                 {this.state.files.map(file => (
                     <tr key={file.name}>
                         <td>{file.name}</td>
                         <td>
                             <Button size="sm" variant="danger"
-                                    className="float-right"
-                                    onClick={() => {
-                                        this.setState({files: this.state.files.filter(f => f !== file)})
-                                    }}
-                            ><FontAwesomeIcon icon={faTrash}/></Button>
+                                className="float-right"
+                                onClick={() => {
+                                    this.setState({ files: this.state.files.filter(f => f !== file) })
+                                }}
+                            ><FontAwesomeIcon icon={faTrash} /></Button>
                         </td>
                     </tr>
                 ))}
-                </tbody>
-            </table>
+            </tbody>
+        </table>
         );
     }
 
@@ -111,7 +125,7 @@ class FileUpload extends Component {
                             <p>{this.props.acceptMimeTypes}</p>
                         </Modal.Body>
                         <Modal.Footer>
-                            <Button variant="primary" className="mr-1" onClick={() => this.setState({rejected: false})}>
+                            <Button variant="primary" className="mr-1" onClick={() => this.setState({ rejected: false })}>
                                 Close
                             </Button>
                         </Modal.Footer>
@@ -132,23 +146,23 @@ class FileUpload extends Component {
                     <Card>
                         <Card.Body>
                             <Dropzone disabled={this.props.isUploading}
-                                      onDragLeave={() => this.setState({dragOver: false})}
-                                      onDragEnter={(k) => {
-                                          this.setState({dragOver: true})
-                                      }}
-                                      onDrop={() => {
-                                          this.setState({dragOver: false})
-                                      }}
-                                      onDropAccepted={acceptedFiles => {
-                                          this.acceptDrop(acceptedFiles)
-                                      }}
-                                      onDropRejected={(k) => {
-                                          this.setState({rejected: true})
-                                      }}
-                                      multiple={this.props.maxCount !== 1}
-                                      accept={this.props.acceptMimeTypes}
+                                onDragLeave={() => this.setState({ dragOver: false })}
+                                onDragEnter={(k) => {
+                                    this.setState({ dragOver: true })
+                                }}
+                                onDrop={() => {
+                                    this.setState({ dragOver: false })
+                                }}
+                                onDropAccepted={acceptedFiles => {
+                                    this.acceptDrop(acceptedFiles)
+                                }}
+                                onDropRejected={(k) => {
+                                    this.setState({ rejected: true })
+                                }}
+                                multiple={this.props.maxCount !== 1}
+                                accept={this.props.acceptMimeTypes}
                             >
-                                {({getRootProps, getInputProps}) => (
+                                {({ getRootProps, getInputProps }) => (
                                     <section>
                                         <div {...getRootProps()} className={this._activeClasses()}>
                                             <input {...getInputProps()} />
@@ -164,8 +178,8 @@ class FileUpload extends Component {
                                     </Card.Title>
                                     {this._renderFileList()}
                                     <Button variant="success" className="mt-3"
-                                            onClick={() => this.props.onUpload(this.state.files)}
-                                            disabled={this.props.isUploading}>Upload</Button>
+                                        onClick={() => this.props.onUpload(this.state.files)}
+                                        disabled={this.props.isUploading}>Upload</Button>
                                 </React.Fragment>
 
                             )}
@@ -177,13 +191,5 @@ class FileUpload extends Component {
     }
 }
 
-
-FileUpload.propTypes = {
-    onUpload: PropTypes.func.isRequired,            // Is called when uploading the files - 1 param: files
-    acceptMimeTypes: PropTypes.string.isRequired,   // The accepted mime types for upload
-    uploadText: PropTypes.string.isRequired,        // The text to display in the Dropzone
-    isUploading: PropTypes.bool.isRequired,         // If true, the Upload-Button will be disabled
-    maxCount: PropTypes.number.isRequired           // Determine the maximum amount of files to upload
-};
 
 export default FileUpload;

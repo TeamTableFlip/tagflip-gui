@@ -1,4 +1,4 @@
-import React from "react";
+import React, { createRef, ReactInstance } from "react";
 import ReactDom from "react-dom";
 import Tooltip from "react-bootstrap/Tooltip";
 import PropTypes from "prop-types";
@@ -9,12 +9,47 @@ import Container from "react-bootstrap/Container";
 import Col from "react-bootstrap/Col";
 import Overlay from "react-bootstrap/Overlay";
 
+import { Annotation } from "../../Annotation";
+import { TagValue } from "../../redux/types";
+import { ButtonProps } from "react-bootstrap";
+
+const propTypes = {
+    text: PropTypes.string,         // The annotated text to be displayed
+    tag: PropTypes.object,          // The Tag information to be displayed in the Tooltip
+    annotation: PropTypes.object,   // The Annotation information to shown next to the text
+    onDelete: PropTypes.any         // Is called when deleting the Tag - 0 params
+};
+
+interface Tag {
+    t_id: number;
+    start_index: number;
+    end_index: number;
+}
+
+interface Props {
+    id: string;
+    text: string;
+    tag: Tag;
+    annotation: { name: string; color: string };
+    onDelete: () => void;
+};
+
+const initialState = {
+    showPopup: false
+}
+
+type State = typeof initialState;
+//type RefType = Button["ref"];
+
 /**
  * A React Component for rendering an annotated text.
  * The text to be rendered will have the background color of the corresponding Annotation. Furthermore there will be a
  * react-bootstrap Tooltip, for displaying the Tag's details.
  */
-class AnnotationHighlight extends React.Component {
+class AnnotationHighlight extends React.Component<Props, State> {
+
+    popupTargetRef: React.RefObject<any>;
+
     /**
      * Create a new AnnotationHighlight component.
      * @param props The properties of the component.
@@ -24,9 +59,7 @@ class AnnotationHighlight extends React.Component {
         this._handleClick = this._handleClick.bind(this);
         this._hideIfVisible = this._hideIfVisible.bind(this);
         this.popupTargetRef = React.createRef();
-        this.state = {
-            showPopup: false
-        };
+        this.state = initialState;
     }
 
     /**
@@ -73,7 +106,9 @@ class AnnotationHighlight extends React.Component {
     render() {
         return (
             <React.Fragment>
-                <Button ref={this.popupTargetRef} onClick={this._handleClick}
+                <Button
+                    ref={this.popupTargetRef}
+                    onClick={this._handleClick}
                     className="annotation"
                     style={{ background: this.props.annotation.color }}>
                     {this.props.annotation.name}
@@ -81,7 +116,7 @@ class AnnotationHighlight extends React.Component {
 
                 <Overlay
                     show={this.state.showPopup}
-                    target={this.popupTargetRef}
+                    target={this.popupTargetRef.current}
                     placement="top"
                     containerPadding={20}
                 >
@@ -99,12 +134,5 @@ class AnnotationHighlight extends React.Component {
             </React.Fragment>);
     }
 }
-
-AnnotationHighlight.propTypes = {
-    text: PropTypes.string,         // The annotated text to be displayed
-    tag: PropTypes.object,          // The Tag information to be displayed in the Tooltip
-    annotation: PropTypes.object,   // The Annotation information to shown next to the text
-    onDelete: PropTypes.any         // Is called when deleting the Tag - 0 params
-};
 
 export default AnnotationHighlight
