@@ -1,3 +1,10 @@
+## [1.1.3](https://github.com/fhswf/tagflip-gui/compare/v1.1.2...v1.1.3) (2020-08-11)
+
+
+### Bug Fixes
+
+* Fixed editing of annotations. ([3483fa7](https://github.com/fhswf/tagflip-gui/commit/3483fa7a62731897b243747256d304d97fa7807d))
+
 ## [1.1.2](https://github.com/fhswf/tagflip-gui/compare/v1.1.1...v1.1.2) (2020-08-11)
 
 
