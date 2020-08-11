@@ -1,3 +1,10 @@
+## [1.1.2](https://github.com/fhswf/tagflip-gui/compare/v1.1.1...v1.1.2) (2020-08-11)
+
+
+### Bug Fixes
+
+* type safety - migration to typescript ([d0a33c1](https://github.com/fhswf/tagflip-gui/commit/d0a33c18ddf5c846483f0440b37d889d9ca0439c))
+
 ## [1.1.1](https://github.com/fhswf/tagflip-gui/compare/v1.1.0...v1.1.1) (2020-08-10)
 
 
