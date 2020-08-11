@@ -27,7 +27,8 @@ import {
     updateAnnotationField,
     saveAnnotation,
     setEditableAnnotation,
-    emptyAnnotationSet
+    emptyAnnotationSet,
+    emptyAnnotation
 } from "./AnnotationSetActions";
 
 
@@ -64,6 +65,7 @@ export const ActionCreators = Object.assign({},
         setActiveAnnotationSet,
         uploadCorpus,
         emptyCorpus,
-        emptyAnnotationSet
+        emptyAnnotationSet,
+        emptyAnnotation
     }
 );

@@ -12,11 +12,12 @@ import ColorPickerBadge from "../../../components/colorPickerBadge/ColorPickerBa
 import { bindActionCreators } from "redux";
 import { ActionCreators } from "../../../../redux/actions/ActionCreators";
 import { RouteComponentProps } from "react-router-dom";
-import connect from "react-redux/es/connect/connect";
 import FetchPending from "../../../components/FetchPending";
 import fetchStatusType from "../../../../redux/actions/FetchStatusTypes";
 import ConfirmationDialog from "../../../components/dialogs/ConfirmationDialog";
-import { ConnectedProps } from "react-redux";
+import { connect, ConnectedProps } from "react-redux";
+import { RootState } from "../../../../redux/reducers/Reducers";
+import { Annotation } from "../../../../Annotation";
 
 const style = {
     annotation: {
@@ -40,10 +41,10 @@ const style = {
  * Maps redux state to component's props.
  * @param state The redux state (reducers).
  */
-function mapStateToProps(state) {
+function mapStateToProps(state: RootState) {
     return {
         annotationSet: state.activeAnnotationSet,
-        emptyAnnotation: state.emptyAnnotation
+        // emptyAnnotation: state.emptyAnnotation
     };
 }
 
@@ -69,7 +70,7 @@ type State = typeof initialState
 
 type PropsFromRedux = ConnectedProps<typeof connector>
 
-type Props = PropsFromRedux & RouteComponentProps;
+type Props = PropsFromRedux;
 
 /**
  * The view for creating and updating single AnnotationSets with their list of Annotations.
@@ -83,7 +84,7 @@ class AnnotationSetDetails extends Component<Props, State> {
         super(props);
         this.state = initialState;
         this._saveAnnotationSet = this._saveAnnotationSet.bind(this);
-        this._addNewAnnotation = this._addNewAnnotation.bind(this);
+        this.addNewAnnotation = this.addNewAnnotation.bind(this);
         this._renderAnnotationsTable = this._renderAnnotationsTable.bind(this);
         this._saveAnnotation = this._saveAnnotation.bind(this);
         this._abortEditAnnotationSet = this._abortEditAnnotationSet.bind(this);
@@ -117,12 +118,12 @@ class AnnotationSetDetails extends Component<Props, State> {
      * Create a new Annotation, which can be edited and persisted later on.
      * @private
      */
-    _addNewAnnotation() {
+    addNewAnnotation() {
         this.setState({
             createNewAnnotation: true,
             editAnnotation: false
         });
-        let newAnnotation = this.props.emptyAnnotation;
+        let newAnnotation = Annotation.EMPTY;
         newAnnotation.s_id = this.props.annotationSet.values.s_id;
         this.props.setEditableAnnotation(newAnnotation);
     }
@@ -362,7 +363,7 @@ class AnnotationSetDetails extends Component<Props, State> {
                                         Annotations
                                     </Card.Title>
                                 </Col>
-                                <Col><Button size="sm" className="float-right" onClick={this._addNewAnnotation}>
+                                <Col><Button size="sm" className="float-right" onClick={this.addNewAnnotation}>
                                     <FontAwesomeIcon icon={faPlus} /> Add</Button>
                                 </Col>
                             </Row>

@@ -10,20 +10,21 @@ import { AnnotationSet } from "../../AnnotationSet";
  */
 export const emptyAnnotationSet = (state = {}, action) => AnnotationSet.EMPTY;
 
+const EMPTY_ANNOTATION = {
+    a_id: 0,
+    s_id: 0,
+    name: "",
+    color: "#bbbbbb"
+};
+
 /**
  * An empty Annotation.
  * @param state The current redux state - does nothing here.
  * @param action The executed action - does nothing here.
  * @returns {{a_id: number, s_id: number, name: string, color: string}}
  */
-export const emptyAnnotation = function (state = {}, action) {
-    return {
-        a_id: 0,
-        s_id: 0,
-        name: "",
-        color: "#bbbbbb"
-    };
-};
+export const emptyAnnotation = (state = {}, action) => EMPTY_ANNOTATION;
+
 
 export const SET_ACTIVE_ANNOTATION_SET = "SET_ACTIVE_ANNOTATION_SET";
 
