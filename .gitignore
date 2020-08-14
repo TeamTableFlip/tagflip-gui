@@ -1,6 +1,8 @@
 /dist/
+/doc/
 /node_modules/
 /.idea/
 /src/js/config/local*
 
 .webpack.env
+.oidcsettings.ts

@@ -10,6 +10,13 @@ import { store, persistor } from "./js/redux/Store";
 import { Auth0Provider } from '@auth0/auth0-react';
 import { OidcSettings } from '../.oidcsettings';
 
+/**
+ * @file Root of the react application
+ * @copyright 2020 TagFlip team
+ * @copyright 2020 Fachhochschule Südwestfalen
+ * @license MIT
+ */
+
 const wrapper = document.getElementById("app");
 
 wrapper

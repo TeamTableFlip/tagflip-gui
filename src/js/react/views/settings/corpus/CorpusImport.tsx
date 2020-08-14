@@ -13,18 +13,17 @@ import { Corpus } from "../../../../Corpus";
 import { uploadCorpus } from "../../../../redux/actions/CorpusActions"
 import { RootState } from "../../../../redux/reducers/Reducers";
 
-type State = RootState;
-
 const initialState = {
     validated: false,
 };
 
+type State = typeof initialState;
 
 /**
  * Maps redux state to component's props.
  * @param state The redux state (reducers).
  */
-function mapStateToProps(state: State) {
+function mapStateToProps(state: RootState) {
     return {
         corpus: state.editableCorpus.values,
         isFetching: state.editableCorpus.isFetching,
@@ -48,7 +47,9 @@ type Props = PropsFromRedux & {
 }
 
 /**
- * The view for creating and editing single corpora with all their corresponding information.
+ * The view for importing a new corpus.
+ * 
+ * @author Christian Gawron 
  */
 class CorpusImport extends Component<Props, State> {
     /**
@@ -57,7 +58,7 @@ class CorpusImport extends Component<Props, State> {
      */
     constructor(props: Props) {
         super(props);
-        //this.state = initialState;
+        this.state = initialState;
     }
 
     /**

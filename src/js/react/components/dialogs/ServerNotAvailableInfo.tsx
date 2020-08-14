@@ -3,9 +3,17 @@ import PropTypes from 'prop-types';
 import Modal from "react-bootstrap/Modal";
 import { Spinner } from "react-bootstrap";
 
-interface Props {
-    serverAvailable: boolean;
-}
+/**
+ * Property type for the availability info component.
+ */
+const propTypes = {
+    /**
+     * `true` if the server is available
+     */
+    serverAvailable: PropTypes.bool.isRequired
+};
+
+type Props = PropTypes.InferProps<typeof propTypes>;
 
 /**
  * A React Component displaying a modal dialog prompting the Server being inaccessible.
@@ -15,7 +23,7 @@ class ServerNotAvailableInfo extends Component<Props> {
      * Create a new ServerNotAvailableInfo.
      * @param props The properties of the component.
      */
-    constructor(props) {
+    constructor(props: Props) {
         super(props);
     }
 
@@ -39,9 +47,7 @@ class ServerNotAvailableInfo extends Component<Props> {
         );
     }
 
-    propTypes = {
-        serverAvailable: PropTypes.bool.isRequired // Determine whether the server is currently available or not
-    };
+
 }
 
 

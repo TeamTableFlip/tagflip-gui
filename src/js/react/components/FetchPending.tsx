@@ -5,15 +5,21 @@ import { Spinner } from "react-bootstrap";
 import Alert from "react-bootstrap/Alert";
 import { FetchState } from "../../redux/types";
 
-interface Props {
-    isPending: boolean;               // Determine whether the data is still being fetched or not
-    silent?: boolean;                             // If silent, the Spinner won't be shown
-    success: boolean;                 // When not pending anymore: Determine whether the fetch process
+const propTypes = {
+    isPending: PropTypes.bool.isRequired,               // Determine whether the data is still being fetched or not
+    silent: PropTypes.bool,                             // If silent, the Spinner won't be shown
+    success: PropTypes.bool.isRequired,                 // When not pending anymore: Determine whether the fetch process
     // was successful or not. If it was, render all the child nodes
-    inheritChildrenHeight?: boolean;   // The height of the inherited child components
-    retryCallback?: () => void;                      // Is called by onClick, when trying to refetch data - No params
+    inheritChildrenHeight: PropTypes.bool,              // The height of the inherited child components
+    retryCallback: PropTypes.func                       // Is called by onClick, when trying to refetch data - No params
 };
 
+const defaultProps = {
+    silent: false,
+    inheritChildrenHeight: true
+};
+
+type Props = PropTypes.InferProps<typeof propTypes>;
 
 /**
  * A React Component to be used as a parent for Components, which require data to be fetched from a backend.
@@ -79,20 +85,6 @@ class FetchPending extends Component<Props> {
             </div>
         );
     }
-
-    propTypes = {
-        isPending: PropTypes.bool.isRequired,               // Determine whether the data is still being fetched or not
-        silent: PropTypes.bool,                             // If silent, the Spinner won't be shown
-        success: PropTypes.bool.isRequired,                 // When not pending anymore: Determine whether the fetch process
-        // was successful or not. If it was, render all the child nodes
-        inheritChildrenHeight: PropTypes.bool,              // The height of the inherited child components
-        retryCallback: PropTypes.func                       // Is called by onClick, when trying to refetch data - No params
-    };
-
-    defaultProps = {
-        silent: false,
-        inheritChildrenHeight: true
-    };
 }
 
 

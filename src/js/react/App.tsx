@@ -15,6 +15,7 @@ import ServerNotAvailableInfo from "./components/dialogs/ServerNotAvailableInfo"
 import LoginButton from "./components/LoginButton";
 import { Auth0Provider } from "@auth0/auth0-react";
 import { OidcSettings } from "../../../.oidcsettings";
+import Home from "./views/Home";
 
 const __webpack_public_path__ = process.env.ASSET_PATH;
 
@@ -98,6 +99,9 @@ class App extends Component<PropsFromRedux> {
                                 </Route>
                                 <Route path="/settings">
                                     <Settings />
+                                </Route>
+                                <Route path="/">
+                                    <Home />
                                 </Route>
                             </Switch>
                         </main>
