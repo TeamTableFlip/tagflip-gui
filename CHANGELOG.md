@@ -1,3 +1,10 @@
+## [1.1.4](https://github.com/fhswf/tagflip-gui/compare/v1.1.3...v1.1.4) (2020-08-14)
+
+
+### Bug Fixes
+
+* add page for / ([01040b6](https://github.com/fhswf/tagflip-gui/commit/01040b6792538fecce105a5558cbeb1c86e5bf83))
+
 ## [1.1.3](https://github.com/fhswf/tagflip-gui/compare/v1.1.2...v1.1.3) (2020-08-11)
 
 
