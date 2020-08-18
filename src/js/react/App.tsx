@@ -1,20 +1,22 @@
-import React, { Component } from "react";
+import React, {Component} from "react";
 import Navigation from "./views/Navigation";
 import Footer from "./views/Footer";
 
-import { BrowserRouter as Router, Redirect, Route, Switch } from "react-router-dom";
+import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
 
 import Settings from "./views/settings/Settings";
 import Editor from "./views/editor/Editor";
-import { ActionCreators } from "../redux/actions/ActionCreators";
-import { connect, ConnectedProps } from "react-redux";
-import { bindActionCreators } from "redux";
+import {ActionCreators} from "../redux/actions/ActionCreators";
+import {connect, ConnectedProps} from "react-redux";
+import {bindActionCreators} from "redux";
 
 import config from '../config/config';
 import ServerNotAvailableInfo from "./components/dialogs/ServerNotAvailableInfo";
-import LoginButton from "./components/LoginButton";
-import { Auth0Provider } from "@auth0/auth0-react";
-import { OidcSettings } from "../../../.oidcsettings";
+import {Auth0Provider} from "@auth0/auth0-react";
+import {OidcSettings} from "../../../.oidcsettings";
+import {ToastContainer} from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
+
 
 const __webpack_public_path__ = process.env.ASSET_PATH;
 
@@ -88,23 +90,31 @@ class App extends Component<PropsFromRedux> {
                     >
 
 
-                        <Navigation />
-                        <ServerNotAvailableInfo serverAvailable={this.props.serverStatus.available} />
-
+                        <Navigation/>
+                        <ServerNotAvailableInfo serverAvailable={this.props.serverStatus.available}/>
+                        <ToastContainer
+                            position="bottom-right"
+                            hideProgressBar={false}
+                            newestOnTop
+                            closeOnClick
+                            rtl={false}
+                            pauseOnFocusLoss
+                            draggable
+                        />
                         <main>
                             <Switch>
                                 <Route path="/editor">
-                                    <Editor />
+                                    <Editor/>
                                 </Route>
                                 <Route path="/settings">
-                                    <Settings />
+                                    <Settings/>
                                 </Route>
                             </Switch>
                         </main>
-                        <Footer />
+                        <Footer/>
                     </Auth0Provider>
                 </Router>
-            </div >);
+            </div>);
     }
 }
 

@@ -1,57 +1,57 @@
-import client from '../../backend/RestApi';
 import FetchStatusType from "./FetchStatusTypes";
+import {createAction} from "@reduxjs/toolkit";
+import {ofType} from "redux-observable";
+import {catchError, filter, map, mergeMap, switchMap} from "rxjs/operators";
+import {fromFetch} from "rxjs/fetch";
+import {RequestBuilder} from "../../backend/RequestBuilder";
+import {handleResponse} from "./Common";
+import {TagFlipError} from "tagflip-common";
+import {of} from "rxjs";
 
 
-export const REQUEST_SERVER_STATUS = "REQUEST_SERVER_STATUS";
-
-/**
- * Action creator for action REQUEST_SERVER_STATUS
- */
-export function requestServerStatus() {
-    return {
-        type: REQUEST_SERVER_STATUS,
-    }
-}
-
-export const INVALIDATE_SERVER_STATUS = "INVALIDATE_SERVER_STATUS";
-
-/**
- * Action creator for action INVALIDATE_SERVER_STATUS
- */
-export function invalidateServerStatus() {
-    return {
-        type: INVALIDATE_SERVER_STATUS,
-    }
-}
-
-
+export const FETCH_SERVER_STATUS = "FETCH_SERVER_STATUS";
 export const RECEIVE_SERVER_STATUS = "RECEIVE_SERVER_STATUS";
 
-/**
- * Action creator for action RECEIVE_SERVER_STATUS
- */
-export function receiveServerStatus(status = FetchStatusType.success, error = null) {
+
+export const fetchServerStatus = createAction(FETCH_SERVER_STATUS);
+export const receiveServerStatusSuccess = () => {
     return {
         type: RECEIVE_SERVER_STATUS,
-        available: status === FetchStatusType.success,
-        receivedAt: Date.now(),
-        status: status,
-        error: error
+        payload: {
+            available: true,
+            receivedAt: Date.now(),
+            status: FetchStatusType.success,
+            error: null
+        }
+    }
+}
+export const receiveServerStatusError = (error: any) => {
+    return {
+        type: RECEIVE_SERVER_STATUS,
+        payload: {
+            available: false,
+            receivedAt: Date.now(),
+            status: FetchStatusType.error,
+            error: error
+        }
     }
 }
 
-
-/**
- * Action creator for async fetching current server status.
- * @returns {Function}
- */
-export function fetchServerStatus() {
-    return (dispatch, getState) => {
-        dispatch(requestServerStatus())
-        client.httpGet('/test')
-            .then(result =>
-                dispatch(receiveServerStatus())
+export const fetchServerStatusEpic = action$ => action$.pipe(
+    ofType(FETCH_SERVER_STATUS),
+    mergeMap(action =>
+        fromFetch(RequestBuilder.GET("/test")).pipe(
+            switchMap(res => {
+                if (res.ok)
+                    return Promise.resolve(res);
+                return Promise.reject(res);
+            }),
+            map(res => receiveServerStatusSuccess()),
+            catchError((err, caught) =>
+                of(err).pipe(
+                    map(() => receiveServerStatusError(err))
+                )
             )
-            .catch(error => dispatch(receiveServerStatus(FetchStatusType.error, error)))
-    }
-}
+        )
+    )
+)

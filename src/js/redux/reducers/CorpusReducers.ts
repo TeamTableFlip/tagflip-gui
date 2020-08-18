@@ -1,15 +1,13 @@
 import createReducer from './CreateReducer'
-import * as CorpusEditActions from '../actions/CorpusActions'
+import * as CorpusActions from '../actions/corpus/CorpusActions'
+import * as DocumentActions from '../actions/corpus/DocumentActions'
+import * as TaggingActions from '../actions/corpus/TaggingActions'
 import FetchStatusType from "../actions/FetchStatusTypes";
-import { Corpus } from '../../Corpus';
+import Corpus from '../../Corpus';
 import { CorpusState } from '../types';
 
 const initialState: CorpusState = {
-    values: {
-        c_id: 0,
-        name: "",
-        description: "",
-    },
+    values: Corpus.create(),
     didInvalidate: false,
     isFetching: false,
     lastUpdated: undefined,
@@ -56,78 +54,115 @@ const initialState: CorpusState = {
  * associated AnnotaionSets, Documents, and the currently selected Document with all its Tags.
  * @type {reducer}
  */
-export const editableCorpus = createReducer(initialState, {
-    [CorpusEditActions.SET_EDITABLE_CORPUS]: (draft: CorpusState, action) => {
-        draft.values = action.corpus;
+export const activeCorpus = createReducer(initialState, {
+    [CorpusActions.SET_ACTIVE_CORPUS]: (draft: CorpusState, action) => {
+        draft.values = action.payload;
         draft.didInvalidate = true;
         draft.annotationSets.didInvalidate = true;
         draft.documents.didInvalidate = true;
         draft.activeDocument.didInvalidate = true;
         draft.activeDocument.tags.didInvalidate = true;
     },
-    [CorpusEditActions.UPDATE_CORPUS_FIELD]: (draft: CorpusState, action) => {
-        draft.values[action.field] = action.value;
+    [CorpusActions.UPDATE_CORPUS_FIELD]: (draft: CorpusState, action) => {
+        draft.values[action.payload.field] = action.payload.value;
     },
-    [CorpusEditActions.ADD_CORPUS_ANNOTATION_SET]: (draft, action) => {
-        draft.annotationSets.items.push(action.annotationSet); // add
+    [CorpusActions.ADD_CORPUS_ANNOTATION_SET]: (draft, action) => {
+        draft.annotationSets.items.push(action.payload); // add
     },
-    [CorpusEditActions.REMOVE_CORPUS_ANNOTATION_SET]: (draft, action) => {
-        if (draft.annotationSets.items.map(a => a.s_id).includes(action.annotationSet.s_id)) { // set is selected
-            draft.annotationSets.items = draft.annotationSets.items.filter(a => a.s_id !== action.annotationSet.s_id)        // remove
+    [CorpusActions.REMOVE_CORPUS_ANNOTATION_SET]: (draft, action) => {
+        if (draft.annotationSets.items.map(a => a.annotationSetId).includes(action.payload.annotationSetId)) { // set is selected
+            draft.annotationSets.items = draft.annotationSets.items.filter(a => a.annotationSetId !== action.payload.annotationSetId)        // remove
         }
     },
-    [CorpusEditActions.REQUEST_CORPUS_ANNOTATION_SETS](draft, action) {
+    [CorpusActions.FETCH_ACTIVE_CORPUS_ANNOTATION_SETS](draft, action) {
         draft.annotationSets.isFetching = true;
-    },
-    [CorpusEditActions.INVALIDATE_CORPUS_ANNOTATION_SETS](draft, action) {
         draft.annotationSets.didInvalidate = true;
     },
-    [CorpusEditActions.RECEIVE_CORPUS_ANNOTATION_SETS](draft, action) {
+    [CorpusActions.RECEIVE_ACTIVE_CORPUS_ANNOTATION_SETS](draft, action) {
         draft.annotationSets.isFetching = false;
         draft.annotationSets.didInvalidate = false;
-        if (action.status === FetchStatusType.success) {
-            draft.annotationSets.items = action.annotationSets;
-            draft.annotationSets.lastUpdated = action.receivedAt;
+        if (action.payload.status === FetchStatusType.success) {
+            draft.annotationSets.items = action.payload.data;
+            draft.annotationSets.lastUpdated = action.payload.receivedAt;
             draft.annotationSets.status = FetchStatusType.success;
             draft.annotationSets.error = null;
         } else {
             draft.annotationSets.isFetching = false;
             draft.annotationSets.didInvalidate = false;
             draft.annotationSets.status = FetchStatusType.error;
-            draft.annotationSets.error = action.error;
+            draft.annotationSets.error = action.payload.error;
         }
     },
-
-    [CorpusEditActions.REQUEST_UPDATE_CORPUS](draft, action) {
+    [CorpusActions.FETCH_ACTIVE_CORPUS](draft, action) {
         draft.isFetching = true;
+        draft.didInvalidate = true;
     },
-    [CorpusEditActions.RECEIVE_UPDATE_CORPUS](draft, action) {
+    [CorpusActions.SAVE_ACTIVE_CORPUS](draft, action) {
+        draft.isFetching = true;
+        draft.didInvalidate = true;
+    },
+    [CorpusActions.RECEIVE_UPDATE_ACTIVE_CORPUS](draft, action) {
         draft.isFetching = false;
-        draft.didInvalidate = false;
-        if (action.status === FetchStatusType.success) {
-            draft.values = action.corpus;
-            draft.lastUpdated = action.receivedAt;
+        if (action.payload.status === FetchStatusType.success) {
+            draft.values = action.payload.data;
+            draft.lastUpdated = action.payload.receivedAt;
             draft.status = FetchStatusType.success;
             draft.error = null;
+            draft.didInvalidate = false;
         } else {
             draft.isFetching = false;
             draft.status = FetchStatusType.error;
-            draft.error = action.error;
+            draft.error = action.payload.error;
+        }
+    },
+    [DocumentActions.FETCH_ACTIVE_CORPUS_DOCUMENTS](draft, action) {
+        draft.documents.isFetching = true;
+        draft.documents.didInvalidate = true;
+    },
+    [DocumentActions.RECEIVE_ACTIVE_CORPUS_DOCUMENTS](draft, action) {
+        draft.documents.isFetching = false;
+        draft.documents.didInvalidate = false;
+        if (action.payload.status === FetchStatusType.success) {
+            draft.documents.items = action.payload.data;
+            draft.documents.lastUpdated = action.payload.receivedAt;
+            draft.documents.status = FetchStatusType.success;
+            draft.documents.error = null;
+        } else {
+            draft.documents.isFetching = false;
+            draft.documents.didInvalidate = false;
+            draft.documents.status = FetchStatusType.error;
+            draft.documents.error = action.payload.error;
         }
     },
 
-    [CorpusEditActions.REQUEST_CORPUS_DOCUMENTS](draft, action) {
+    [DocumentActions.REQUEST_CORPUS_IMPORT](draft, action) {
+        draft.isFetching = true;
+    },
+    [DocumentActions.UPLOAD_ACTIVE_CORPUS_DOCUMENTS](draft, action) {
         draft.documents.isFetching = true;
     },
-    [CorpusEditActions.INVALIDATE_CORPUS_DOCUMENTS](draft, action) {
-        draft.documents.didInvalidate = true;
-    },
-    [CorpusEditActions.RECEIVE_CORPUS_DOCUMENTS](draft, action) {
+    [DocumentActions.RECEIVE_ACTIVE_CORPUS_UPLOAD_DOCUMENTS](draft, action) {
         draft.documents.isFetching = false;
         draft.documents.didInvalidate = false;
-        if (action.status === FetchStatusType.success) {
-            draft.documents.items = action.documents;
-            draft.documents.lastUpdated = action.receivedAt;
+        if (action.payload.status === FetchStatusType.success) {
+            draft.documents.items.push(...action.payload.data);
+            draft.documents.lastUpdated = action.payload.receivedAt;
+            draft.documents.status = FetchStatusType.success;
+            draft.documents.error = null;
+        } else {
+            draft.documents.isFetching = false;
+            draft.documents.didInvalidate = false;
+            draft.documents.status = FetchStatusType.error;
+            draft.documents.error = action.payload.error;
+        }
+    },
+
+    [DocumentActions.RECEIVE_DELETE_ACTIVE_CORPUS_DOCUMENT](draft, action) {
+        draft.documents.isFetching = false;
+        draft.documents.didInvalidate = false;
+        if (action.payload.status === FetchStatusType.success) {
+            draft.documents.items = draft.documents.items.filter(x => x.documentId !== action.payload.data)
+            draft.documents.lastUpdated = action.payload.receivedAt;
             draft.documents.status = FetchStatusType.success;
             draft.documents.error = null;
         } else {
@@ -137,104 +172,75 @@ export const editableCorpus = createReducer(initialState, {
             draft.documents.error = action.error;
         }
     },
-
-    [CorpusEditActions.REQUEST_CORPUS_IMPORT](draft, action) {
-        draft.isFetching = true;
-    },
-
-    [CorpusEditActions.REQUEST_CORPUS_UPLOAD_DOCUMENTS](draft, action) {
-        draft.documents.isFetching = true;
-    },
-
-    [CorpusEditActions.RECEIVE_CORPUS_UPLOAD_DOCUMENTS](draft, action) {
-        draft.documents.isFetching = false;
-        draft.documents.didInvalidate = false;
-        draft.documents.items.push(...action.documents);
-        if (action.skippedDocuments.length !== 0) {
-            draft.documents.status = FetchStatusType.warning;
-            draft.documents.error = "Could not process all documents."
-            for (let doc of action.skippedDocuments) {
-                draft.documents.error = draft.documents.error.concat("\n");
-                draft.documents.error = draft.documents.error.concat(doc.item.filename).concat(": ").concat(doc.reason)
-            }
-        } else {
-            draft.documents.status = FetchStatusType.success;
-            draft.documents.error = null;
-        }
-    },
-
-    [CorpusEditActions.CORPUS_DELETE_DOCUMENT](draft, action) {
-        draft.documents.items = draft.documents.items.filter(x => x.d_id !== action.documentId)
-    },
-
-    [CorpusEditActions.REQUEST_CORPUS_DOCUMENT](draft, action) {
+    [DocumentActions.FETCH_ACTIVE_CORPUS_DOCUMENT](draft, action) {
         draft.activeDocument.isFetching = true;
+        draft.activeDocument.didInvalidate = true;
         draft.activeDocument.item = null;
     },
-    [CorpusEditActions.RECEIVE_CORPUS_DOCUMENT](draft, action) {
+    [DocumentActions.RECEIVE_ACTIVE_CORPUS_DOCUMENT](draft, action) {
         draft.activeDocument.isFetching = false;
         draft.activeDocument.didInvalidate = false;
-        if (action.status === FetchStatusType.success) {
-            draft.activeDocument.item = action.document;
-            draft.activeDocument.lastUpdated = action.receivedAt;
+        if (action.payload.status === FetchStatusType.success) {
+            draft.activeDocument.item = action.payload.data;
+            draft.activeDocument.lastUpdated = action.payload.receivedAt;
             draft.activeDocument.status = FetchStatusType.success;
             draft.activeDocument.error = null;
         } else {
-            draft.activeDocument.lastUpdated = action.receivedAt;
+            draft.activeDocument.lastUpdated = action.payload.receivedAt;
             draft.activeDocument.status = FetchStatusType.error;
-            draft.activeDocument.error = action.error;
+            draft.activeDocument.error = action.payload.error;
         }
     },
-    [CorpusEditActions.REQUEST_TAGS_FOR_ACTIVE_DOCUMENT](draft, action) {
+    [TaggingActions.FETCH_TAGS_FOR_ACTIVE_DOCUMENT](draft, action) {
         draft.activeDocument.tags.isFetching = true;
         draft.activeDocument.tags.didInvalidate = true;
     },
-    [CorpusEditActions.RECEIVE_TAGS_FOR_ACTIVE_DOCUMENT](draft, action) {
+    [TaggingActions.RECEIVE_TAGS_FOR_ACTIVE_DOCUMENT](draft, action) {
         draft.activeDocument.tags.isFetching = false;
         draft.activeDocument.tags.didInvalidate = false;
-        if (action.status === FetchStatusType.success) {
-            draft.activeDocument.tags.items = action.tags;
-            draft.activeDocument.tags.lastUpdated = action.receivedAt;
+        if (action.payload.status === FetchStatusType.success) {
+            draft.activeDocument.tags.items = action.payload.data;
+            draft.activeDocument.tags.lastUpdated = action.payload.receivedAt;
             draft.activeDocument.tags.status = FetchStatusType.success;
             draft.activeDocument.tags.error = null;
         } else {
-            draft.activeDocument.tags.lastUpdated = action.receivedAt;
+            draft.activeDocument.tags.lastUpdated = action.payload.receivedAt;
             draft.activeDocument.tags.status = FetchStatusType.error;
             draft.activeDocument.tags.error = action.error;
         }
     },
-    [CorpusEditActions.REQUEST_SAVE_TAG](draft, action) {
-        draft.activeDocument.tags.isFetching = false;
+    [TaggingActions.SAVE_TAG_FOR_ACTIVE_DOCUMENT](draft, action) {
+        draft.activeDocument.tags.isFetching = true;
         draft.activeDocument.tags.didInvalidate = true;
     },
-    [CorpusEditActions.RECEIVE_SAVE_TAG](draft, action) {
+    [TaggingActions.RECEIVE_SAVE_TAG_FOR_ACTIVE_DOCUMENT](draft, action) {
         draft.activeDocument.tags.isFetching = false;
         draft.activeDocument.tags.didInvalidate = false;
-        if (action.status === FetchStatusType.success) {
-            draft.activeDocument.tags.items.push(action.tag);
-            draft.activeDocument.tags.lastUpdated = action.receivedAt;
+        if (action.payload.status === FetchStatusType.success) {
+            draft.activeDocument.tags.items.push(action.payload.data);
+            draft.activeDocument.tags.lastUpdated = action.payload.receivedAt;
             draft.activeDocument.tags.status = FetchStatusType.success;
             draft.activeDocument.tags.error = null;
         } else {
-            draft.activeDocument.tags.lastUpdated = action.receivedAt;
+            draft.activeDocument.tags.lastUpdated = action.payload.receivedAt;
             draft.activeDocument.tags.status = FetchStatusType.error;
-            draft.activeDocument.tags.error = action.error;
+            draft.activeDocument.tags.error = action.payload.error;
         }
     },
-    [CorpusEditActions.REQUEST_DELETE_TAG](draft, action) {
-        draft.activeDocument.tags.isFetching = false;
+    [TaggingActions.DELETE_TAG_FOR_ACTIVE_DOCUMENT](draft, action) {
+        draft.activeDocument.tags.isFetching = true;
         draft.activeDocument.tags.didInvalidate = true;
     },
-    [CorpusEditActions.RECEIVE_DELETE_TAG](draft, action) {
+    [TaggingActions.RECEIVE_DELETE_TAG_FOR_ACTIVE_DOCUMENT](draft, action) {
         draft.activeDocument.tags.isFetching = false;
         draft.activeDocument.tags.didInvalidate = false;
-        if (action.status === FetchStatusType.success) {
-            draft.activeDocument.tags.items = draft.activeDocument.tags.items.filter(x => x.t_id !== action.tagId);
-            draft.activeDocument.tags.lastUpdated = action.receivedAt;
+        if (action.payload.status === FetchStatusType.success) {
+            draft.activeDocument.tags.items = draft.activeDocument.tags.items.filter(x => x.tagId !== action.payload.data.tagId);
+            draft.activeDocument.tags.lastUpdated = action.payload.receivedAt;
             draft.activeDocument.tags.status = FetchStatusType.success;
             draft.activeDocument.tags.error = null;
         } else {
-            draft.activeDocument.tags.lastUpdated = action.receivedAt;
+            draft.activeDocument.tags.lastUpdated = action.payload.receivedAt;
             draft.activeDocument.tags.status = FetchStatusType.error;
             draft.activeDocument.tags.error = action.error;
         }

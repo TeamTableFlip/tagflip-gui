@@ -3,6 +3,9 @@ import Navbar from "react-bootstrap/Navbar";
 import Nav from "react-bootstrap/Nav";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import LoginButton from "../components/LoginButton";
+import {Button} from "react-bootstrap";
+import {toast, ToastContainer} from "react-toastify";
+import {Auth0Provider} from "@auth0/auth0-react";
 
 interface State {
     activeLink: string

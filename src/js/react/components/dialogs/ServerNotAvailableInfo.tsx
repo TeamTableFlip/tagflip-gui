@@ -38,10 +38,6 @@ class ServerNotAvailableInfo extends Component<Props> {
             </Modal>
         );
     }
-
-    propTypes = {
-        serverAvailable: PropTypes.bool.isRequired // Determine whether the server is currently available or not
-    };
 }
 
 

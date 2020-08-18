@@ -1,15 +1,16 @@
-import React, { Component } from "react";
+import React, {Component} from "react";
 import FetchPending from "../../components/FetchPending";
 import FetchStatusType from "../../../redux/actions/FetchStatusTypes";
 import ListGroup from "react-bootstrap/ListGroup";
-import { bindActionCreators } from "redux";
-import { ActionCreators } from "../../../redux/actions/ActionCreators";
+import {bindActionCreators} from "redux";
+import {ActionCreators} from "../../../redux/actions/ActionCreators";
 import AnnotationEditorCodeMirror from "../../components/AnnotationEditorCodeMirror";
 import SearchableDropdown from "../../components/searchableDropdown/SearchableDropdown";
-import { RootState } from "../../../redux/reducers/Reducers"
-import { CorpusListValue, CorpusValue, DocumentValue } from "../../../redux/types";
-import { AnnotationSet } from "../../../AnnotationSet";
-import { connect, ConnectedProps } from "react-redux";
+import {RootState} from "../../../redux/reducers/Reducers"
+import {CorpusListValue, CorpusValue, DocumentValue} from "../../../redux/types";
+import AnnotationSet from "../../../backend/model/AnnotationSet";
+import Document from "../../../backend/model/Document";
+import {connect, ConnectedProps} from "react-redux";
 
 /**
  * Maps redux state to component's props.
@@ -18,8 +19,8 @@ import { connect, ConnectedProps } from "react-redux";
 function mapStateToProps(state: RootState) {
     return {
         corpora: state.corpora,
-        selectedCorpus: state.editableCorpus,
-        selectedDocument: state.editableCorpus.activeDocument,
+        selectedCorpus: state.activeCorpus,
+        selectedDocument: state.activeCorpus.activeDocument,
         selectedAnnotationSet: state.activeAnnotationSet
     };
 }
@@ -79,15 +80,18 @@ class Editor extends Component<EditorProps, EditorState> {
      */
     renderDocuments() {
         return this.props.selectedCorpus.documents.items
-            .filter(document => document.filename.toLowerCase().includes(this.state.searchDocumentSubstring.toLowerCase()))
+            .filter((document: Document) => document.filename.toLowerCase().includes(this.state.searchDocumentSubstring.toLowerCase()))
             .map(document => {
                 let filenamePath = document.filename.split('/');
-                let documentName = document.d_id + ': ' + filenamePath[filenamePath.length - 1];
+                let documentName = document.documentId + ': ' + filenamePath[filenamePath.length - 1];
                 return (
-                    <ListGroup.Item action key={document.d_id}
-                        active={this.props.selectedDocument.item && this.props.selectedDocument.item.d_id === document.d_id}
-                        onClick={() => this.props.fetchCorpusDocument(document.d_id, true)
-                        }>
+                    <ListGroup.Item action key={document.documentId}
+                                    active={this.props.selectedDocument.item && this.props.selectedDocument.item.documentId === document.documentId}
+                                    onClick={() => this.props.fetchActiveCorpusDocument({
+                                        documentId: document.documentId,
+                                        withTags: true
+                                    })}
+                    >
                         {documentName}
                     </ListGroup.Item>
                 )
@@ -118,7 +122,7 @@ class Editor extends Component<EditorProps, EditorState> {
      * @private
      */
     _isSelectedCorpusNew() {
-        return this.props.selectedCorpus.values.c_id <= 0;
+        return this.props.selectedCorpus.values.corpusId <= 0;
     }
 
     /**
@@ -137,7 +141,7 @@ class Editor extends Component<EditorProps, EditorState> {
      */
     _isAnnotationSetValid() {
         return this._hasCorpusAnnotationSets()
-            && this.props.selectedCorpus.annotationSets.items.filter(x => x.s_id === this.props.selectedAnnotationSet.values.s_id).length > 0;
+            && this.props.selectedCorpus.annotationSets.items.filter(x => x.annotationSetId === this.props.selectedAnnotationSet.values.annotationSetId).length > 0;
     }
 
     /**
@@ -149,7 +153,7 @@ class Editor extends Component<EditorProps, EditorState> {
      * @private
      */
     _isDocumentValid() {
-        return this.props.selectedCorpus.documents.items.length > 0 && this.props.selectedDocument.item && this.props.selectedDocument.item.d_id >= 0;
+        return this.props.selectedCorpus.documents.items.length > 0 && this.props.selectedDocument.item && this.props.selectedDocument.item.documentId >= 0;
     }
 
     /**
@@ -159,8 +163,8 @@ class Editor extends Component<EditorProps, EditorState> {
      */
     _tagsBySet() {
         let tags = this.props.selectedDocument.tags.items;
-        let annotations = new Set(this.props.selectedAnnotationSet.annotations.items.map(x => x.a_id));
-        return tags.filter(x => annotations.has(x.a_id));
+        let annotations = new Set(this.props.selectedAnnotationSet.annotations.items.map(x => x.annotationId));
+        return tags.filter(x => annotations.has(x.annotationId));
     }
 
     /**
@@ -171,8 +175,8 @@ class Editor extends Component<EditorProps, EditorState> {
     _renderEditor() {
         if (!this._isAnnotationSetValid() || !this._isDocumentValid())
             return (
-                <div className="d-flex w-100 h-100 justify-content-center align-items-center" >
-                    <h4 className="text-center" > Please select your options.</h4>
+                <div className="d-flex w-100 h-100 justify-content-center align-items-center">
+                    <h4 className="text-center"> Please select your options.</h4>
                 </div>
             );
         return (
@@ -182,7 +186,7 @@ class Editor extends Component<EditorProps, EditorState> {
                 onSaveTag={(tag) => this._saveTag(tag)
                 }
                 onDeleteTag={(tag) => this._deleteTag(tag)}
-                document={this.props.selectedDocument.item} />);
+                document={this.props.selectedDocument.item}/>);
     }
 
     /**
@@ -192,33 +196,33 @@ class Editor extends Component<EditorProps, EditorState> {
     render() {
         return (
             <React.Fragment>
-                <div className="editorNav" >
-                    <div style={{ minWidth: "300px" }} />
+                <div className="editorNav">
+                    <div style={{minWidth: "300px"}}/>
 
                     <h6> Select Corpus </h6>
                     <FetchPending isPending={this.props.corpora.isFetching}
-                        success={this.props.corpora.status === FetchStatusType.success}
-                        inheritChildrenHeight={false}
-                        silent={false}
+                                  success={this.props.corpora.status === FetchStatusType.success}
+                                  inheritChildrenHeight={false}
+                                  silent={false}
                     >
                         <SearchableDropdown buttonText="No Corpus selected"
-                            toggleId="corpusToggle"
-                            onChange={(corpus) => {
-                                this.props.setEditableCorpus(corpus);
-                                this.props.fetchCorpusDocuments(corpus.c_id);
-                            }
-                            }
-                            optionKey="c_id"
-                            options={this.props.corpora.items}
-                            selected={!this._isSelectedCorpusNew() ? this.props.selectedCorpus.values : (this.props.corpora.items.length === 0 ? undefined : this.props.corpora.items[0])}
-                            label="name"
-                            searchPlaceholder={"Find Corpus..."} />
+                                            toggleId="corpusToggle"
+                                            onChange={
+                                                (corpus) => {
+                                                    this.props.setActiveCorpus(corpus);
+                                                }
+                                            }
+                                            optionKey="c_id"
+                                            options={this.props.corpora.items}
+                                            selected={!this._isSelectedCorpusNew() ? this.props.selectedCorpus.values : (this.props.corpora.items.length === 0 ? undefined : this.props.corpora.items[0])}
+                                            label="name"
+                                            searchPlaceholder={"Find Corpus..."}/>
                     </FetchPending>
 
                     {
                         !this._isSelectedCorpusNew() && !this._hasCorpusAnnotationSets() &&
                         <React.Fragment>
-                            <hr />
+                            <hr/>
                             <p> The selected Corpus has no Annotation Set assigned.</p>
                             <p> Please go to the Settings to add an Annotation Set to the selected Corpus.</p>
                         </React.Fragment>
@@ -227,63 +231,66 @@ class Editor extends Component<EditorProps, EditorState> {
                     {
                         !this._isSelectedCorpusNew() && this._hasCorpusAnnotationSets() &&
                         <React.Fragment>
-                            <hr />
+                            <hr/>
                             <h6> Select Annotation Set </h6>
                             <FetchPending isPending={this.props.selectedCorpus.annotationSets.isFetching}
-                                success={this.props.selectedCorpus.annotationSets.status === FetchStatusType.success}
-                                inheritChildrenHeight={false}
-                                silent={false}
+                                          success={this.props.selectedCorpus.annotationSets.status === FetchStatusType.success}
+                                          inheritChildrenHeight={false}
+                                          silent={false}
                             >
                                 <SearchableDropdown buttonText="No Annotation Set selected"
-                                    toggleId="annotationSetId"
-                                    onChange={(annotationSet) => {
-                                        this.props.setActiveAnnotationSet(annotationSet)
-                                    }
-                                    }
-                                    optionKey="s_id"
-                                    options={this.props.selectedCorpus.annotationSets.items}
-                                    selected={
-                                        this.props.selectedAnnotationSet.values.s_id > 0
-                                            && this.props.selectedCorpus.annotationSets.items.filter(x => x.s_id === this.props.selectedAnnotationSet.values.s_id).length > 0
-                                            ? this.props.selectedAnnotationSet.values
-                                            : (this.props.selectedCorpus.annotationSets.items.length === 0 ? undefined : this.props.selectedCorpus.annotationSets.items[0])
-                                    }
-                                    label="name"
-                                    searchPlaceholder={"Find Annotation Set..."} />
+                                                    toggleId="annotationSetId"
+                                                    onChange={(annotationSet) => {
+                                                        this.props.setActiveAnnotationSet(annotationSet)
+                                                    }
+                                                    }
+                                                    optionKey="s_id"
+                                                    options={this.props.selectedCorpus.annotationSets.items}
+                                                    selected={
+                                                        this.props.selectedAnnotationSet.values.annotationSetId > 0
+                                                        && this.props.selectedCorpus.annotationSets.items.filter(x => x.annotationSetId === this.props.selectedAnnotationSet.values.annotationSetId).length > 0
+                                                            ? this.props.selectedAnnotationSet.values
+                                                            : (this.props.selectedCorpus.annotationSets.items.length === 0 ? undefined : this.props.selectedCorpus.annotationSets.items[0])
+                                                    }
+                                                    label="name"
+                                                    searchPlaceholder={"Find Annotation Set..."}/>
                             </FetchPending>
 
                             <FetchPending isPending={this.props.selectedCorpus.documents.isFetching}
-                                success={this.props.selectedCorpus.documents.status === FetchStatusType.success}
-                                inheritChildrenHeight={false}
-                                silent={false}
+                                          success={this.props.selectedCorpus.documents.status === FetchStatusType.success}
+                                          inheritChildrenHeight={false}
+                                          silent={false}
                             >
-                                <hr />
+                                <hr/>
                                 <h6> Select Document </h6>
                                 <SearchableDropdown buttonText="No Document selected"
-                                    toggleId="documentToggle"
-                                    onChange={(document) => this.props.fetchCorpusDocument(document.d_id, true)}
-                                    optionKey="d_id"
-                                    disabled={this._isSelectedCorpusNew()}
-                                    options={this.props.selectedCorpus.documents.items}
-                                    selected={
-                                        this.props.selectedDocument.item &&
-                                            this.props.selectedDocument.item.d_id > 0
-                                            && this.props.selectedCorpus.documents.items.filter(x => x.d_id === this.props.selectedDocument.item.d_id).length > 0
-                                            ? this.props.selectedDocument.item
-                                            : (this.props.selectedCorpus.documents.items.length === 0 ? undefined : this.props.selectedCorpus.documents.items[0])
-                                    }
-                                    getText={document => {
-                                        let filenamePath = document.filename.split('/');
-                                        return document.d_id + ': ' + filenamePath[filenamePath.length - 1];
-                                    }}
-                                    filter={(document, searchSubstring) => {
-                                        let matchFilename = document.filename.toLowerCase().includes(searchSubstring.toLowerCase());
-                                        let matchId = document.d_id.toString().toLowerCase().includes(searchSubstring.toLowerCase());
-                                        return matchFilename || matchId;
-                                    }}
-                                    searchPlaceholder={"Find Document..."}
+                                                    toggleId="documentToggle"
+                                                    onChange={(document) => this.props.fetchActiveCorpusDocument({
+                                                        documentId: document.documentId,
+                                                        withTags: true
+                                                    })} //TODO ADD GET TAGS
+                                                    optionKey="documentId"
+                                                    disabled={this._isSelectedCorpusNew()}
+                                                    options={this.props.selectedCorpus.documents.items}
+                                                    selected={
+                                                        this.props.selectedDocument.item &&
+                                                        this.props.selectedDocument.item.documentId > 0
+                                                        && this.props.selectedCorpus.documents.items.filter(x => x.documentId === this.props.selectedDocument.item.documentId).length > 0
+                                                            ? this.props.selectedDocument.item
+                                                            : (this.props.selectedCorpus.documents.items.length === 0 ? undefined : this.props.selectedCorpus.documents.items[0])
+                                                    }
+                                                    getText={document => {
+                                                        let filenamePath = document.filename.split('/');
+                                                        return document.documentId + ': ' + filenamePath[filenamePath.length - 1];
+                                                    }}
+                                                    filter={(document, searchSubstring) => {
+                                                        let matchFilename = document.filename.toLowerCase().includes(searchSubstring.toLowerCase());
+                                                        let matchId = document.documentId.toString().toLowerCase().includes(searchSubstring.toLowerCase());
+                                                        return matchFilename || matchId;
+                                                    }}
+                                                    searchPlaceholder={"Find Document..."}
                                 />
-                                <ListGroup style={{ marginTop: "10px" }}>
+                                <ListGroup style={{marginTop: "10px"}}>
                                     {this.renderDocuments()}
                                 </ListGroup>
                             </FetchPending>
@@ -305,7 +312,7 @@ class Editor extends Component<EditorProps, EditorState> {
                         && this.props.selectedDocument.tags.status === FetchStatusType.success
                     }
                 >
-                    <div className="editor" >
+                    <div className="editor">
                         {this._renderEditor()}
                     </div>
                 </FetchPending>
@@ -314,7 +321,6 @@ class Editor extends Component<EditorProps, EditorState> {
         );
     }
 }
-
 
 
 export default connector(Editor);

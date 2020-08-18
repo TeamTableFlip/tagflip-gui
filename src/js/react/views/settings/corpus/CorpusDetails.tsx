@@ -10,6 +10,8 @@ import Button from "react-bootstrap/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import CorpusBasicData from "./details/CorpusBasicData";
+import Corpus from "../../../../Corpus";
+import {CorpusValue} from "../../../../redux/types";
 
 interface State {
     validated: boolean;
@@ -27,7 +29,7 @@ const initialState: State = {
  */
 function mapStateToProps(state) {
     return {
-        corpus: state.editableCorpus,
+        corpus: state.activeCorpus,
         annotationSets: state.annotationSets,
     };
 }
@@ -45,6 +47,7 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>
 
 type Props = PropsFromRedux & {
+    corpus: CorpusValue
 }
 
 /**
@@ -65,7 +68,7 @@ class CorpusDetails extends Component<Props, State> {
      * @returns {boolean} True if the selected Corpus is new, otherwise false.
      */
     isNewCorpus() {
-        return this.props.corpus.values.c_id <= 0;
+        return this.props.corpus.values.corpusId <= 0;
     }
 
     /**
@@ -75,7 +78,7 @@ class CorpusDetails extends Component<Props, State> {
     render() {
         return (
             <React.Fragment>
-                <h2>Edit Corpus ({!this.isNewCorpus() ? ("ID: " + this.props.corpus.values.c_id) : "New"})</h2>
+                <h2>Edit Corpus ({!this.isNewCorpus() ? ("ID: " + this.props.corpus.values.corpusId) : "New"})</h2>
                 <Tabs id="corpustab" className="mb-3" activeKey={this.state.activeTab}
                     onSelect={k => this.setState({ activeTab: k })}>
                     <Tab eventKey="basicdata" title="Basic Data">

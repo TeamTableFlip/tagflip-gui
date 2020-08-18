@@ -1,5 +1,5 @@
 import createReducer from './CreateReducer'
-import * as AnnotationSetFetchActions from '../actions/AnnotationSetListActions'
+import * as AnnotationSetFetchActions from '../actions/annotationset/AnnotationSetListActions'
 import FetchStatusType from "../actions/FetchStatusTypes";
 import { AnnotationSetListState } from '../types';
 
@@ -18,26 +18,24 @@ const initialState: AnnotationSetListState = {
  */
 export const annotationSets = createReducer(initialState,
     {
-        [AnnotationSetFetchActions.REQUEST_ANNOTATION_SETS](draft, action) {
+        [AnnotationSetFetchActions.FETCH_ANNOTATION_SETS](draft, action) {
             draft.isFetching = true;
-        },
-        [AnnotationSetFetchActions.INVALIDATE_ANNOTATION_SETS](draft, action) {
-            draft.didInvalidate = true
+            draft.didInvalidate = true;
         },
         [AnnotationSetFetchActions.RECEIVE_ANNOTATION_SETS](draft, action) {
             draft.isFetching = false;
-            draft.didInvalidate = false;
-            if (action.status === FetchStatusType.success) {
-                draft.items = action.annotationSets;
-                draft.lastUpdated = action.receivedAt;
+            if (action.payload.status === FetchStatusType.success) {
+                draft.items = action.payload.data;
+                draft.lastUpdated = action.payload.receivedAt;
                 draft.status = FetchStatusType.success;
                 draft.error = null;
+                draft.didInvalidate = false;
             } else {
                 draft.status = FetchStatusType.error;
-                draft.error = action.error;
+                draft.error = action.payload.error;
             }
         },
-        [AnnotationSetFetchActions.DELETE_ANNOTATION_SET](draft, action) {
-            draft.items = draft.items.filter(annotationSet => annotationSet.s_id !== action.annotationSetId);
+        [AnnotationSetFetchActions.RECEIVE_DELETE_ANNOTATION_SET](draft, action) {
+            draft.items = draft.items.filter(annotationSet => annotationSet.annotationSetId !== action.payload.data);
         }
     });

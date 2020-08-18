@@ -1,6 +1,6 @@
-import React, { Component } from "react";
+import React, {Component} from "react";
 import Badge from "react-bootstrap/Badge";
-import { SketchPicker } from 'react-color';
+import {SketchPicker} from 'react-color';
 import PropTypes from "prop-types";
 
 
@@ -12,9 +12,7 @@ const propTypes = {
 type Props = PropTypes.InferProps<typeof propTypes>;
 
 const initialState = {
-    color: "#000000".replace(/0/g, function () {
-        return (~~(Math.random() * 16)).toString(16);
-    })
+    color: "#000000"
 };
 
 type State = typeof initialState;
@@ -29,20 +27,16 @@ class ColorPickerBadge extends Component<Props, State> {
      */
     constructor(props) {
         super(props);
-        this.state = initialState
+        this.state = {
+            color: props.color
+        }
     }
 
-    /**
-     * React lifecycle method. Updates the color when mounted.
-     */
-    componentDidMount() {
-        if (this.props.color) {
+    componentDidUpdate(prevProps: Readonly<Props>, prevState: Readonly<State>, snapshot?: any) {
+        if(prevProps.color !== this.props.color) {
             this.setState({
                 color: this.props.color
-            });
-        }
-        else {
-            this.props.updateColorCallback(this.state.color);
+            }, () => this.props.updateColorCallback(this.state.color))
         }
     }
 
@@ -51,7 +45,7 @@ class ColorPickerBadge extends Component<Props, State> {
      * @param color The picked color.
      */
     handleChangeComplete(color) {
-        this.setState({ color: color.hex });
+        this.setState({color: color.hex});
         this.props.updateColorCallback(color.hex);
     };
 
@@ -62,10 +56,10 @@ class ColorPickerBadge extends Component<Props, State> {
     render() {
         return (
             <React.Fragment>
-                <Badge variant="primary" style={{ backgroundColor: this.state.color }}>{this.state.color}</Badge>
+                <Badge variant="primary" style={{backgroundColor: this.state.color}}>{this.state.color}</Badge>
                 <SketchPicker
                     color={this.state.color}
-                    onChange={(color) => this.handleChangeComplete(color)} />
+                    onChange={(color) => this.handleChangeComplete(color)}/>
             </React.Fragment>
         );
     }
