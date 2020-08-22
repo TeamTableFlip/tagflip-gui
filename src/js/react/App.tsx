@@ -16,6 +16,7 @@ import { Auth0Provider } from "@auth0/auth0-react";
 import { OidcSettings } from "../../../.oidcsettings";
 import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
+import Home from "./views/Home";
 
 
 const __webpack_public_path__ = process.env.ASSET_PATH;
