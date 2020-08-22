@@ -30,7 +30,7 @@ module.exports = {
     devServer: {
         historyApiFallback: true,
     },
-    devtool: 'cheap-source-map',
+    devtool: 'source-map',
     resolve: {
         // Add '.ts' and '.tsx' as resolvable extensions.
         extensions: [".ts", ".tsx", ".js"]
@@ -97,7 +97,8 @@ module.exports = {
         }),
         new HtmlWebPackPlugin({
             template: "./src/index.html",
-            filename: "./index.html"
+            filename: "./index.html",
+            favicon: "./src/favicon.ico"
         }),
         new MiniCssExtractPlugin({
             // Options similar to the same options in webpackOptions.output

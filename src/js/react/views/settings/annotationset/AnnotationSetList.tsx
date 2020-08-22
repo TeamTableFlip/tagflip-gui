@@ -1,20 +1,21 @@
-import React, { Component } from "react";
+import React, {Component} from "react";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPen, faTrash, faPlus } from '@fortawesome/free-solid-svg-icons'
-import { RouteComponentProps, withRouter } from "react-router-dom";
-import { bindActionCreators } from "redux";
-import { ActionCreators } from "../../../../redux/actions/ActionCreators";
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
+import {faPen, faTrash, faPlus} from '@fortawesome/free-solid-svg-icons'
+import {RouteComponentProps, withRouter} from "react-router-dom";
+import {bindActionCreators} from "redux";
+import {ActionCreators} from "../../../../redux/actions/ActionCreators";
 import connect from "react-redux/es/connect/connect";
 import fetchStatusType from "../../../../redux/actions/FetchStatusTypes";
 import ConfirmationDialog from "../../../components/dialogs/ConfirmationDialog";
 import FetchPending from "../../../components/FetchPending";
-import { ConnectedProps } from "react-redux";
-import { RootState } from "../../../../redux/reducers/Reducers";
-import { AnnotationSet } from "../../../../AnnotationSet";
+import {ConnectedProps} from "react-redux";
+import {RootState} from "../../../../redux/reducers/Reducers";
+import AnnotationSet from "../../../../backend/model/AnnotationSet";
+import {AnnotationSetListValue} from "../../../../redux/types";
 
 /**
  * Maps redux state to component's props.
@@ -23,7 +24,6 @@ import { AnnotationSet } from "../../../../AnnotationSet";
 function mapStateToProps(state: RootState) {
     return {
         annotationSets: state.annotationSets,
-        //emptyAnnotationSet: state.emptyAnnotationSet
     };
 }
 
@@ -39,7 +39,9 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 
 type PropsFromRedux = ConnectedProps<typeof connector>
 
-type Props = PropsFromRedux & RouteComponentProps;
+type Props = PropsFromRedux & RouteComponentProps & {
+    annotationSets: AnnotationSetListValue;
+};
 
 interface State {
     annotationSetIdToBeDeleted: number;
@@ -78,7 +80,7 @@ class AnnotationSetList extends Component<Props, State> {
      * @private
      */
     _addNewAnnotationSet() {
-        this.props.setActiveAnnotationSet(AnnotationSet.EMPTY);
+        this.props.setActiveAnnotationSet(AnnotationSet.create());
         return this.props.history.push(`${this.props.match.path}/edit`)
     }
 
@@ -90,29 +92,29 @@ class AnnotationSetList extends Component<Props, State> {
     _renderAnnotationSets() {
         let renderAnnotationSetTableData = () => {
             return this.props.annotationSets.items.map(annotationSet => {
-                return <tr key={annotationSet.s_id}>
-                    <th scope="row">{annotationSet.s_id}</th>
+                return <tr key={annotationSet.annotationSetId}>
+                    <th scope="row">{annotationSet.annotationSetId}</th>
                     <td>{annotationSet.name}</td>
                     <td>
                         <div className="float-right">
                             <Button size="sm"
-                                onClick={() => {
-                                    this.props.setActiveAnnotationSet(annotationSet);
-                                    return this.props.history.push(`${this.props.match.path}/edit`)
-                                }}><FontAwesomeIcon
-                                    icon={faPen} /></Button>
+                                    onClick={() => {
+                                        this.props.setActiveAnnotationSet(annotationSet);
+                                        return this.props.history.push(`${this.props.match.path}/edit`)
+                                    }}><FontAwesomeIcon
+                                icon={faPen}/></Button>
                             <Button size="sm" variant="danger" onClick={() => {
                                 this.setState({
-                                    annotationSetIdToBeDeleted: annotationSet.s_id
+                                    annotationSetIdToBeDeleted: annotationSet.annotationSetId
                                 });
                             }}>
-                                <FontAwesomeIcon icon={faTrash} />
+                                <FontAwesomeIcon icon={faTrash}/>
                             </Button>
                             <ConfirmationDialog
-                                show={this.state.annotationSetIdToBeDeleted === annotationSet.s_id}
+                                show={this.state.annotationSetIdToBeDeleted === annotationSet.annotationSetId}
                                 message={"Are you sure you want to delete the Annotation Set '" + annotationSet.name + "'?"}
                                 onAccept={() => {
-                                    this.props.deleteAnnotationSet(annotationSet.s_id);
+                                    this.props.deleteAnnotationSet(annotationSet.annotationSetId);
                                     this.setState({
                                         annotationSetIdToBeDeleted: undefined
                                     });
@@ -123,7 +125,7 @@ class AnnotationSetList extends Component<Props, State> {
                                     });
                                 }}
                                 acceptText="Delete"
-                                acceptVariant="danger" />
+                                acceptVariant="danger"/>
                         </div>
                     </td>
                 </tr>
@@ -134,6 +136,7 @@ class AnnotationSetList extends Component<Props, State> {
             <div className="table-responsive">
                 <FetchPending
                     isPending={this.props.annotationSets.isFetching}
+                    subtle={false}
                     success={this.props.annotationSets.status === fetchStatusType.success}
                     retryCallback={() => {
                         this.props.fetchAnnotationSets();
@@ -141,14 +144,14 @@ class AnnotationSetList extends Component<Props, State> {
                 >
                     <table className="table">
                         <thead>
-                            <tr>
-                                <th scope="col">#</th>
-                                <th scope="col">Name</th>
-                                <th scope="col"></th>
-                            </tr>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Name</th>
+                            <th scope="col"/>
+                        </tr>
                         </thead>
                         <tbody>
-                            {renderAnnotationSetTableData()}
+                        {renderAnnotationSetTableData()}
                         </tbody>
                     </table>
                 </FetchPending>
@@ -170,7 +173,7 @@ class AnnotationSetList extends Component<Props, State> {
                         <Row>
                             <Col><Card.Title>Available: {this.props.annotationSets.items.length}</Card.Title></Col>
                             <Col><Button className="float-right" size="sm" onClick={this._addNewAnnotationSet}>
-                                <FontAwesomeIcon icon={faPlus} /> Add
+                                <FontAwesomeIcon icon={faPlus}/> Add
                             </Button></Col>
                         </Row>
                         {this._renderAnnotationSets()}

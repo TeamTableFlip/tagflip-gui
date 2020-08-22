@@ -46,8 +46,6 @@ class ServerNotAvailableInfo extends Component<Props> {
             </Modal>
         );
     }
-
-
 }
 
 

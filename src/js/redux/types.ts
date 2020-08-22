@@ -1,7 +1,8 @@
 import FetchStatusType from "./actions/FetchStatusTypes";
-import { Corpus } from '../Corpus';
-import { AnnotationSet } from '../AnnotationSet';
-import { Annotation } from '../Annotation';
+import Corpus from '../Corpus';
+import AnnotationSet from '../backend/model/AnnotationSet';
+import Annotation from '../backend/model/Annotation';
+import Document from '../backend/model/Document';
 
 export interface FetchState {
     didInvalidate: boolean;
@@ -26,11 +27,11 @@ export interface AnnotationSetValue {
 }
 
 export interface DocumentListValue {
-    items: any[];
+    items: Document[];
 }
 
 export interface DocumentValue {
-    item: any;
+    item: Document;
     tags: TagState;
 }
 
@@ -46,7 +47,7 @@ export interface CorpusValue {
 }
 
 export interface CorpusListValue {
-    items: any[];
+    items: Corpus[];
 }
 
 export interface ServerValue {

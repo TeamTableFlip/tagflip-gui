@@ -24,7 +24,7 @@ const popover = (
  */
 function mapStateToProps(state) {
     return {
-        corpus: state.editableCorpus,
+        corpus: state.activeCorpus,
         annotationSets: state.annotationSets,
     };
 }
@@ -66,15 +66,15 @@ class CorpusAnnotationSets extends Component<Props> {
      * @returns {*} The AnnotationSets to be rendered with a selection option.
      */
     renderAnnotationSetSelection() {
-        const selectedAnnotationSetIds = new Set(this.props.corpus.annotationSets.items.map(annotationSet => annotationSet.s_id));
+        const selectedAnnotationSetIds = new Set(this.props.corpus.annotationSets.items.map(annotationSet => annotationSet.annotationSetId));
         let renderAnnotationSetList = () => {
             return this.props.annotationSets.items.map(annotationSet => {
                 return (
 
-                    <ListGroup.Item key={annotationSet.s_id}>
+                    <ListGroup.Item key={annotationSet.annotationSetId}>
                         <Form.Check type="checkbox"
-                            checked={selectedAnnotationSetIds.has(annotationSet.s_id)}
-                            onChange={() => this.props.toggleCorpusAnnotationSet(annotationSet)}
+                            checked={selectedAnnotationSetIds.has(annotationSet.annotationSetId)}
+                            onChange={() => this.props.toggleActiveCorpusAnnotationSet(annotationSet)}
                             label={annotationSet.name} />
                     </ListGroup.Item>
 
@@ -88,7 +88,7 @@ class CorpusAnnotationSets extends Component<Props> {
                 success={this.props.annotationSets.status === FetchStatusType.success && this.props.corpus.annotationSets.status === FetchStatusType.success}
                 retryCallback={() => {
                     this.props.fetchAnnotationSets();
-                    this.props.fetchCorpusAnnotationSets(this.props.corpus.values.c_id);
+                    this.props.fetchActiveCorpus(this.props.corpus.values.corpusId);
                 }}
             >
                 <ListGroup>
@@ -106,7 +106,7 @@ class CorpusAnnotationSets extends Component<Props> {
         return (
             <React.Fragment>
                 <h3>Annotation Sets</h3>
-                <OverlayTrigger trigger="hover" placement="left" overlay={popover}>
+                <OverlayTrigger trigger={["focus","hover"]} placement="left" overlay={popover}>
                     <Card className="mt-3" id="annotationSetCard">
                         <Card.Body>
                             <Row>
@@ -115,7 +115,7 @@ class CorpusAnnotationSets extends Component<Props> {
                                         Selection
                                     </Card.Title>
                                 </Col>
-                                <Col></Col>
+                                <Col />
                             </Row>
                             {this.renderAnnotationSetSelection()}
                         </Card.Body>

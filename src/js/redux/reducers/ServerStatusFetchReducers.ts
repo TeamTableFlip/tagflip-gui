@@ -18,18 +18,16 @@ const initialState: ServerState = {
  */
 export const serverStatus = createReducer(initialState,
     {
-        [ServerStatusFetchActions.REQUEST_SERVER_STATUS](draft, action) {
+        [ServerStatusFetchActions.FETCH_SERVER_STATUS](draft, action) {
             draft.isFetching = true;
-        },
-        [ServerStatusFetchActions.INVALIDATE_SERVER_STATUS](draft, action) {
             draft.didInvalidate = true;
         },
         [ServerStatusFetchActions.RECEIVE_SERVER_STATUS](draft, action) {
             draft.isFetching = false;
             draft.didInvalidate = false;
-            draft.available = action.available;
-            draft.lastUpdated = action.receivedAt;
-            draft.status = action.status;
-            draft.error = action.error;
+            draft.available = action.payload.available;
+            draft.lastUpdated = action.payload.receivedAt;
+            draft.status = action.payload.status;
+            draft.error = action.payload.error;
         }
     });

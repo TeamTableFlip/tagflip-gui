@@ -1,17 +1,14 @@
-import React, { Component } from "react";
+import React, {Component} from "react";
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
 import ListGroup from "react-bootstrap/ListGroup";
-import { ConnectedProps, connect } from 'react-redux';
-import { bindActionCreators, ActionCreator } from 'redux';
-import { ActionCreators } from '../../../../redux/actions/ActionCreators';
+import {connect, ConnectedProps} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import {ActionCreators} from '../../../../redux/actions/ActionCreators';
 import FileUpload from "../../../components/fileUpload/FileUpload";
 import FetchPending from "../../../components/FetchPending";
 import fetchStatusType from "../../../../redux/actions/FetchStatusTypes";
-import { AnnotationSet } from "../../../../AnnotationSet";
-import { Corpus } from "../../../../Corpus";
-import { uploadCorpus } from "../../../../redux/actions/CorpusActions"
-import { RootState } from "../../../../redux/reducers/Reducers";
+import {RootState} from "../../../../redux/reducers/Reducers";
 
 const initialState = {
     validated: false,
@@ -25,9 +22,9 @@ type State = typeof initialState;
  */
 function mapStateToProps(state: RootState) {
     return {
-        corpus: state.editableCorpus.values,
-        isFetching: state.editableCorpus.isFetching,
-        annotationSets: state.editableCorpus.annotationSets,
+        corpus: state.activeCorpus.values,
+        isFetching: state.activeCorpus.isFetching,
+        annotationSets: state.activeCorpus.annotationSets,
     };
 }
 
@@ -73,12 +70,12 @@ class CorpusImport extends Component<Props, State> {
       * @returns {*} The AnnotationSets to be rendered with a selection option.
       */
     renderAnnotationSetSelection() {
-        const selectedAnnotationSetIds = new Set(this.props.annotationSets.items.map(annotationSet => annotationSet.s_id));
+        const selectedAnnotationSetIds = new Set(this.props.annotationSets.items.map(annotationSet => annotationSet.annotationSetId));
         let renderAnnotationSetList = () => {
             return this.props.annotationSets.items.map(annotationSet => {
                 return (
 
-                    <ListGroup.Item key={annotationSet.s_id}>
+                    <ListGroup.Item key={annotationSet.annotationSetId}>
                         <Form.Check type="checkbox"
                             defaultChecked={false}
                             //onChange={() => this.props.toggleCorpusAnnotationSet(annotationSet)}

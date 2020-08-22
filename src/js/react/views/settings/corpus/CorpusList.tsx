@@ -1,19 +1,20 @@
-import React, { Component } from "react";
+import React, {Component} from "react";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPen, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons'
-import { RouteComponentProps, withRouter } from "react-router-dom";
-import { connect, ConnectedProps } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import { ActionCreators } from '../../../../redux/actions/ActionCreators';
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
+import {faPen, faPlus, faTrash} from '@fortawesome/free-solid-svg-icons'
+import {RouteComponentProps, withRouter} from "react-router-dom";
+import {connect, ConnectedProps} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import {ActionCreators} from '../../../../redux/actions/ActionCreators';
 import fetchStatusType from "../../../../redux/actions/FetchStatusTypes";
 import FetchPending from "../../../components/FetchPending";
 import ConfirmationDialog from "../../../components/dialogs/ConfirmationDialog";
-import { RootState } from "../../../../redux/reducers/Reducers";
-import { Corpus } from "../../../../Corpus";
+import {RootState} from "../../../../redux/reducers/Reducers";
+import Corpus from "../../../../Corpus";
+import {CorpusListValue} from "../../../../redux/types";
 
 /**
  * Maps redux state to component's props.
@@ -23,7 +24,7 @@ function mapStateToProps(state: RootState) {
     return {
         corpora: state.corpora,
         //emptyCorpus: state.emptyCorpus,
-        selectedCorpus: state.editableCorpus
+        selectedCorpus: state.activeCorpus
     };
 }
 
@@ -38,7 +39,9 @@ function mapDispatchToProps(dispatch) {
 const connector = connect(mapStateToProps, mapDispatchToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>
 
-type Props = PropsFromRedux & RouteComponentProps;
+type Props = PropsFromRedux & RouteComponentProps & {
+    corpora: CorpusListValue;
+};
 
 interface State {
     corpusIdToBeDeleted: number;
@@ -76,7 +79,7 @@ class CorpusList extends Component<Props, State> {
      * @private
      */
     addNewCorpus() {
-        this.props.setEditableCorpus(Corpus.EMPTY);
+        this.props.setActiveCorpus(Corpus.create());
         return this.props.history.push(`${this.props.match.path}/edit`)
     }
 
@@ -86,7 +89,7 @@ class CorpusList extends Component<Props, State> {
      * @private
      */
     importNewCorpus() {
-        this.props.setEditableCorpus(Corpus.EMPTY);
+        this.props.setActiveCorpus(Corpus.create());
         return this.props.history.push(`${this.props.match.path}/import`)
     }
 
@@ -99,36 +102,35 @@ class CorpusList extends Component<Props, State> {
         let renderCorpusTableData = () => {
             return this.props.corpora.items.map(corpus => {
                 return (
-                    <tr key={corpus.c_id}>
-                        <td scope="row">{corpus.c_id}</td>
+                    <tr key={corpus.corpusId}>
+                        <td scope="row">{corpus.corpusId}</td>
                         <td>{corpus.name}</td>
-                        <td>{corpus.num_documents}</td>
                         <td>
                             <div className="float-right">
                                 <Button size="sm" onClick={() => {
-                                    this.props.setEditableCorpus(corpus);
+                                    this.props.setActiveCorpus(corpus);
                                     return this.props.history.push(`${this.props.match.path}/edit`)
-                                }}><FontAwesomeIcon icon={faPen} /></Button>
+                                }}><FontAwesomeIcon icon={faPen}/></Button>
                                 <Button size="sm" variant="danger"
-                                    onClick={() => {
-                                        this.setState({ corpusIdToBeDeleted: corpus.c_id });
-                                    }}
-                                ><FontAwesomeIcon icon={faTrash} /></Button>
+                                        onClick={() => {
+                                            this.setState({corpusIdToBeDeleted: corpus.corpusId});
+                                        }}
+                                ><FontAwesomeIcon icon={faTrash}/></Button>
                                 <ConfirmationDialog
                                     acceptVariant="danger"
-                                    show={this.state.corpusIdToBeDeleted === corpus.c_id}
+                                    show={this.state.corpusIdToBeDeleted === corpus.corpusId}
                                     message={"Are you sure you want to delete the Corpus '" + corpus.name + "'?"}
                                     onAccept={() => {
-                                        this.props.deleteCorpus(corpus.c_id);
-                                        this.setState({ corpusIdToBeDeleted: undefined });
-                                        if (this.props.selectedCorpus.values.c_id === corpus.c_id) {
-                                            this.props.setEditableCorpus(this.props.emptyCorpus);
+                                        this.props.deleteCorpus(corpus.corpusId);
+                                        this.setState({corpusIdToBeDeleted: undefined});
+                                        if (this.props.selectedCorpus.values.corpusId === corpus.corpusId) {
+                                            this.props.setActiveCorpus(Corpus.create());
                                         }
                                     }}
                                     onCancel={() => {
-                                        this.setState({ corpusIdToBeDeleted: undefined });
+                                        this.setState({corpusIdToBeDeleted: undefined});
                                     }}
-                                    acceptText="Delete" />
+                                    acceptText="Delete"/>
                             </div>
                         </td>
                     </tr>)
@@ -138,20 +140,20 @@ class CorpusList extends Component<Props, State> {
         return (
             <div className="table-responsive">
                 <FetchPending isPending={this.props.corpora.isFetching}
-                    success={this.props.corpora.status === fetchStatusType.success}
-                    retryCallback={this.props.fetchCorpora}
+                              subtle={false}
+                              success={this.props.corpora.status === fetchStatusType.success}
+                              retryCallback={this.props.fetchCorpora}
                 >
                     <table className="table">
                         <thead>
-                            <tr>
-                                <th scope="col">ID</th>
-                                <th scope="col">Name</th>
-                                <th scope="col"># Documents</th>
-                                <th scope="col"></th>
-                            </tr>
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Name</th>
+                            <th scope="col"/>
+                        </tr>
                         </thead>
                         <tbody>
-                            {renderCorpusTableData()}
+                        {renderCorpusTableData()}
                         </tbody>
                     </table>
                 </FetchPending>
@@ -173,11 +175,11 @@ class CorpusList extends Component<Props, State> {
                             <Col><Card.Title>Available: {this.props.corpora.items.length}</Card.Title></Col>
                             <Col md="auto">
                                 <Button size="sm" onClick={this.addNewCorpus}>
-                                    <FontAwesomeIcon icon={faPlus} />Add</Button>
+                                    <FontAwesomeIcon icon={faPlus}/>Add</Button>
                             </Col>
                             <Col md="auto">
                                 <Button size="sm" onClick={this.importNewCorpus}>
-                                    <FontAwesomeIcon icon={faPlus} />Import</Button>
+                                    <FontAwesomeIcon icon={faPlus}/>Import</Button>
                             </Col>
                         </Row>
                         {this._renderCorpora()}

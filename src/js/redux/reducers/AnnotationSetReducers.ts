@@ -1,15 +1,14 @@
 import createReducer from "./CreateReducer";
-import * as AnnotationSetEditActions from "../actions/AnnotationSetActions";
 import FetchStatusType from "../actions/FetchStatusTypes";
-import { AnnotationSetState } from "../types";
+import * as AnnotationSetEditActions from "../actions/annotationset/AnnotationSetActions";
+import * as AnnotationEditActions from "../actions/annotationset/AnnotationActions";
+import {AnnotationSetState} from "../types";
+import Annotation from "../../backend/model/Annotation";
+import AnnotationSet from "../../backend/model/AnnotationSet";
 
 
 const initialState: AnnotationSetState = {
-    values: {
-        s_id: 0,
-        name: "",
-        description: "",
-    },
+    values: AnnotationSet.create(),
     didInvalidate: false,
     isFetching: false,
     lastUpdated: undefined,
@@ -23,12 +22,7 @@ const initialState: AnnotationSetState = {
         status: FetchStatusType.success,
         error: null,
         editableAnnotation: {
-            values: {
-                a_id: 0,
-                s_id: 0,
-                name: "",
-                color: "#bbbbbb"
-            },
+            values: Annotation.create(),
             didInvalidate: false,
             isFetching: false,
             lastUpdated: undefined,
@@ -46,75 +40,81 @@ const initialState: AnnotationSetState = {
  */
 export const activeAnnotationSet = createReducer(initialState, {
     [AnnotationSetEditActions.SET_ACTIVE_ANNOTATION_SET](draft, action) {
-        draft.values = action.annotationSet;
+        draft.values = action.payload;
         draft.didInvalidate = true;
         draft.annotations.didInvalidate = true;
+        draft.status = FetchStatusType.success;
+        draft.error = null;
     },
     [AnnotationSetEditActions.UPDATE_ANNOTATION_SET_FIELD](draft, action) {
-        draft.values[action.field] = action.value;
+        draft.values[action.payload.field] = action.payload.value;
     },
-    [AnnotationSetEditActions.REQUEST_ACTIVE_ANNOTATION_SET](draft, action) {
+    [AnnotationSetEditActions.FETCH_ACTIVE_ANNOTATION_SET](draft, action) {
         draft.isFetching = true;
     },
-    [AnnotationSetEditActions.RECEIVE_ACTIVE_ANNOTATION_SET](draft, action) {
+    [AnnotationSetEditActions.SAVE_ACTIVE_ANNOTATION_SET](draft, action) {
+        draft.isFetching = true;
+    },
+    [AnnotationSetEditActions.RECEIVE_UPDATE_ACTIVE_ANNOTATION_SET](draft, action) {
         draft.isFetching = false;
         draft.didInvalidate = false;
-        if (action.status === FetchStatusType.success) {
-            draft.values = action.annotationSet;
-            draft.lastUpdated = action.receivedAt;
+        if (action.payload.status === FetchStatusType.success) {
+            draft.values = action.payload.data;
+            draft.lastUpdated = action.payload.receivedAt;
             draft.status = FetchStatusType.success;
             draft.error = null;
         } else {
             draft.status = FetchStatusType.error;
-            draft.error = action.error;
+            draft.error = action.payload.error;
         }
     },
-    [AnnotationSetEditActions.REQUEST_ANNOTATIONS](draft, action) {
+    [AnnotationEditActions.FETCH_ACTIVE_ANNOTATIONSET_ANNOTATIONS](draft, action) {
         draft.annotations.isFetching = true;
-    },
-    [AnnotationSetEditActions.INVALIDATE_ANNOTATIONS](draft, action) {
         draft.annotations.didInvalidate = true;
     },
-    [AnnotationSetEditActions.RECEIVE_ANNOTATIONS](draft, action) {
+    [AnnotationEditActions.RECEIVE_ACTIVE_ANNOTATIONSET_ANNOTATIONS](draft, action) {
         draft.annotations.isFetching = false;
         draft.annotations.didInvalidate = false;
-        if (action.status === FetchStatusType.success) {
-            draft.annotations.items = action.annotations;
-            draft.annotations.lastUpdated = action.receivedAt;
+        if (action.payload.status === FetchStatusType.success) {
+            draft.annotations.items = action.payload.data;
+            draft.annotations.lastUpdated = action.payload.receivedAt;
             draft.annotations.status = FetchStatusType.success;
             draft.annotations.error = null;
         } else {
             draft.annotations.status = FetchStatusType.error;
-            draft.annotations.error = action.error;
+            draft.annotations.error = action.payload.error;
         }
     },
-    [AnnotationSetEditActions.DELETE_ANNOTATION](draft, action) {
+    [AnnotationEditActions.RECEIVE_DELETE_ACTIVE_ANNOTATIONSET_ANNOTATION](draft, action) {
         draft.annotations.items = draft.annotations.items.filter(annotation =>
-            annotation.a_id !== action.annotationId
+            annotation.annotationId !== action.payload
         )
     },
 
-    [AnnotationSetEditActions.SET_EDITABLE_ANNOTATION](draft, action) {
-        draft.annotations.editableAnnotation.values = action.annotation;
+    [AnnotationEditActions.SET_ACTIVE_ANNOTATIONSET_EDITABLE_ANNOTATION](draft, action) {
+        draft.annotations.editableAnnotation.values = action.payload;
+        draft.annotations.editableAnnotation.error = null
+        draft.annotations.editableAnnotation.lastUpdated = Date.now();
+        draft.annotations.editableAnnotation.status = FetchStatusType.success;
     },
-    [AnnotationSetEditActions.UPDATE_ANNOTATION_FIELD](draft, action) {
-        draft.annotations.editableAnnotation.values[action.field] = action.value;
+    [AnnotationEditActions.UPDATE_ACTIVE_ANNOTATIONSET_EDITABLE_ANNOTATION](draft, action) {
+        draft.annotations.editableAnnotation.values[action.payload.field] = action.payload.value;
     },
-    [AnnotationSetEditActions.REQUEST_SAVE_ANNOTATION](draft, action) {
+    [AnnotationEditActions.SAVE_ANNOTATION](draft, action) {
         draft.annotations.editableAnnotation.isFetching = true;
     },
-    [AnnotationSetEditActions.RECEIVE_SAVE_ANNOTATION](draft, action) {
+    [AnnotationEditActions.RECEIVE_SAVE_ANNOTATION](draft, action) {
         draft.annotations.editableAnnotation.isFetching = false;
-        if (action.status === FetchStatusType.success) {
-            draft.annotations.items = draft.annotations.items.filter(x => x.a_id !== action.annotation.a_id)
-            draft.annotations.items.push(action.annotation);
-            draft.annotations.editableAnnotation.values = action.annotation;
-            draft.annotations.editableAnnotation.lastUpdated = action.receivedAt;
+        if (action.payload.status === FetchStatusType.success) {
+            draft.annotations.items = draft.annotations.items.filter(x => x.annotationId !== action.payload.data.annotationId)
+            draft.annotations.items.push(action.payload.data);
+            draft.annotations.editableAnnotation.values = action.payload.data;
+            draft.annotations.editableAnnotation.lastUpdated = action.payload.receivedAt;
             draft.annotations.editableAnnotation.status = FetchStatusType.success;
             draft.annotations.editableAnnotation.error = null;
         } else {
             draft.annotations.editableAnnotation.status = FetchStatusType.error;
-            draft.annotations.editableAnnotation.error = action.error;
+            draft.annotations.editableAnnotation.error = action.payload.error;
         }
     }
 });

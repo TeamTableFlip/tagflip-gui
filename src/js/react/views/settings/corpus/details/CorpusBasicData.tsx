@@ -22,7 +22,7 @@ const initialState: State = {
  */
 function mapStateToProps(state) {
     return {
-        corpus: state.editableCorpus,
+        corpus: state.activeCorpus,
         annotationSets: state.annotationSets
     };
 }
@@ -68,7 +68,7 @@ class CorpusBasicData extends Component<Props, State> {
             event.stopPropagation();
             this.setState({ validated: true });
         } else {
-            this.props.saveCorpus();
+            this.props.saveActiveCorpus();
         }
     }
 
@@ -77,7 +77,7 @@ class CorpusBasicData extends Component<Props, State> {
      * @returns {boolean} True if the Corpus is new, otherwise false.
      */
     isNewCorpus() {
-        return this.props.corpus.values.c_id <= 0;
+        return this.props.corpus.values.corpusId <= 0;
     }
 
     /**
@@ -97,7 +97,7 @@ class CorpusBasicData extends Component<Props, State> {
                             <FetchPending
                                 isPending={this.props.corpus.isFetching}
                                 success={this.props.corpus.status === fetchStatusType.success}
-                                retryCallback={this.props.reloadCorpus}
+                                noSuccessMessage={this.props.corpus.error ? this.props.corpus.error.message : null}
                             >
                                 <Form.Group controlId="formName">
                                     <Form.Label>Name</Form.Label>
@@ -119,7 +119,7 @@ class CorpusBasicData extends Component<Props, State> {
                                         value={this.props.corpus.values.description || ""} />
                                 </Form.Group>
                                 <Button variant="success" className="mr-1" type="submit">Save</Button>
-                                {!this.isNewCorpus() && <Button variant="danger" className="mr-1" onClick={() => this.props.reloadCorpus()}>Abort</Button>}
+                                {!this.isNewCorpus() && <Button variant="danger" className="mr-1" onClick={() => this.props.fetchActiveCorpus(this.props.corpus.corpusId)}>Abort</Button>}
                             </FetchPending>
                         </Card.Body>
                     </Card>

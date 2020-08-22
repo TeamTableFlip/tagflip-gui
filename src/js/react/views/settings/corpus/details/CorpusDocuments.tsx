@@ -13,6 +13,7 @@ import { Alert } from "react-bootstrap";
 import ShowMoreText from 'react-show-more-text';
 import ConfirmationDialog from "../../../../components/dialogs/ConfirmationDialog";
 import ShowDocument from "../../../../components/dialogs/ShowDocument";
+import {toast} from "react-toastify";
 
 /**
  * Maps redux state to component's props.
@@ -20,7 +21,7 @@ import ShowDocument from "../../../../components/dialogs/ShowDocument";
  */
 function mapStateToProps(state) {
     return {
-        corpus: state.editableCorpus,
+        corpus: state.activeCorpus,
     };
 }
 
@@ -72,41 +73,36 @@ class CorpusDocuments extends Component<Props, State> {
     _renderDocuments() {
         let renderDocumentTableData = () => {
             return this.props.corpus.documents.items.map(document => {
-                return (<tr key={document.d_id}>
-                    <td scope="row">{document.d_id}</td>
+                return (<tr key={document.documentId}>
+                    <td scope="row">{document.documentId}</td>
                     <td>{document.filename}</td>
                     <td>
                         <div className="float-right">
                             <Button size="sm"
                                 onClick={() => {
-                                    this.props.fetchCorpusDocument(document.d_id);
-                                    this.setState({ documentToBeShown: document.d_id });
+                                    this.props.fetchActiveCorpusDocument({
+                                        documentId: document.documentId,
+                                        withTags: false
+                                    });
+                                    this.setState({ documentToBeShown: document.documentId });
                                 }}><FontAwesomeIcon
                                     icon={faSearch} /></Button>
                             <Button size="sm" variant="danger"
-                                onClick={() => this.setState({ documentIdToBeDeleted: document.d_id })}
+                                onClick={() => this.setState({ documentIdToBeDeleted: document.documentId })}
                             ><FontAwesomeIcon
                                     icon={faTrash} /></Button>
                             <ConfirmationDialog
                                 acceptVariant="danger"
-                                show={this.state.documentIdToBeDeleted === document.d_id}
+                                show={this.state.documentIdToBeDeleted === document.documentId}
                                 message={"Are you sure you want to delete the Corpus '" + document.filename + "'?"}
                                 onAccept={() => {
-                                    this.props.deleteCorpusDocument(document.d_id);
+                                    this.props.deleteActiveCorpusDocument(document.documentId);
                                     this.setState({ documentIdToBeDeleted: undefined });
                                 }}
                                 onCancel={() => {
                                     this.setState({ documentIdToBeDeleted: undefined });
                                 }}
                                 acceptText="Delete" />
-                            <ShowDocument
-                                show={this.state.documentToBeShown > 0}
-                                onHide={() => this.setState({ documentToBeShown: undefined })}
-                                isLoading={this.props.corpus.activeDocument.isFetching}
-                                success={this.props.corpus.activeDocument.status === fetchStatusType.success}
-                                title={this.props.corpus.activeDocument.item ? this.props.corpus.activeDocument.item.filename : ""}
-                                text={this.props.corpus.activeDocument.item ? this.props.corpus.activeDocument.item.text : ""}
-                            />
                         </div>
                     </td>
                 </tr>)
@@ -117,7 +113,7 @@ class CorpusDocuments extends Component<Props, State> {
             <div className="table-responsive">
                 <FetchPending isPending={this.props.corpus.documents.isFetching}
                     success={this.props.corpus.documents.status !== fetchStatusType.error}
-                    retryCallback={() => this.props.fetchCorpusDocuments(this.props.corpus.values.c_id)}
+                    retryCallback={() => this.props.fetchActiveCorpus(this.props.corpus.values.corpusId)}
                 >
                     <table className="table">
                         <thead>
@@ -131,6 +127,14 @@ class CorpusDocuments extends Component<Props, State> {
                             {renderDocumentTableData()}
                         </tbody>
                     </table>
+                    <ShowDocument
+                        show={this.state.documentToBeShown > 0}
+                        onHide={() => this.setState({ documentToBeShown: undefined })}
+                        isLoading={this.props.corpus.activeDocument.isFetching}
+                        success={this.props.corpus.activeDocument.status === fetchStatusType.success}
+                        title={this.props.corpus.activeDocument.item ? this.props.corpus.activeDocument.item.filename : ""}
+                        text={this.props.corpus.activeDocument.item ? this.props.corpus.activeDocument.item.content : ""}
+                    />
                 </FetchPending>
             </div>
         )
@@ -167,8 +171,12 @@ class CorpusDocuments extends Component<Props, State> {
                             }
                             <FileUpload
                                 isUploading={this.props.corpus.documents.isFetching}
-                                onUpload={(files) => this.props.uploadCorpusDocuments(this.props.corpus.values.c_id, files)}
+                                onUpload={(files) => {
+                                    files.forEach(f => this.props.uploadActiveCorpusDocuments([f]))
+                                }}
                                 maxCount={50}
+                                onTooManyFiles={(current: number, max: number) => toast.error("Cannot process more than " + max + " files at once. ZIP files first.")}
+                                onTypeMismatch={(acceptableTypes: string) => toast.error("Given type of file is not suppored. Choose one of: " + acceptableTypes)}
                                 uploadText="Drop Text-Files or ZIP-Archive here... or just click..."
                                 acceptMimeTypes='text/plain, application/zip,application/x-zip-compressed,multipart/x-zip"'
                             />

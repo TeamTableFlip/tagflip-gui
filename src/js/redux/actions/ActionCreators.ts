@@ -1,36 +1,36 @@
-import { fetchCorpora, deleteCorpus } from "./CorpusListActions";
+import { fetchCorpora, deleteCorpus } from "./corpus/CorpusListActions";
 import {
-    setEditableCorpus,
-    fetchCorpusAnnotationSets,
+    setActiveCorpus,
     updateCorpusField,
-    toggleCorpusAnnotationSet,
-    saveCorpus,
-    reloadCorpus,
-    fetchCorpusDocuments,
-    uploadCorpusDocuments,
-    deleteCorpusDocument,
-    fetchCorpusDocument,
+    toggleActiveCorpusAnnotationSet,
+    saveActiveCorpus,
+    fetchActiveCorpus
+} from './corpus/CorpusActions';
+import {
+    uploadActiveCorpusDocuments,
+    deleteActiveCorpusDocument,
+    fetchActiveCorpusDocument,
+    uploadCorpus
+} from './corpus/DocumentActions';
+import {
     saveTagForActiveDocument,
     deleteTagForActiveDocument,
-    uploadCorpus,
-    emptyCorpus
-} from './CorpusActions';
+} from './corpus/TaggingActions';
 import { fetchServerStatus } from './ServerStatusFetchActions';
-import { fetchAnnotationSets, deleteAnnotationSet } from "./AnnotationSetListActions";
+import { fetchAnnotationSets, deleteAnnotationSet } from "./annotationset/AnnotationSetListActions";
 import {
     setActiveAnnotationSet,
-    saveAnnotationSet,
-    updateAnnotationSetField,
-    reloadAnnotationSet,
-    fetchAnnotations,
-    deleteAnnotation,
-    updateAnnotationField,
-    saveAnnotation,
-    setEditableAnnotation,
-    emptyAnnotationSet,
-    emptyAnnotation
-} from "./AnnotationSetActions";
-
+    saveActiveAnnotationSet,
+    updateActiveAnnotationSetField,
+    fetchActiveAnnotationSet
+} from "./annotationset/AnnotationSetActions";
+import {
+    fetchActiveAnnotationSetAnnotations,
+    deleteActiveAnnotationSetAnnotation,
+    updateActiveAnnotationSetEditableAnnotationField,
+    saveActiveAnnotationSetAnnotation,
+    setActiveAnnotationSetEditableAnnotation,
+} from "./annotationset/AnnotationActions";
 
 /**
  * Grouping up all possible actions.
@@ -39,33 +39,28 @@ export const ActionCreators = Object.assign({},
     {
         fetchCorpora,
         deleteCorpus,
-        setEditableCorpus,
+        setActiveCorpus,
         updateCorpusField,
-        toggleCorpusAnnotationSet,
-        fetchCorpusAnnotationSets,
-        saveCorpus,
-        reloadCorpus,
-        fetchCorpusDocuments,
-        fetchCorpusDocument,
-        deleteCorpusDocument,
-        uploadCorpusDocuments,
+        toggleActiveCorpusAnnotationSet,
+        saveActiveCorpus,
+        fetchActiveCorpus,
+        fetchActiveCorpusDocument,
+        deleteActiveCorpusDocument,
+        uploadActiveCorpusDocuments,
         fetchServerStatus,
         fetchAnnotationSets,
         deleteAnnotationSet,
-        saveAnnotationSet,
-        updateAnnotationSetField,
-        reloadAnnotationSet,
-        fetchAnnotations,
-        saveAnnotation,
-        updateAnnotationField,
-        setEditableAnnotation,
-        deleteAnnotation,
+        saveActiveAnnotationSet,
+        updateActiveAnnotationSetField,
+        fetchActiveAnnotationSet,
+        fetchActiveAnnotationSetAnnotations,
+        saveActiveAnnotationSetAnnotation,
+        updateActiveAnnotationSetEditableAnnotationField,
+        setActiveAnnotationSetEditableAnnotation,
+        deleteActiveAnnotationSetAnnotation,
         saveTagForActiveDocument,
         deleteTagForActiveDocument,
         setActiveAnnotationSet,
-        uploadCorpus,
-        emptyCorpus,
-        emptyAnnotationSet,
-        emptyAnnotation
+        uploadCorpus
     }
 );

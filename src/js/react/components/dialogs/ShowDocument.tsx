@@ -47,16 +47,6 @@ class ShowDocument extends Component<Props> {
             </Modal>
         );
     }
-
-    propTypes = {
-        show: PropTypes.bool.isRequired,        // Determine whether the dialog is visible or not
-        isLoading: PropTypes.bool.isRequired,   // The isPending property for FetchPending
-        success: PropTypes.bool.isRequired,     // The success property for FetchPending
-        title: PropTypes.string,                // The title of the dialog
-        text: PropTypes.string,                 // The text of the Document to be displayed
-        retryCallback: PropTypes.func,          // The retryCallback function for FetchPending
-        onHide: PropTypes.func.isRequired       // Is called when hiding the dialog - No params
-    };
 }
 
 

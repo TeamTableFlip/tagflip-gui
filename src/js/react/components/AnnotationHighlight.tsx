@@ -9,9 +9,10 @@ import Container from "react-bootstrap/Container";
 import Col from "react-bootstrap/Col";
 import Overlay from "react-bootstrap/Overlay";
 
-import { Annotation } from "../../Annotation";
+import Annotation  from "../../backend/model/Annotation";
 import { TagValue } from "../../redux/types";
 import { ButtonProps } from "react-bootstrap";
+import {TagAttributes} from "tagflip-common";
 
 const propTypes = {
     text: PropTypes.string,         // The annotated text to be displayed
@@ -20,16 +21,10 @@ const propTypes = {
     onDelete: PropTypes.any         // Is called when deleting the Tag - 0 params
 };
 
-interface Tag {
-    t_id: number;
-    start_index: number;
-    end_index: number;
-}
-
 interface Props {
     id: string;
     text: string;
-    tag: Tag;
+    tag: TagAttributes;
     annotation: { name: string; color: string };
     onDelete: () => void;
 };
@@ -120,15 +115,14 @@ class AnnotationHighlight extends React.Component<Props, State> {
                     placement="top"
                     containerPadding={20}
                 >
-                    <Tooltip id={`tooltip-${this.props.tag.t_id}`}>
+                    <Tooltip id={`tooltip-${this.props.tag.tagId}`}>
                         <Container className="mb-2">
                             <Row><Col className="text-left">Text:</Col><Col className="text-left">{this.props.text}</Col></Row>
-                            <Row><Col className="text-left">ID:</Col><Col className="text-right">{this.props.tag.t_id}</Col></Row>
-                            <Row><Col className="text-left">From:</Col><Col className="text-right">{this.props.tag.start_index}</Col></Row>
-                            <Row><Col className="text-left">To:</Col><Col className="text-right">{this.props.tag.end_index}</Col></Row>
+                            <Row><Col className="text-left">ID:</Col><Col className="text-right">{this.props.tag.tagId}</Col></Row>
+                            <Row><Col className="text-left">From:</Col><Col className="text-right">{this.props.tag.startIndex}</Col></Row>
+                            <Row><Col className="text-left">To:</Col><Col className="text-right">{this.props.tag.endIndex}</Col></Row>
                         </Container>
                         {this.props.onDelete && <Button variant="danger" size="sm" onClick={() => this.onDelete()}>Delete</Button>}
-
                     </Tooltip>
                 </Overlay>
             </React.Fragment>);
