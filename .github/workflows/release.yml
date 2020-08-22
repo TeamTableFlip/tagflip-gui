@@ -50,7 +50,7 @@ jobs:
       - name: Install
         run: npm ci
         env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_KEY}}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_RW }}
 
       - name: Release
         run: npx semantic-release
