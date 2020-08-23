@@ -1,4 +1,4 @@
-import {AnnotationSetAttributes} from "tagflip-common";
+import {AnnotationSetAttributes} from "@fhswf/tagflip-common";
 
 export default class AnnotationSet implements AnnotationSetAttributes {
 

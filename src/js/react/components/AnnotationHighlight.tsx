@@ -12,7 +12,7 @@ import Overlay from "react-bootstrap/Overlay";
 import Annotation  from "../../backend/model/Annotation";
 import { TagValue } from "../../redux/types";
 import { ButtonProps } from "react-bootstrap";
-import {TagAttributes} from "tagflip-common";
+import {TagAttributes} from "@fhswf/tagflip-common";
 
 const propTypes = {
     text: PropTypes.string,         // The annotated text to be displayed

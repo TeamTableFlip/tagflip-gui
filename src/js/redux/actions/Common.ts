@@ -1,4 +1,4 @@
-import {TagFlipError} from "tagflip-common";
+import {TagFlipError} from "@fhswf/tagflip-common";
 import {catchError, map, switchMap} from "rxjs/operators";
 import {Observable, of} from "rxjs";
 import {toast} from "react-toastify";

@@ -18,7 +18,7 @@ import AnnotationPicker from "./dialogs/AnnotationPicker";
 import "./AnnotationEditorCodeMirror.scss"
 import "./temp-maker.css"
 import AnnotationHighlight from "./AnnotationHighlight";
-import {AnnotationAttributes, TagAttributes} from "tagflip-common";
+import {AnnotationAttributes, TagAttributes} from "@fhswf/tagflip-common";
 import Tag from "../../backend/model/Tag";
 
 

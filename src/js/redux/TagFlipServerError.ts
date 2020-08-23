@@ -1,4 +1,4 @@
-import {TagFlipError, TagFlipErrorCode} from "tagflip-common";
+import {TagFlipError, TagFlipErrorCode} from "@fhswf/tagflip-common";
 
 class TagFlipServerError implements TagFlipError {
 

@@ -1,4 +1,4 @@
-import {DocumentAttributes} from "tagflip-common";
+import {DocumentAttributes} from "@fhswf/tagflip-common";
 
 export default class Document implements DocumentAttributes {
 
