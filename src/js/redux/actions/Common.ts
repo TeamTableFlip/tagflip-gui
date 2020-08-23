@@ -1,7 +1,7 @@
-import {TagFlipError} from "tagflip-common";
-import {catchError, map, switchMap} from "rxjs/operators";
-import {Observable, of} from "rxjs";
-import {toast} from "react-toastify";
+import { TagFlipError } from "@fhswf/tagflip-common";
+import { catchError, map, switchMap } from "rxjs/operators";
+import { Observable, of } from "rxjs";
+import { toast } from "react-toastify";
 import FetchStatusType from "./FetchStatusTypes";
 
 export const GLOBAL_ERROR = "GLOBAL_ERROR";

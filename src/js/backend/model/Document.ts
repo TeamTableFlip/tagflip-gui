@@ -1,8 +1,8 @@
-import {DocumentAttributes} from "tagflip-common";
+import { DocumentAttributes } from "@fhswf/tagflip-common";
 
 export default class Document implements DocumentAttributes {
 
-    static create = () : Document  => {
+    static create = (): Document => {
         return Object.assign({}, new Document());
     }
 

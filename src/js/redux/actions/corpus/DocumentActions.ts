@@ -1,7 +1,8 @@
 import FetchStatusType from "../FetchStatusTypes";
+/** TODO: Replace with RequestBuilder */
 import client from "../../../backend/RestApi";
-import {ofType} from "redux-observable";
-import {filter, map, mergeMap, switchMap} from "rxjs/operators";
+import { ofType } from "redux-observable";
+import { filter, map, mergeMap, switchMap } from "rxjs/operators";
 import {
     BaseAction,
     createFetchErrorAction,
@@ -12,11 +13,11 @@ import {
     PayloadAction,
     toJson
 } from "../Common";
-import {fromFetch} from "rxjs/fetch";
-import {RequestBuilder} from "../../../backend/RequestBuilder";
-import {toast} from "react-toastify";
-import {createAction} from "@reduxjs/toolkit";
-import {fetchTagsForActiveDocument} from "./TaggingActions";
+import { fromFetch } from "rxjs/fetch";
+import { RequestBuilder } from "../../../backend/RequestBuilder";
+import { toast } from "react-toastify";
+import { createAction } from "@reduxjs/toolkit";
+import { fetchTagsForActiveDocument } from "./TaggingActions";
 import Document from "../../../backend/model/Document";
 
 
@@ -28,7 +29,7 @@ export const fetchActiveCorpusDocumentsEpic = (action$, state$) => action$.pipe(
     ofType(FETCH_ACTIVE_CORPUS_DOCUMENTS),
     filter(() => state$.value.activeCorpus.values.corpusId > 0),
     mergeMap((action: BaseAction) =>
-        fromFetch(RequestBuilder.GET(`/corpus/${state$.value.activeCorpus.values.corpusId}/document`)).pipe(
+        fromFetch(RequestBuilder.GET(`corpus/${state$.value.activeCorpus.values.corpusId}/document`)).pipe(
             toJson(
                 map((res: Document[]) => createFetchSuccessAction<Document[]>(RECEIVE_ACTIVE_CORPUS_DOCUMENTS)(res)),
                 createFetchErrorAction(RECEIVE_ACTIVE_CORPUS_DOCUMENTS)
@@ -53,16 +54,16 @@ export const uploadActiveCorpusDocumentsEpic = (action$, state$) => action$.pipe
         return formData
     }),
     mergeMap((formData: FormData) => {
-            return fromFetch(RequestBuilder.POST(`/corpus/${state$.value.activeCorpus.values.corpusId}/document/import`, formData, {})).pipe(
-                toJson(
-                    map(res => {
-                        toast.success("Uploaded!")
-                        return createFetchSuccessAction(RECEIVE_ACTIVE_CORPUS_UPLOAD_DOCUMENTS)(res)
-                    }),
-                    onTagFlipError(createFetchErrorAction(RECEIVE_ACTIVE_CORPUS_UPLOAD_DOCUMENTS))
-                )
+        return fromFetch(RequestBuilder.POST(`corpus/${state$.value.activeCorpus.values.corpusId}/document/import`, formData, {})).pipe(
+            toJson(
+                map(res => {
+                    toast.success("Uploaded!")
+                    return createFetchSuccessAction(RECEIVE_ACTIVE_CORPUS_UPLOAD_DOCUMENTS)(res)
+                }),
+                onTagFlipError(createFetchErrorAction(RECEIVE_ACTIVE_CORPUS_UPLOAD_DOCUMENTS))
             )
-        }
+        )
+    }
     )
 )
 
@@ -81,7 +82,7 @@ export const deleteActiveCorpusDocumentEpic = (action$, state$) => action$.pipe(
     ofType(DELETE_ACTIVE_CORPUS_DOCUMENT),
     filter(() => state$.value.activeCorpus.values.corpusId > 0),
     mergeMap((action: BaseAction) =>
-        fromFetch(RequestBuilder.DELETE(`/corpus/${state$.value.activeCorpus.values.corpusId}/document/${action.payload}`)).pipe(
+        fromFetch(RequestBuilder.DELETE(`corpus/${state$.value.activeCorpus.values.corpusId}/document/${action.payload}`)).pipe(
             handleResponse(
                 map((_) => {
                     toast.info("Deleted!")
@@ -107,10 +108,10 @@ export const fetchActiveCorpusDocumentEpic = (action$, state$) => action$.pipe(
     filter((action: PayloadAction<FetchCorpusPayload>) => action.payload.documentId > 0),
     filter(() => state$.value.activeCorpus.values.corpusId > 0),
     switchMap((action: PayloadAction<FetchCorpusPayload>) =>
-        fromFetch(RequestBuilder.GET(`/corpus/${state$.value.activeCorpus.values.corpusId}/document/${action.payload.documentId}`)).pipe(
+        fromFetch(RequestBuilder.GET(`corpus/${state$.value.activeCorpus.values.corpusId}/document/${action.payload.documentId}`)).pipe(
             toJson(
                 mergeMap((res: Document) => {
-                    if(!action.payload.withTags)
+                    if (!action.payload.withTags)
                         return [createFetchSuccessAction<Document>(RECEIVE_ACTIVE_CORPUS_DOCUMENT)(res)]
                     return [
                         createFetchSuccessAction<Document>(RECEIVE_ACTIVE_CORPUS_DOCUMENT)(res),
@@ -167,8 +168,8 @@ export function uploadCorpus(files) {
 
         client.httpPost(`/import`, formData, {}, false)
             .then(result => {
-                    dispatch(receiveCorpusUpload(result))
-                }
+                dispatch(receiveCorpusUpload(result))
+            }
             )
             .catch(error => dispatch(receiveCorpusUpload(null, FetchStatusType.error, error)))
     }

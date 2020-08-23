@@ -1,4 +1,4 @@
-import {TagAttributes} from "tagflip-common";
+import { TagAttributes } from "@fhswf/tagflip-common";
 
 export default class Tag implements TagAttributes {
 

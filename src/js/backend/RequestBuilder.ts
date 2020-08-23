@@ -14,9 +14,9 @@ const defaultHeaders = {
 };
 
 const convertBody = (body) => {
-    if(!body)
+    if (!body)
         return null;
-    if(body instanceof FormData)
+    if (body instanceof FormData)
         return body;
     return JSON.stringify(body)
 }
@@ -45,7 +45,7 @@ export class RequestBuilder {
 
     public static REQUEST(path: string, method: HttpMethod = HttpMethod.GET, body = null, headers: HeadersInit = defaultHeaders): Request {
         let endpoint = config.backend.endpoint;
-        if (endpoint.endsWith('/')) {
+        if (!endpoint.endsWith('/')) {
             endpoint += '/';
         }
 
@@ -59,7 +59,10 @@ export class RequestBuilder {
             body: convertBody(body)
         };
 
-        const req = new Request(new URL(path, endpoint).toString(), payload)
+        const endpoint_url = new URL(endpoint);
+        const url = new URL(path, endpoint_url);
+        console.log('endpoint: %s, path: %s, url: %s', endpoint, path, url.toString());
+        const req = new Request(url.toString(), payload)
         console.log(req)
         return req;
     }

@@ -1,4 +1,4 @@
-import {CorpusAttributes} from "tagflip-common";
+import { CorpusAttributes } from "@fhswf/tagflip-common";
 
 export default class Corpus implements CorpusAttributes {
 
