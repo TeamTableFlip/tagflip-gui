@@ -1,12 +1,3 @@
-## [1.1.5](https://github.com/fhswf/tagflip-gui/compare/v1.1.4...v1.1.5) (2020-08-23)
-
-
-### Bug Fixes
-
-* Added missing scope-prefix for package @fhswf/tagflip-common ([0dffbbe](https://github.com/fhswf/tagflip-gui/commit/0dffbbe5487880244e2a3ec011961d71404ec669))
-* publish package tagflip-common on npm ([7b556b4](https://github.com/fhswf/tagflip-gui/commit/7b556b459a8887893eab47f612aca66b9c907fd2))
-* release script ([7c53121](https://github.com/fhswf/tagflip-gui/commit/7c53121ead1894d6ac6d248b609eba8abaf51f42))
-
 ## [1.1.4](https://github.com/fhswf/tagflip-gui/compare/v1.1.3...v1.1.4) (2020-08-14)
 
 

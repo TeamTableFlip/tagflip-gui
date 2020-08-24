@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, {Component} from "react";
 import ReactDom from "react-dom";
 
 import {
@@ -11,14 +11,14 @@ import {
     ViewUpdate,
     WidgetType
 } from "@codemirror/next/view"
-import { EditorState, StateEffect, StateField } from "@codemirror/next/state"
+import {EditorState, StateEffect, StateField} from "@codemirror/next/state"
 
 import PropTypes from "prop-types";
 import AnnotationPicker from "./dialogs/AnnotationPicker";
 import "./AnnotationEditorCodeMirror.scss"
 import "./temp-maker.css"
 import AnnotationHighlight from "./AnnotationHighlight";
-import { AnnotationAttributes, TagAttributes } from "@fhswf/tagflip-common";
+import {AnnotationAttributes, TagAttributes} from "@fhswf/tagflip-common";
 import Tag from "../../backend/model/Tag";
 
 
@@ -384,7 +384,7 @@ class AnnotationEditorCodeMirror extends Component<AnnotationProps, State> {
             endIndex = helpIndex;
         }
 
-        let newTag: Tag = Tag.create({
+        let newTag : Tag = Tag.create({
             startIndex: startIndex,
             endIndex: endIndex,
             annotationId: annotation.annotationId,

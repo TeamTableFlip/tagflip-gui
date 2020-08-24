@@ -15,7 +15,7 @@ import {
     toggleActiveCorpusAnnotationSetEpic
 } from "./corpus/CorpusActions";
 import {
-    deleteActiveCorpusDocumentEpic,
+    deleteActiveCorpusDocumentEpic, fetchActiveCorpusDocumentCountEpic,
     fetchActiveCorpusDocumentEpic,
     fetchActiveCorpusDocumentsEpic,
     uploadActiveCorpusDocumentsEpic
@@ -38,6 +38,7 @@ const rootEpic = combineEpics(
     toggleActiveCorpusAnnotationSetEpic,
     fetchActiveCorpusDocumentEpic,
     fetchActiveCorpusDocumentsEpic,
+    fetchActiveCorpusDocumentCountEpic,
     uploadActiveCorpusDocumentsEpic,
     deleteActiveCorpusDocumentEpic,
     fetchCorporaEpic,

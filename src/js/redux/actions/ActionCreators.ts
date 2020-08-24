@@ -10,6 +10,7 @@ import {
     uploadActiveCorpusDocuments,
     deleteActiveCorpusDocument,
     fetchActiveCorpusDocument,
+    fetchActiveCorpusDocuments,
     uploadCorpus
 } from './corpus/DocumentActions';
 import {
@@ -45,6 +46,7 @@ export const ActionCreators = Object.assign({},
         saveActiveCorpus,
         fetchActiveCorpus,
         fetchActiveCorpusDocument,
+        fetchActiveCorpusDocuments,
         deleteActiveCorpusDocument,
         uploadActiveCorpusDocuments,
         fetchServerStatus,
