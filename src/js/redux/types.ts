@@ -28,6 +28,7 @@ export interface AnnotationSetValue {
 
 export interface DocumentListValue {
     items: Document[];
+    totalCount: number;
 }
 
 export interface DocumentValue {

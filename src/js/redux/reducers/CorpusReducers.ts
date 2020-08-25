@@ -5,6 +5,7 @@ import * as TaggingActions from '../actions/corpus/TaggingActions'
 import FetchStatusType from "../actions/FetchStatusTypes";
 import Corpus from '../../Corpus';
 import { CorpusState } from '../types';
+import {RECEIVE_ACTIVE_CORPUS_DOCUMENT_COUNT} from "../actions/corpus/DocumentActions";
 
 const initialState: CorpusState = {
     values: Corpus.create(),
@@ -25,6 +26,7 @@ const initialState: CorpusState = {
         isFetching: false,
         didInvalidate: false,
         items: [],
+        totalCount: 0,
         lastUpdated: undefined,
         status: FetchStatusType.success,
         error: null
@@ -119,6 +121,9 @@ export const activeCorpus = createReducer(initialState, {
         draft.documents.isFetching = true;
         draft.documents.didInvalidate = true;
     },
+    [DocumentActions.RECEIVE_ACTIVE_CORPUS_DOCUMENT_COUNT](draft, action) {
+        draft.documents.totalCount = action.payload.data
+    },
     [DocumentActions.RECEIVE_ACTIVE_CORPUS_DOCUMENTS](draft, action) {
         draft.documents.isFetching = false;
         draft.documents.didInvalidate = false;
@@ -145,7 +150,6 @@ export const activeCorpus = createReducer(initialState, {
         draft.documents.isFetching = false;
         draft.documents.didInvalidate = false;
         if (action.payload.status === FetchStatusType.success) {
-            draft.documents.items.push(...action.payload.data);
             draft.documents.lastUpdated = action.payload.receivedAt;
             draft.documents.status = FetchStatusType.success;
             draft.documents.error = null;

@@ -3,10 +3,10 @@ import PropTypes from "prop-types";
 import Dropzone from 'react-dropzone'
 import './FileUpload.css';
 import Card from "react-bootstrap/Card";
-import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faTrash} from "@fortawesome/free-solid-svg-icons";
+import {Spinner} from "react-bootstrap";
 
 const propTypes = {
     onUpload: PropTypes.func.isRequired,            // Is called when uploading the files - 1 param: files
@@ -43,15 +43,17 @@ class FileUpload extends Component<Props, State> {
 
     componentDidUpdate(prevProps: Readonly<Props>, prevState: Readonly<State>, snapshot?: any) {
         let reset = false;
-        if(this.state.files.length > this.props.maxCount) {
-            this.props.onTooManyFiles(this.state.files.length,this.props.maxCount);
+        if (this.state.files.length > this.props.maxCount) {
+            this.props.onTooManyFiles(this.state.files.length, this.props.maxCount);
             reset = true;
         }
-        if(this.state.rejected) {
+        if (this.state.rejected) {
             this.props.onTypeMismatch(this.props.acceptMimeTypes)
-                reset = true;
+            reset = true;
         }
-        if(reset)
+        if (prevProps.isUploading && !this.props.isUploading)
+            reset = true
+        if (reset)
             this._reset()
     }
 
@@ -112,6 +114,7 @@ class FileUpload extends Component<Props, State> {
                         <td>
                             <Button size="sm" variant="danger"
                                     className="float-right"
+                                    disabled={this.props.isUploading}
                                     onClick={() => {
                                         this.setState({files: this.state.files.filter(f => f !== file)})
                                     }}
@@ -170,7 +173,12 @@ class FileUpload extends Component<Props, State> {
                                             onClick={() => {
                                                 this.props.onUpload(this.state.files);
                                             }}
-                                            disabled={this.props.isUploading}>Upload</Button>
+                                            disabled={this.props.isUploading}>
+                                        {!this.props.isUploading ? "Upload" : (
+                                            <Spinner as="span" aria-hidden="true" role="status" animation="border"
+                                                     variant="light" size="sm"/>)}
+                                    </Button>
+
                                 </React.Fragment>
 
                             )}

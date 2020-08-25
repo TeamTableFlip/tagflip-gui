@@ -1,8 +1,5 @@
-import React, { Component } from "react";
-import { Button, Spinner, Alert } from "react-bootstrap";
-import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { bool } from "prop-types";
+import React, {Component} from "react";
+import {Alert, Spinner} from "react-bootstrap";
 
 interface Props {
     isPending: boolean;               // Determine whether the data is still being fetched or not
@@ -55,10 +52,12 @@ class FetchPending extends Component<Props, State> {
                 </div>
             )
         }
-        if (this.props.isPending && this.props.subtle && !this.props.silent) {
+        if (this.props.subtle && !this.props.silent) {
             return (
                 <div ref={this.childNode} className="w-100 h-100">
-                    <Spinner size="sm" animation="border" variant="primary" style={{ position: 'absolute', right: 5, top: 5 }} />
+                    <div className="d-flex justify-content-end">
+                        <Spinner size="sm" animation="border" variant="primary" className={!this.props.isPending ? "invisible" : ""}/>
+                    </div>
                     {this.props.children}
                 </div>
             );

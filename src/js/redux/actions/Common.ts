@@ -1,8 +1,9 @@
-import { TagFlipError } from "@fhswf/tagflip-common";
-import { catchError, map, switchMap } from "rxjs/operators";
-import { Observable, of } from "rxjs";
-import { toast } from "react-toastify";
+import {TagFlipError} from "@fhswf/tagflip-common";
+import {catchError, map, switchMap} from "rxjs/operators";
+import {Observable, of} from "rxjs";
+import {toast} from "react-toastify";
 import FetchStatusType from "./FetchStatusTypes";
+import {PayloadAction, PayloadStatusAction} from "./types";
 
 export const GLOBAL_ERROR = "GLOBAL_ERROR";
 export const globalError = (err: any) => {
@@ -73,32 +74,33 @@ export function toJson<V>(successOperator: (source: Observable<V>) => any, error
     }
 }
 
-export interface BaseAction {
-    type: any,
-    payload: any
-}
-
-export interface PayloadAction<T> extends BaseAction {
-    payload: T
-}
-
-export interface PayloadStatusAction<T> extends BaseAction {
-    payload: {
-        data: T,
-        receivedAt: number,
-        status: FetchStatusType,
-        error: any
+export function toText(successOperator: (source: Observable<any>) => any, errorOperator: (source: Observable<Response>) => any = globalError) {
+    return function <T>(source: Observable<Response>) {
+        return source.pipe(
+            switchMap(response => {
+                if (response.ok) {
+                    return Promise.resolve(response.text())
+                }
+                return Promise.reject(response);
+            }),
+            successOperator,
+            catchError((error: Response, caught) => {
+                return of(error).pipe(
+                    errorOperator
+                )
+            })
+        );
     }
 }
 
-export function createPayloadAction<T>(type: string): ((data: T) => PayloadAction<T>) {
+export function createPayloadAction<T>(type: string): ((data?: T) => PayloadAction<T>) {
     return (data: T): PayloadAction<T> => ({
         type: type,
         payload: data
     });
 }
 
-export function createFetchSuccessAction<T>(type: string): ((data: T) => PayloadStatusAction<T>) {
+export function createFetchSuccessAction<T>(type: string): ((data?: T) => PayloadStatusAction<T>) {
     return (data: T): PayloadStatusAction<T> => ({
         type: type,
         payload: {
