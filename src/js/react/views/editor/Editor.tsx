@@ -189,6 +189,12 @@ class Editor extends Component<EditorProps, EditorState> {
                 document={this.props.selectedDocument.item}/>);
     }
 
+    componentDidUpdate(prevProps: Readonly<EditorProps>, prevState: Readonly<EditorState>, snapshot?: any) {
+        if(prevProps.selectedCorpus.values.corpusId !== this.props.selectedCorpus.values.corpusId) {
+            this.props.fetchActiveCorpusDocuments([]) // TODO: Once this view is overhauled this should be done different
+        }
+    }
+
     /**
      * Renders the Editor view for tagging Documents, and a side nav containing a Corpus-, AnnotationSet- and Document-Selection.
      * @returns {*} The view to be rendered.
@@ -202,6 +208,7 @@ class Editor extends Component<EditorProps, EditorState> {
                     <h6> Select Corpus </h6>
                     <FetchPending isPending={this.props.corpora.isFetching}
                                   success={this.props.corpora.status === FetchStatusType.success}
+                                  subtle={false}
                                   inheritChildrenHeight={false}
                                   silent={false}
                     >
@@ -236,6 +243,7 @@ class Editor extends Component<EditorProps, EditorState> {
                             <FetchPending isPending={this.props.selectedCorpus.annotationSets.isFetching}
                                           success={this.props.selectedCorpus.annotationSets.status === FetchStatusType.success}
                                           inheritChildrenHeight={false}
+                                          subtle={false}
                                           silent={false}
                             >
                                 <SearchableDropdown buttonText="No Annotation Set selected"
@@ -259,6 +267,7 @@ class Editor extends Component<EditorProps, EditorState> {
                             <FetchPending isPending={this.props.selectedCorpus.documents.isFetching}
                                           success={this.props.selectedCorpus.documents.status === FetchStatusType.success}
                                           inheritChildrenHeight={false}
+                                          subtle={false}
                                           silent={false}
                             >
                                 <hr/>
@@ -311,6 +320,7 @@ class Editor extends Component<EditorProps, EditorState> {
                         && this.props.selectedAnnotationSet.annotations.status === FetchStatusType.success
                         && this.props.selectedDocument.tags.status === FetchStatusType.success
                     }
+                    silent={true}
                 >
                     <div className="editor">
                         {this._renderEditor()}

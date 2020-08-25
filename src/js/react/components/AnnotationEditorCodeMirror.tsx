@@ -439,7 +439,8 @@ class AnnotationEditorCodeMirror extends Component<AnnotationProps, State> {
                     onPicked={this.onAnnotationPicked}
                     onCanceled={() => this._cancelSelection()}
                 />
-                <div ref={(DOMNodeRef) => { this.componentRef = DOMNodeRef; }}>
+                <div className="CodeMirror"
+                    ref={(DOMNodeRef) => { this.componentRef = DOMNodeRef; }}>
                 </div>
             </React.Fragment>
         );

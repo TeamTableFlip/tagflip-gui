@@ -54,7 +54,7 @@ class FetchPending extends Component<Props, State> {
         }
         if (this.props.subtle && !this.props.silent) {
             return (
-                <div ref={this.childNode} className="w-100 h-100">
+                <div ref={this.childNode}>
                     <div className="d-flex justify-content-end">
                         <Spinner size="sm" animation="border" variant="primary" className={!this.props.isPending ? "invisible" : ""}/>
                     </div>
@@ -62,12 +62,9 @@ class FetchPending extends Component<Props, State> {
                 </div>
             );
         }
-        if (!this.props.inheritChildrenHeight)
-            return this.props.children;
-
         if (!this.props.success && this.props.noSuccessMessage)
             return (
-                <div ref={this.childNode} className="p-2 w-100 h-100">
+                <div ref={this.childNode}>
                     {this.props.noSuccessMessage && (
                         <Alert variant="danger">
                             {this.props.noSuccessMessage}
@@ -77,7 +74,7 @@ class FetchPending extends Component<Props, State> {
                 </div>
             );
         return (
-            <div ref={this.childNode} className="w-100 h-100">
+            <div ref={this.childNode}>
                 {this.props.children}
             </div>
         );
