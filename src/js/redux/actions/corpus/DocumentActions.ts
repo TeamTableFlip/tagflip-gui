@@ -108,7 +108,7 @@ export const deleteActiveCorpusDocumentEpic = (action$, state$) => action$.pipe(
                 mergeMap((_) => {
                     toast.info("Deleted!")
                     return [
-                        fetchActiveCorpusDocumentCount(),
+                        fetchActiveCorpusDocumentCount([]),
                         createFetchSuccessAction(RECEIVE_DELETE_ACTIVE_CORPUS_DOCUMENT)(action.payload)
                     ]
                 }),
