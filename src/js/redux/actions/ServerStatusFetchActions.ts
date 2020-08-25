@@ -14,7 +14,16 @@ export const RECEIVE_SERVER_STATUS = "RECEIVE_SERVER_STATUS";
 
 
 export const fetchServerStatus = createAction(FETCH_SERVER_STATUS);
-export const receiveServerStatusSuccess = () => {
+export type ServerStatusAction = {
+    type: typeof RECEIVE_SERVER_STATUS,
+    payload:  {
+        available: boolean,
+        receivedAt: number,
+        status: FetchStatusType,
+        error: any
+    }
+}
+export const receiveServerStatusSuccess = () : ServerStatusAction => {
     return {
         type: RECEIVE_SERVER_STATUS,
         payload: {
@@ -25,7 +34,7 @@ export const receiveServerStatusSuccess = () => {
         }
     }
 }
-export const receiveServerStatusError = (error: any) => {
+export const receiveServerStatusError = (error: any) : ServerStatusAction => {
     return {
         type: RECEIVE_SERVER_STATUS,
         payload: {

@@ -3,9 +3,14 @@ import * as CorpusActions from '../actions/corpus/CorpusActions'
 import * as DocumentActions from '../actions/corpus/DocumentActions'
 import * as TaggingActions from '../actions/corpus/TaggingActions'
 import FetchStatusType from "../actions/FetchStatusTypes";
-import Corpus from '../../Corpus';
-import { CorpusState } from '../types';
-import {RECEIVE_ACTIVE_CORPUS_DOCUMENT_COUNT} from "../actions/corpus/DocumentActions";
+import Corpus from '../../backend/model/Corpus';
+import Document from '../../backend/model/Document';
+import {CorpusState} from '../types';
+import {BaseAction, PayloadAction, PayloadStatusAction} from "../actions/types";
+import AnnotationSet from "../../backend/model/AnnotationSet";
+import {QueryParam} from "../../backend/RequestBuilder";
+import {FetchCorpusPayload} from "../actions/corpus/DocumentActions";
+import Tag from "../../backend/model/Tag";
 
 const initialState: CorpusState = {
     values: Corpus.create(),
@@ -57,7 +62,7 @@ const initialState: CorpusState = {
  * @type {reducer}
  */
 export const activeCorpus = createReducer(initialState, {
-    [CorpusActions.SET_ACTIVE_CORPUS]: (draft: CorpusState, action) => {
+    [CorpusActions.SET_ACTIVE_CORPUS]: (draft: CorpusState, action: PayloadAction<Corpus>) => {
         draft.values = action.payload;
         draft.didInvalidate = true;
         draft.annotationSets.didInvalidate = true;
@@ -65,22 +70,22 @@ export const activeCorpus = createReducer(initialState, {
         draft.activeDocument.didInvalidate = true;
         draft.activeDocument.tags.didInvalidate = true;
     },
-    [CorpusActions.UPDATE_CORPUS_FIELD]: (draft: CorpusState, action) => {
+    [CorpusActions.UPDATE_CORPUS_FIELD]: (draft: CorpusState, action: BaseAction) => {
         draft.values[action.payload.field] = action.payload.value;
     },
-    [CorpusActions.ADD_CORPUS_ANNOTATION_SET]: (draft, action) => {
+    [CorpusActions.ADD_CORPUS_ANNOTATION_SET]: (draft: CorpusState, action: PayloadAction<AnnotationSet>) => {
         draft.annotationSets.items.push(action.payload); // add
     },
-    [CorpusActions.REMOVE_CORPUS_ANNOTATION_SET]: (draft, action) => {
+    [CorpusActions.REMOVE_CORPUS_ANNOTATION_SET]: (draft: CorpusState, action: PayloadAction<AnnotationSet>) => {
         if (draft.annotationSets.items.map(a => a.annotationSetId).includes(action.payload.annotationSetId)) { // set is selected
             draft.annotationSets.items = draft.annotationSets.items.filter(a => a.annotationSetId !== action.payload.annotationSetId)        // remove
         }
     },
-    [CorpusActions.FETCH_ACTIVE_CORPUS_ANNOTATION_SETS](draft, action) {
+    [CorpusActions.FETCH_ACTIVE_CORPUS_ANNOTATION_SETS](draft: CorpusState, action: BaseAction) {
         draft.annotationSets.isFetching = true;
         draft.annotationSets.didInvalidate = true;
     },
-    [CorpusActions.RECEIVE_ACTIVE_CORPUS_ANNOTATION_SETS](draft, action) {
+    [CorpusActions.RECEIVE_ACTIVE_CORPUS_ANNOTATION_SETS](draft: CorpusState, action: PayloadStatusAction<AnnotationSet[]>) {
         draft.annotationSets.isFetching = false;
         draft.annotationSets.didInvalidate = false;
         if (action.payload.status === FetchStatusType.success) {
@@ -95,15 +100,15 @@ export const activeCorpus = createReducer(initialState, {
             draft.annotationSets.error = action.payload.error;
         }
     },
-    [CorpusActions.FETCH_ACTIVE_CORPUS](draft, action) {
+    [CorpusActions.FETCH_ACTIVE_CORPUS](draft: CorpusState, action: PayloadAction<number>) {
         draft.isFetching = true;
         draft.didInvalidate = true;
     },
-    [CorpusActions.SAVE_ACTIVE_CORPUS](draft, action) {
+    [CorpusActions.SAVE_ACTIVE_CORPUS](draft: CorpusState, action: BaseAction) {
         draft.isFetching = true;
         draft.didInvalidate = true;
     },
-    [CorpusActions.RECEIVE_UPDATE_ACTIVE_CORPUS](draft, action) {
+    [CorpusActions.RECEIVE_UPDATE_ACTIVE_CORPUS](draft: CorpusState, action: PayloadStatusAction<Corpus>) {
         draft.isFetching = false;
         if (action.payload.status === FetchStatusType.success) {
             draft.values = action.payload.data;
@@ -117,14 +122,14 @@ export const activeCorpus = createReducer(initialState, {
             draft.error = action.payload.error;
         }
     },
-    [DocumentActions.FETCH_ACTIVE_CORPUS_DOCUMENTS](draft, action) {
+    [DocumentActions.FETCH_ACTIVE_CORPUS_DOCUMENTS](draft: CorpusState, action: PayloadAction<QueryParam[]>) {
         draft.documents.isFetching = true;
         draft.documents.didInvalidate = true;
     },
-    [DocumentActions.RECEIVE_ACTIVE_CORPUS_DOCUMENT_COUNT](draft, action) {
+    [DocumentActions.RECEIVE_ACTIVE_CORPUS_DOCUMENT_COUNT](draft: CorpusState, action: PayloadStatusAction<number>) {
         draft.documents.totalCount = action.payload.data
     },
-    [DocumentActions.RECEIVE_ACTIVE_CORPUS_DOCUMENTS](draft, action) {
+    [DocumentActions.RECEIVE_ACTIVE_CORPUS_DOCUMENTS](draft: CorpusState, action: PayloadStatusAction<Document[]>) {
         draft.documents.isFetching = false;
         draft.documents.didInvalidate = false;
         if (action.payload.status === FetchStatusType.success) {
@@ -140,13 +145,13 @@ export const activeCorpus = createReducer(initialState, {
         }
     },
 
-    [DocumentActions.REQUEST_CORPUS_IMPORT](draft, action) {
+    [DocumentActions.REQUEST_CORPUS_IMPORT](draft: CorpusState, action) {
         draft.isFetching = true;
     },
-    [DocumentActions.UPLOAD_ACTIVE_CORPUS_DOCUMENTS](draft, action) {
+    [DocumentActions.UPLOAD_ACTIVE_CORPUS_DOCUMENTS](draft: CorpusState, action: PayloadAction<File[]>) {
         draft.documents.isFetching = true;
     },
-    [DocumentActions.RECEIVE_ACTIVE_CORPUS_UPLOAD_DOCUMENTS](draft, action) {
+    [DocumentActions.RECEIVE_ACTIVE_CORPUS_UPLOAD_DOCUMENTS](draft: CorpusState, action: PayloadStatusAction<Document[]>) {
         draft.documents.isFetching = false;
         draft.documents.didInvalidate = false;
         if (action.payload.status === FetchStatusType.success) {
@@ -161,7 +166,7 @@ export const activeCorpus = createReducer(initialState, {
         }
     },
 
-    [DocumentActions.RECEIVE_DELETE_ACTIVE_CORPUS_DOCUMENT](draft, action) {
+    [DocumentActions.RECEIVE_DELETE_ACTIVE_CORPUS_DOCUMENT](draft: CorpusState, action : PayloadStatusAction<number>) {
         draft.documents.isFetching = false;
         draft.documents.didInvalidate = false;
         if (action.payload.status === FetchStatusType.success) {
@@ -173,15 +178,15 @@ export const activeCorpus = createReducer(initialState, {
             draft.documents.isFetching = false;
             draft.documents.didInvalidate = false;
             draft.documents.status = FetchStatusType.error;
-            draft.documents.error = action.error;
+            draft.documents.error = action.payload.error;
         }
     },
-    [DocumentActions.FETCH_ACTIVE_CORPUS_DOCUMENT](draft, action) {
+    [DocumentActions.FETCH_ACTIVE_CORPUS_DOCUMENT](draft: CorpusState, action : PayloadAction<FetchCorpusPayload>) {
         draft.activeDocument.isFetching = true;
         draft.activeDocument.didInvalidate = true;
         draft.activeDocument.item = null;
     },
-    [DocumentActions.RECEIVE_ACTIVE_CORPUS_DOCUMENT](draft, action) {
+    [DocumentActions.RECEIVE_ACTIVE_CORPUS_DOCUMENT](draft: CorpusState, action : PayloadStatusAction<Document>) {
         draft.activeDocument.isFetching = false;
         draft.activeDocument.didInvalidate = false;
         if (action.payload.status === FetchStatusType.success) {
@@ -195,11 +200,11 @@ export const activeCorpus = createReducer(initialState, {
             draft.activeDocument.error = action.payload.error;
         }
     },
-    [TaggingActions.FETCH_TAGS_FOR_ACTIVE_DOCUMENT](draft, action) {
+    [TaggingActions.FETCH_TAGS_FOR_ACTIVE_DOCUMENT](draft: CorpusState, action : BaseAction) {
         draft.activeDocument.tags.isFetching = true;
         draft.activeDocument.tags.didInvalidate = true;
     },
-    [TaggingActions.RECEIVE_TAGS_FOR_ACTIVE_DOCUMENT](draft, action) {
+    [TaggingActions.RECEIVE_TAGS_FOR_ACTIVE_DOCUMENT](draft: CorpusState, action : PayloadStatusAction<Tag[]>) {
         draft.activeDocument.tags.isFetching = false;
         draft.activeDocument.tags.didInvalidate = false;
         if (action.payload.status === FetchStatusType.success) {
@@ -210,14 +215,14 @@ export const activeCorpus = createReducer(initialState, {
         } else {
             draft.activeDocument.tags.lastUpdated = action.payload.receivedAt;
             draft.activeDocument.tags.status = FetchStatusType.error;
-            draft.activeDocument.tags.error = action.error;
+            draft.activeDocument.tags.error = action.payload.error;
         }
     },
-    [TaggingActions.SAVE_TAG_FOR_ACTIVE_DOCUMENT](draft, action) {
+    [TaggingActions.SAVE_TAG_FOR_ACTIVE_DOCUMENT](draft: CorpusState, action : PayloadAction<Tag>) {
         draft.activeDocument.tags.isFetching = true;
         draft.activeDocument.tags.didInvalidate = true;
     },
-    [TaggingActions.RECEIVE_SAVE_TAG_FOR_ACTIVE_DOCUMENT](draft, action) {
+    [TaggingActions.RECEIVE_SAVE_TAG_FOR_ACTIVE_DOCUMENT](draft: CorpusState, action : PayloadStatusAction<Tag>) {
         draft.activeDocument.tags.isFetching = false;
         draft.activeDocument.tags.didInvalidate = false;
         if (action.payload.status === FetchStatusType.success) {
@@ -231,11 +236,11 @@ export const activeCorpus = createReducer(initialState, {
             draft.activeDocument.tags.error = action.payload.error;
         }
     },
-    [TaggingActions.DELETE_TAG_FOR_ACTIVE_DOCUMENT](draft, action) {
+    [TaggingActions.DELETE_TAG_FOR_ACTIVE_DOCUMENT](draft: CorpusState, action : PayloadAction<Tag>) {
         draft.activeDocument.tags.isFetching = true;
         draft.activeDocument.tags.didInvalidate = true;
     },
-    [TaggingActions.RECEIVE_DELETE_TAG_FOR_ACTIVE_DOCUMENT](draft, action) {
+    [TaggingActions.RECEIVE_DELETE_TAG_FOR_ACTIVE_DOCUMENT](draft: CorpusState, action : PayloadStatusAction<Tag>) {
         draft.activeDocument.tags.isFetching = false;
         draft.activeDocument.tags.didInvalidate = false;
         if (action.payload.status === FetchStatusType.success) {
@@ -246,7 +251,7 @@ export const activeCorpus = createReducer(initialState, {
         } else {
             draft.activeDocument.tags.lastUpdated = action.payload.receivedAt;
             draft.activeDocument.tags.status = FetchStatusType.error;
-            draft.activeDocument.tags.error = action.error;
+            draft.activeDocument.tags.error = action.payload.error;
         }
     }
 

@@ -1,5 +1,5 @@
 import FetchStatusType from "./actions/FetchStatusTypes";
-import Corpus from '../Corpus';
+import Corpus from '../backend/model/Corpus';
 import AnnotationSet from '../backend/model/AnnotationSet';
 import Annotation from '../backend/model/Annotation';
 import Document from '../backend/model/Document';

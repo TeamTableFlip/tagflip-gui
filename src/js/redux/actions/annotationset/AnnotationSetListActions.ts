@@ -19,7 +19,7 @@ export const RECEIVE_ANNOTATION_SETS = "RECEIVE_ANNOTATION_SETS";
 export const fetchAnnotationSets = createAction(FETCH_ANNOTATION_SETS)
 export const fetchAnnotationSetsEpic = action$ => action$.pipe(
     ofType(FETCH_ANNOTATION_SETS),
-    mergeMap(action =>
+    mergeMap((action : BaseAction) =>
         fromFetch(RequestBuilder.GET("/annotationset")).pipe(
             toJson(
                 map((res: AnnotationSet[]) => createFetchSuccessAction(RECEIVE_ANNOTATION_SETS)(res)),

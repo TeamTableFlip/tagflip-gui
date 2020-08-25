@@ -14,16 +14,14 @@ import {toast} from "react-toastify";
 import {createAction} from "@reduxjs/toolkit";
 import {setActiveAnnotationSetEditableAnnotation} from "./AnnotationActions";
 import Annotation from "../../../backend/model/Annotation";
-import {BaseAction} from "../types";
+import {BaseAction, PayloadAction} from "../types";
 
 export const SET_ACTIVE_ANNOTATION_SET = "SET_ACTIVE_ANNOTATION_SET";
-export const FETCH_ACTIVE_ANNOTATION_SET = "FETCH_ACTIVE_ANNOTATION_SET"
-
 export const setActiveAnnotationSet = createPayloadAction<AnnotationSet>(SET_ACTIVE_ANNOTATION_SET);
 export const setActiveAnnotationSetEpic = action$ => action$.pipe(
     ofType(SET_ACTIVE_ANNOTATION_SET),
-    filter((action: BaseAction) => (action.payload.annotationSetId > 0)),
-    map((action: BaseAction) => fetchActiveAnnotationSet())
+    filter((action: PayloadAction<AnnotationSet>) => (action.payload.annotationSetId > 0)),
+    map(() => fetchActiveAnnotationSet())
 )
 
 export const UPDATE_ANNOTATION_SET_FIELD = "UPDATE_ANNOTATION_SET_FIELD";
@@ -59,6 +57,7 @@ export const saveActiveAnnotationSetEpic = (action$, state$) => action$.pipe(
     )
 );
 
+export const FETCH_ACTIVE_ANNOTATION_SET = "FETCH_ACTIVE_ANNOTATION_SET"
 export const fetchActiveAnnotationSet = createAction(FETCH_ACTIVE_ANNOTATION_SET);
 export const fetchActiveAnnotationSetEpic = (action$, state$) => action$.pipe(
     ofType(FETCH_ACTIVE_ANNOTATION_SET),

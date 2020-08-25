@@ -122,7 +122,7 @@ export const deleteActiveCorpusDocumentEpic = (action$, state$) => action$.pipe(
 // Actions for displaying document contents
 export const FETCH_ACTIVE_CORPUS_DOCUMENT = "FETCH_ACTIVE_CORPUS_DOCUMENT";
 export const RECEIVE_ACTIVE_CORPUS_DOCUMENT = "RECEIVE_ACTIVE_CORPUS_DOCUMENT";
-type FetchCorpusPayload = {
+export type FetchCorpusPayload = {
     documentId: number,
     withTags: boolean
 }

@@ -13,7 +13,7 @@ import fetchStatusType from "../../../../redux/actions/FetchStatusTypes";
 import FetchPending from "../../../components/FetchPending";
 import ConfirmationDialog from "../../../components/dialogs/ConfirmationDialog";
 import {RootState} from "../../../../redux/reducers/Reducers";
-import Corpus from "../../../../Corpus";
+import Corpus from "../../../../backend/model/Corpus";
 import {CorpusListValue} from "../../../../redux/types";
 
 /**

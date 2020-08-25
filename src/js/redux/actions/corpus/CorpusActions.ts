@@ -1,4 +1,4 @@
-import Corpus from "../../../Corpus";
+import Corpus from "../../../backend/model/Corpus";
 import AnnotationSet from "../../../backend/model/AnnotationSet";
 import {ofType} from "redux-observable";
 import {filter, map, mergeMap, switchMap} from "rxjs/operators";
