@@ -1,3 +1,10 @@
+## [1.2.1](https://github.com/fhswf/tagflip-gui/compare/v1.2.0...v1.2.1) (2020-08-25)
+
+
+### Bug Fixes
+
+* Overflow scrolling for editor view ([66b5250](https://github.com/fhswf/tagflip-gui/commit/66b52509d07adbb53d36649ae115780e1ad856a9))
+
 # [1.2.0](https://github.com/fhswf/tagflip-gui/compare/v1.1.5...v1.2.0) (2020-08-25)
 
 
