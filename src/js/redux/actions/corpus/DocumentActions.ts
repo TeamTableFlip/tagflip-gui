@@ -11,7 +11,7 @@ import {
     toJson, toText
 } from "../Common";
 import {fromFetch} from "rxjs/fetch";
-import {OffsetLimitParam, QueryParam, RequestBuilder} from "../../../backend/RequestBuilder";
+import {OffsetLimitParam, QueryParam, RequestBuilder, SimpleQueryParam} from "../../../backend/RequestBuilder";
 import {toast} from "react-toastify";
 import {fetchTagsForActiveDocument} from "./TaggingActions";
 import Document from "../../../backend/model/Document";
@@ -21,12 +21,12 @@ import {createAction} from "@reduxjs/toolkit";
 
 export const FETCH_ACTIVE_CORPUS_DOCUMENT_COUNT = "FETCH_ACTIVE_CORPUS_DOCUMENT_COUNT";
 export const RECEIVE_ACTIVE_CORPUS_DOCUMENT_COUNT = "RECEIVE_ACTIVE_CORPUS_DOCUMENT_COUNT";
-export const fetchActiveCorpusDocumentCount = createAction(FETCH_ACTIVE_CORPUS_DOCUMENT_COUNT);
+export const fetchActiveCorpusDocumentCount = createPayloadAction<QueryParam[]>(FETCH_ACTIVE_CORPUS_DOCUMENT_COUNT);
 export const fetchActiveCorpusDocumentCountEpic = (action$, state$) => action$.pipe(
     ofType(FETCH_ACTIVE_CORPUS_DOCUMENT_COUNT),
     filter(() => state$.value.activeCorpus.values.corpusId > 0),
-    mergeMap((action: BaseAction) =>
-        fromFetch(RequestBuilder.GET(`/corpus/${state$.value.activeCorpus.values.corpusId}/document`, [{key:"count", value:true}])).pipe(
+    mergeMap((action: PayloadAction<QueryParam[]>) =>
+        fromFetch(RequestBuilder.GET(`/corpus/${state$.value.activeCorpus.values.corpusId}/document`, [SimpleQueryParam.of("count", true), ... (action.payload || [])])).pipe(
             handleResponse(
                 toText(
                     map((res: string) => createFetchSuccessAction<number>(RECEIVE_ACTIVE_CORPUS_DOCUMENT_COUNT)(Number.parseInt(res)))
@@ -48,7 +48,7 @@ export const fetchActiveCorpusDocumentsEpic = (action$, state$) => action$.pipe(
         fromFetch(RequestBuilder.GET(`/corpus/${state$.value.activeCorpus.values.corpusId}/document`, action.payload)).pipe(
             toJson(
                 mergeMap((res: Document[]) => [
-                    fetchActiveCorpusDocumentCount(),
+                    fetchActiveCorpusDocumentCount(action.payload),
                     createFetchSuccessAction<Document[]>(RECEIVE_ACTIVE_CORPUS_DOCUMENTS)(res)
                 ] ),
                 createFetchErrorAction(RECEIVE_ACTIVE_CORPUS_DOCUMENTS)
@@ -108,8 +108,8 @@ export const deleteActiveCorpusDocumentEpic = (action$, state$) => action$.pipe(
                 mergeMap((_) => {
                     toast.info("Deleted!")
                     return [
-                        createFetchSuccessAction(RECEIVE_DELETE_ACTIVE_CORPUS_DOCUMENT)(action.payload),
-                        fetchActiveCorpusDocumentCount()
+                        fetchActiveCorpusDocumentCount(),
+                        createFetchSuccessAction(RECEIVE_DELETE_ACTIVE_CORPUS_DOCUMENT)(action.payload)
                     ]
                 }),
                 onTagFlipError(() => createFetchErrorAction(RECEIVE_DELETE_ACTIVE_CORPUS_DOCUMENT)(action.payload))

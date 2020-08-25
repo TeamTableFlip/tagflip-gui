@@ -43,17 +43,17 @@ class FileUpload extends Component<Props, State> {
 
     componentDidUpdate(prevProps: Readonly<Props>, prevState: Readonly<State>, snapshot?: any) {
         let reset = false;
-        if(this.state.files.length > this.props.maxCount) {
-            this.props.onTooManyFiles(this.state.files.length,this.props.maxCount);
+        if (this.state.files.length > this.props.maxCount) {
+            this.props.onTooManyFiles(this.state.files.length, this.props.maxCount);
             reset = true;
         }
-        if(this.state.rejected) {
+        if (this.state.rejected) {
             this.props.onTypeMismatch(this.props.acceptMimeTypes)
-                reset = true;
+            reset = true;
         }
-        if(prevProps.isUploading && !this.props.isUploading)
+        if (prevProps.isUploading && !this.props.isUploading)
             reset = true
-        if(reset)
+        if (reset)
             this._reset()
     }
 
@@ -174,7 +174,9 @@ class FileUpload extends Component<Props, State> {
                                                 this.props.onUpload(this.state.files);
                                             }}
                                             disabled={this.props.isUploading}>
-                                        {!this.props.isUploading ? "Upload" : (<Spinner animation="border" variant="light" size="sm"/>)}
+                                        {!this.props.isUploading ? "Upload" : (
+                                            <Spinner as="span" aria-hidden="true" role="status" animation="border"
+                                                     variant="light" size="sm"/>)}
                                     </Button>
 
                                 </React.Fragment>

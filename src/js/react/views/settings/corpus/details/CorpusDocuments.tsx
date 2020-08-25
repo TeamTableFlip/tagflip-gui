@@ -14,7 +14,7 @@ import ShowMoreText from 'react-show-more-text';
 import ConfirmationDialog from "../../../../components/dialogs/ConfirmationDialog";
 import ShowDocument from "../../../../components/dialogs/ShowDocument";
 import {toast} from "react-toastify";
-import CorpusDocumentTable from "./CorpusDocumentTable";
+import DataTable, {tagFlipTextFilter} from "../../../../components/DataTable";
 import {OffsetLimitParam, SimpleQueryParam} from "../../../../../backend/RequestBuilder";
 import Document from "../../../../../backend/model/Document";
 
@@ -45,12 +45,14 @@ type Props = PropsFromRedux & {}
 interface State {
     uploadWarningShowMore: boolean;
     documentToBeDeleted: Document;
+    documentsToBeDeleted: Document[];
     documentToBeShown: Document;
 }
 
 const initialState = {
     uploadWarningShowMore: false,
     documentToBeDeleted: undefined,
+    documentsToBeDeleted: undefined,
     documentToBeShown: undefined
 }
 
@@ -82,7 +84,8 @@ class CorpusDocuments extends Component<Props, State> {
                     });
                     this.setState({documentToBeShown: document});
                 }}>
-                    <FontAwesomeIcon icon={faSearch}/></Button>
+                    <FontAwesomeIcon icon={faSearch}/>
+                </Button>
                 <Button size="sm" variant="danger" onClick={() => this.setState({documentToBeDeleted: document})}>
                     <FontAwesomeIcon icon={faTrash}/>
                 </Button>
@@ -116,20 +119,43 @@ class CorpusDocuments extends Component<Props, State> {
                     onCancel={() => {
                         this.setState({documentToBeDeleted: undefined});
                     }}
-                    acceptText="Delete"/>
-                <CorpusDocumentTable<Document>
+                    acceptText="Delete"
+                />
+                <ConfirmationDialog
+                    acceptVariant="danger"
+                    show={this.state.documentsToBeDeleted && this.state.documentsToBeDeleted.length > 0}
+                    message={"Are you sure you want to delete selected documents'?"}
+                    onAccept={() => {
+                        this.state.documentsToBeDeleted.map(doc => this.props.deleteActiveCorpusDocument(doc.documentId));
+                        this.setState({documentsToBeDeleted: undefined});
+                    }}
+                    onCancel={() => {
+                        this.setState({documentsToBeDeleted: undefined});
+                    }}
+                    acceptText="Delete"
+                />
+                <DataTable<Document>
                     keyField="documentId"
-                    columns={[{text: 'ID', dataField: 'documentId', sort: true},
-                        {text: 'Filename', dataField: 'filename', sort: true}]}
-                    rowActionComponent={(rowObject) => rowActions(rowObject)}
+                    columns={[{text: 'ID', dataField: 'documentId', sort: true, filter: tagFlipTextFilter()},
+                        {text: 'Filename', dataField: 'filename', sort: true, filter: tagFlipTextFilter()}]}
+                    rowActionComponent={(rowObject: Document) => rowActions(rowObject)}
+                    tableActionComponent={(selectedObjects: Document[]) => (
+                        <Button size="sm" variant="outline-danger" disabled={selectedObjects.length === 0}
+                                onClick={() => this.setState({documentsToBeDeleted: selectedObjects})}>
+                            <FontAwesomeIcon icon={faTrash}/> Delete
+                        </Button>)
+                    }
                     totalSize={this.props.corpus.documents.totalCount}
                     data={this.props.corpus.documents.items}
-                    onRequestData={(offset, limit, sortField, sortOrder) => {
+                    multiSelect={true}
+                    onRequestData={(offset, limit, sortField, sortOrder, searchFilter) => {
                         let queryParams = OffsetLimitParam.of(offset, limit)
                         if (sortField)
                             queryParams.push(SimpleQueryParam.of("sortField", sortField))
                         if (sortOrder)
                             queryParams.push(SimpleQueryParam.of("sortOrder", sortOrder))
+                        if (searchFilter && searchFilter.length > 0)
+                            queryParams.push(SimpleQueryParam.of("searchFilter", JSON.stringify(searchFilter)))
                         this.props.fetchActiveCorpusDocuments(queryParams)
                     }}
                 />
