@@ -14,12 +14,12 @@ import {
 import {EditorState, StateEffect, StateField} from "@codemirror/next/state"
 
 import PropTypes from "prop-types";
-import AnnotationPicker from "./dialogs/AnnotationPicker";
+import AnnotationPicker from "../../components/Dialog/AnnotationPicker";
 import "./AnnotationEditorCodeMirror.scss"
 import "./temp-maker.css"
 import AnnotationHighlight from "./AnnotationHighlight";
 import {AnnotationAttributes, TagAttributes} from "@fhswf/tagflip-common";
-import Tag from "../../backend/model/Tag";
+import Tag from "../../../backend/model/Tag";
 
 
 class State {
@@ -388,7 +388,7 @@ class AnnotationEditorCodeMirror extends Component<AnnotationProps, State> {
             startIndex: startIndex,
             endIndex: endIndex,
             annotationId: annotation.annotationId,
-            documentId: this.props.document.documentId
+            annotationTaskDocumentId: this.props.document.documentId // todo relate to annotation task document
         });
 
         this.props.onSaveTag(newTag);

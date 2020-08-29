@@ -4,11 +4,11 @@ import Form from "react-bootstrap/Form";
 import ListGroup from "react-bootstrap/ListGroup";
 import {connect, ConnectedProps} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import {ActionCreators} from '../../../../redux/actions/ActionCreators';
-import FileUpload from "../../../components/fileUpload/FileUpload";
-import FetchPending from "../../../components/FetchPending";
-import fetchStatusType from "../../../../redux/actions/FetchStatusTypes";
-import {RootState} from "../../../../redux/reducers/Reducers";
+import {ActionCreators} from '../../../redux/actions/ActionCreators';
+import FileUpload from "../../components/FileUpload/FileUpload";
+import FetchPending from "../../components/FetchPending/FetchPending";
+import fetchStatusType from "../../../redux/actions/FetchStatusTypes";
+import {RootState} from "../../../redux/reducers/Reducers";
 
 const initialState = {
     validated: false,

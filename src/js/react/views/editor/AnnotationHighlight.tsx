@@ -9,8 +9,8 @@ import Container from "react-bootstrap/Container";
 import Col from "react-bootstrap/Col";
 import Overlay from "react-bootstrap/Overlay";
 
-import Annotation  from "../../backend/model/Annotation";
-import { TagValue } from "../../redux/types";
+import Annotation  from "../../../backend/model/Annotation";
+import { TagValue } from "../../../redux/types";
 import { ButtonProps } from "react-bootstrap";
 import {TagAttributes} from "@fhswf/tagflip-common";
 

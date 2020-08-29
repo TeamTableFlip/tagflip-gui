@@ -1,12 +1,13 @@
-import React, { Component } from "react";
+import React, {Component} from "react";
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
-import { connect, ConnectedProps } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import { ActionCreators } from '../../../../../redux/actions/ActionCreators';
-import fetchStatusType from "../../../../../redux/actions/FetchStatusTypes";
-import FetchPending from "../../../../components/FetchPending";
+import {connect, ConnectedProps} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import {ActionCreators} from '../../../../redux/actions/ActionCreators';
+import fetchStatusType from "../../../../redux/actions/FetchStatusTypes";
+import FetchPending from "../../../components/FetchPending/FetchPending";
+import {Col, Container, Row} from "react-bootstrap";
 
 interface State {
     validated: boolean;
@@ -39,8 +40,7 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 
 type PropsFromRedux = ConnectedProps<typeof connector>
 
-type Props = PropsFromRedux & {
-}
+type Props = PropsFromRedux & {}
 
 /**
  * A React view for displaying and editing basic information of a Corpus.
@@ -63,10 +63,10 @@ class CorpusBasicData extends Component<Props, State> {
     handleSubmit(event) {
         const form = event.currentTarget;
         event.preventDefault();
-        this.setState({ validated: false });
+        this.setState({validated: false});
         if (form.checkValidity() === false) {
             event.stopPropagation();
-            this.setState({ validated: true });
+            this.setState({validated: true});
         } else {
             this.props.saveActiveCorpus();
         }
@@ -87,12 +87,11 @@ class CorpusBasicData extends Component<Props, State> {
     render() {
         return (
             <React.Fragment>
-                <h3>Basic Data</h3>
                 <Form noValidate validated={this.state.validated} onSubmit={this.handleSubmit}>
                     <Card className="mt-3">
                         <Card.Body>
                             <Card.Title>
-                                Information
+                                Basic Information
                             </Card.Title>
                             <FetchPending
                                 isPending={this.props.corpus.isFetching}
@@ -102,10 +101,10 @@ class CorpusBasicData extends Component<Props, State> {
                                 <Form.Group controlId="formName">
                                     <Form.Label>Name</Form.Label>
                                     <Form.Control type="text" placeholder="Name of the corpus"
-                                        name="name"
-                                        onChange={(e) => this.props.updateCorpusField('name', e.target.value)}
-                                        value={this.props.corpus.values.name || ""}
-                                        required={true}
+                                                  name="name"
+                                                  onChange={(e) => this.props.updateCorpusField('name', e.target.value)}
+                                                  value={this.props.corpus.values.name || ""}
+                                                  required={true}
                                     />
                                     <Form.Control.Feedback type="invalid">
                                         Please choose a name.
@@ -114,12 +113,18 @@ class CorpusBasicData extends Component<Props, State> {
                                 < Form.Group controlId="formDescription">
                                     <Form.Label>Description</Form.Label>
                                     <Form.Control as="textarea" placeholder="Description of the corpus"
-                                        name="description"
-                                        onChange={(e) => this.props.updateCorpusField('description', e.target.value)}
-                                        value={this.props.corpus.values.description || ""} />
+                                                  name="description"
+                                                  onChange={(e) => this.props.updateCorpusField('description', e.target.value)}
+                                                  value={this.props.corpus.values.description || ""}/>
                                 </Form.Group>
-                                <Button variant="success" className="mr-1" type="submit">Save</Button>
-                                {!this.isNewCorpus() && <Button variant="danger" className="mr-1" onClick={() => this.props.fetchActiveCorpus(this.props.corpus.corpusId)}>Abort</Button>}
+                                <div className="mt-5">
+                                    <div className="d-flex justify-content-end">
+                                        {!this.isNewCorpus() && <Button variant="secondary" className="mr-1"
+                                                                        onClick={() => this.props.fetchActiveCorpus(this.props.corpus.corpusId)}>Abort</Button>}
+                                        <Button variant="success" className="float-right" type="submit">Save</Button>
+                                    </div>
+                                    <Col xs lg="3"/>
+                                </div>
                             </FetchPending>
                         </Card.Body>
                     </Card>

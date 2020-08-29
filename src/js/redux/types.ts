@@ -49,6 +49,7 @@ export interface CorpusValue {
 
 export interface CorpusListValue {
     items: Corpus[];
+    totalCount: number;
 }
 
 export interface ServerValue {

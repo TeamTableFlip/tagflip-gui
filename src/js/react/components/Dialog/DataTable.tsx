@@ -191,7 +191,7 @@ class DataTable<T> extends Component<Props<T>, State<T>> {
             <React.Fragment>
                 <div className="d-flex bd-highlight">
                     <h6 className="mr-auto bd-highlight">Available: {this.props.totalSize}</h6>
-                    <div className="bd-highlight mb-2 mt-2">{this.props.tableActionComponent(this.state.selectedRows)}</div>
+                    <div className="bd-highlight mb-2 mt-2">{this.props.tableActionComponent && this.props.tableActionComponent(this.state.selectedRows)}</div>
                 </div>
                 <PaginationProvider
                     pagination={

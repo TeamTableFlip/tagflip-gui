@@ -1,10 +1,10 @@
 import React, {Component} from "react";
-import FetchPending from "../../components/FetchPending";
+import FetchPending from "../../components/FetchPending/FetchPending";
 import FetchStatusType from "../../../redux/actions/FetchStatusTypes";
 import ListGroup from "react-bootstrap/ListGroup";
 import {bindActionCreators} from "redux";
 import {ActionCreators} from "../../../redux/actions/ActionCreators";
-import AnnotationEditorCodeMirror from "../../components/AnnotationEditorCodeMirror";
+import AnnotationEditorCodeMirror from "./AnnotationEditorCodeMirror";
 import SearchableDropdown from "../../components/searchableDropdown/SearchableDropdown";
 import {RootState} from "../../../redux/reducers/Reducers"
 import {CorpusListValue, CorpusValue, DocumentValue} from "../../../redux/types";

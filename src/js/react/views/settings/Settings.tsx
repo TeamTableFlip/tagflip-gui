@@ -1,8 +1,8 @@
 import React, {Component} from "react";
 import Nav from "react-bootstrap/Nav";
-import CorporaList from "./corpus/CorpusList";
-import CorpusDetails from "./corpus/CorpusDetails";
-import CorpusImport from "./corpus/CorpusImport";
+import CorporaList from "../corpus/CorpusList";
+import CorpusDetails from "../corpus/details/CorpusDetails";
+import CorpusImport from "../corpus/CorpusImport";
 import {Redirect, Route, RouteComponentProps, withRouter} from "react-router-dom";
 import AnnotationSetList from "./annotationset/AnnotationSetList";
 import AnnotationSetDetails from "./annotationset/AnnotationSetDetails";
@@ -35,41 +35,39 @@ class Settings extends Component<Props, State> {
      * @returns {*} The component to be rendered.
      */
     render() {
-        const { match } = this.props;
+        const {match} = this.props;
         return (
             <React.Fragment>
-                <div className="leftNav">
-                    <Nav variant="pills" activeKey={this.state.activeLink} className="mt-4 flex-column"
-                        onSelect={(k) => this.setState({ activeLink: k })}>
-                        <Nav.Link onSelect={() => this.props.history.push(`${match.path}/corpus`)}
-                            eventKey="0">Corpora</Nav.Link>
-                        <Nav.Link onSelect={() => this.props.history.push(`${match.path}/annotationset`)} eventKey="1">Annotation
-                            Sets</Nav.Link>
-                    </Nav>
-                </div>
-                <div className="content">
+                <Nav id="leftNav" variant="pills" className="flex-column p-5" as={"nav"} activeKey={this.state.activeLink}
+                     onSelect={(k) => this.setState({activeLink: k})}>
+                    <Nav.Link onSelect={() => this.props.history.push(`${match.path}/corpus`)}
+                              eventKey="0">Corpora</Nav.Link>
+                    <Nav.Link onSelect={() => this.props.history.push(`${match.path}/annotationset`)} eventKey="1">Annotation
+                        Sets</Nav.Link>
+                </Nav>
+                <section id="content">
                     <Route exact={true} path={`${match.path}/corpus`}>
-                        <CorporaList />
+                        <CorporaList/>
                     </Route>
                     <Route path={`${match.path}/corpus/edit`}>
-                        <CorpusDetails />
+                        <CorpusDetails/>
                     </Route>
                     <Route path={`${match.path}/corpus/import`}>
-                        <CorpusImport />
+                        <CorpusImport/>
                     </Route>
                     <Route exact={true} path={`${match.path}/annotationset`}>
-                        <AnnotationSetList />
+                        <AnnotationSetList/>
                     </Route>
                     <Route path={`${match.path}/annotationset/edit`}>
-                        <AnnotationSetDetails />
+                        <AnnotationSetDetails/>
                     </Route>
                     <Route exact={true} path={`${match.path}`} render={props => {
-                        this.setState({ activeLink: "0" });
-                        return <Redirect to={`${match.path}/corpus`} />
-                    }} />
+                        this.setState({activeLink: "0"});
+                        return <Redirect to={`${match.path}/corpus`}/>
+                    }}/>
 
 
-                </div>
+                </section>
             </React.Fragment>
         );
     }

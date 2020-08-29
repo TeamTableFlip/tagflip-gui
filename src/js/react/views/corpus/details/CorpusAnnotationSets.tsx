@@ -7,9 +7,9 @@ import Col from "react-bootstrap/Col";
 import Tooltip from "react-bootstrap/Tooltip";
 import { connect, ConnectedProps } from "react-redux";
 import { bindActionCreators } from 'redux';
-import { ActionCreators } from '../../../../../redux/actions/ActionCreators';
-import FetchStatusType from "../../../../../redux/actions/FetchStatusTypes";
-import FetchPending from "../../../../components/FetchPending";
+import { ActionCreators } from '../../../../redux/actions/ActionCreators';
+import FetchStatusType from "../../../../redux/actions/FetchStatusTypes";
+import FetchPending from "../../../components/FetchPending/FetchPending";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 
 const popover = (
