@@ -7,8 +7,8 @@ import AnnotationSet from "../../backend/model/AnnotationSet";
 
 const initialState: AnnotationSetListState = {
     isFetching: false,
-    didInvalidate: false,
     items: [],
+    totalCount: 0,
     lastUpdated: undefined,
     status: FetchStatusType.success,
     error: null
@@ -22,7 +22,9 @@ export const annotationSets = createReducer(initialState,
     {
         [AnnotationSetFetchActions.FETCH_ANNOTATION_SETS](draft : AnnotationSetListState, action : BaseAction) {
             draft.isFetching = true;
-            draft.didInvalidate = true;
+        },
+        [AnnotationSetFetchActions.RECEIVE_ANNOTATION_SET_COUNT](draft : AnnotationSetListState, action : PayloadAction<number>) {
+            draft.totalCount = action.payload;
         },
         [AnnotationSetFetchActions.RECEIVE_ANNOTATION_SETS](draft : AnnotationSetListState, action : PayloadStatusAction<AnnotationSet[]>) {
             draft.isFetching = false;
@@ -31,7 +33,6 @@ export const annotationSets = createReducer(initialState,
                 draft.lastUpdated = action.payload.receivedAt;
                 draft.status = FetchStatusType.success;
                 draft.error = null;
-                draft.didInvalidate = false;
             } else {
                 draft.status = FetchStatusType.error;
                 draft.error = action.payload.error;

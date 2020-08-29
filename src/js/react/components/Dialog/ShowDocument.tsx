@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import FetchPending from "../FetchPending";
+import FetchPending from "../FetchPending/FetchPending";
 import Modal from "react-bootstrap/Modal";
 import PropTypes from "prop-types";
 

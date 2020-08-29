@@ -1,5 +1,5 @@
 import {combineEpics} from "redux-observable";
-import {deleteCorpusEpic, fetchCorporaEpic} from "./corpus/CorpusListActions";
+import {deleteCorpusEpic, fetchCorporaCountEpic, fetchCorporaEpic} from "./corpus/CorpusListActions";
 import {fetchServerStatusEpic} from "./ServerStatusFetchActions";
 import {deleteAnnotationSetEpic, fetchAnnotationSetsEpic} from "./annotationset/AnnotationSetListActions";
 import {
@@ -8,11 +8,9 @@ import {
     setActiveAnnotationSetEpic
 } from "./annotationset/AnnotationSetActions";
 import {
-    fetchActiveCorpusAnnotationSetsEpic,
     fetchActiveCorpusEpic,
-    saveActiveCorpusEpic,
+    saveCorpusEpic,
     setActiveCorpusEpic,
-    toggleActiveCorpusAnnotationSetEpic
 } from "./corpus/CorpusActions";
 import {
     deleteActiveCorpusDocumentEpic, fetchActiveCorpusDocumentCountEpic,
@@ -32,15 +30,14 @@ import {
 
 const rootEpic = combineEpics(
     setActiveCorpusEpic,
-    saveActiveCorpusEpic,
+    saveCorpusEpic,
     fetchActiveCorpusEpic,
-    fetchActiveCorpusAnnotationSetsEpic,
-    toggleActiveCorpusAnnotationSetEpic,
     fetchActiveCorpusDocumentEpic,
     fetchActiveCorpusDocumentsEpic,
     fetchActiveCorpusDocumentCountEpic,
     uploadActiveCorpusDocumentsEpic,
     deleteActiveCorpusDocumentEpic,
+    fetchCorporaCountEpic,
     fetchCorporaEpic,
     deleteCorpusEpic,
     fetchServerStatusEpic,

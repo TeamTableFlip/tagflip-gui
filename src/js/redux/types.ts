@@ -5,7 +5,6 @@ import Annotation from '../backend/model/Annotation';
 import Document from '../backend/model/Document';
 
 export interface FetchState {
-    didInvalidate: boolean;
     isFetching: boolean;
     lastUpdated: number;
     status: FetchStatusType;
@@ -14,6 +13,7 @@ export interface FetchState {
 
 export interface AnnotationSetListValue {
     items: AnnotationSet[];
+    totalCount: number;
 }
 
 export interface AnnotationSetValue {
@@ -42,13 +42,13 @@ export interface TagValue {
 
 export interface CorpusValue {
     values: Corpus;
-    annotationSets: AnnotationSetListState;
     documents: DocumentListState;
     activeDocument: DocumentState;
 }
 
 export interface CorpusListValue {
     items: Corpus[];
+    totalCount: number;
 }
 
 export interface ServerValue {

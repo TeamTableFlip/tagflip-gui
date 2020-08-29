@@ -2,18 +2,19 @@ import React, {Component, SyntheticEvent} from "react";
 
 import BootstrapTable from 'react-bootstrap-table-next';
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faCaretDown, faCaretUp, faFrown} from "@fortawesome/free-solid-svg-icons";
+import {faCaretDown, faCaretUp, faFrown, faSyncAlt} from "@fortawesome/free-solid-svg-icons";
 import paginationFactory, {PaginationProvider} from 'react-bootstrap-table2-paginator';
 import ToolkitProvider from 'react-bootstrap-table2-toolkit';
 import filterFactory, {textFilter} from 'react-bootstrap-table2-filter';
 import {Operator, SearchFilter} from "@fhswf/tagflip-common";
-import {Form} from "react-bootstrap";
+import {Button, Form} from "react-bootstrap";
 
 type Props<T> = {
     keyField: string,
     totalSize: number,
     data: T[]
     onRequestData: (offset: number, limit: number, sortField?: string, sortOrder?: string, searchFilter?: SearchFilter[]) => void,
+    isFetching: boolean
     columns: object[]
     rowActionComponent?: (rowObject: T) => JSX.Element,
     tableActionComponent?: (selectedObjects: T[]) => JSX.Element,
@@ -26,18 +27,11 @@ interface State<T> {
     data: T[],
     columns: object[],
     selectedRows: T[],
-    isSelectAll: boolean
+    isSelectAll: boolean,
+    currentSearch: {
+        offset: number, limit: number, sortField?: string, sortOrder?: string, searchFilter?: SearchFilter[]
+    }
 }
-
-const initialState: State<any> = {
-    page: 1,
-    sizePerPage: 10,
-    data: [],
-    columns: [],
-    selectedRows: [],
-    isSelectAll: false
-}
-
 
 export const tagFlipTextFilter = () => {
     return textFilter({
@@ -57,13 +51,23 @@ class DataTable<T> extends Component<Props<T>, State<T>> {
 
     constructor(props) {
         super(props);
-        this.state = initialState;
+        this.state = {
+            page: 1,
+            sizePerPage: 10,
+            data: [],
+            columns: [],
+            selectedRows: [],
+            isSelectAll: false,
+            currentSearch: {
+                offset: 0, limit: 10, sortField: this.props.keyField, sortOrder: 'ASC'
+            }
+        };
         this.handleTableChange.bind(this);
-        this.onMouseEnter.bind(this);
         this.actionCellFormatter.bind(this);
         this.selectionHeaderRenderer.bind(this);
         this.handleOnSelect.bind(this);
         this.handleOnSelectAll.bind(this);
+        this.refresh.bind(this);
 
         this.columns = []
 
@@ -71,7 +75,7 @@ class DataTable<T> extends Component<Props<T>, State<T>> {
             this.columns.push({
                 ...column,
                 headerFormatter: (column, colIndex, {sortElement, filterElement}) => (
-                    <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
+                    <div className="d-flex justify-content-start">
                         <span style={{flex: 0.6}}>{column.text}{sortElement}</span>
                         <span style={{flex: 0.4}}>{filterElement}</span>
                     </div>
@@ -116,12 +120,9 @@ class DataTable<T> extends Component<Props<T>, State<T>> {
 
     selectionHeaderRenderer = (options: { mode: string; checked: boolean; indeterminate: boolean }) => {
         return (
-            <input type="checkbox" className="selection-input-4" checked={this.state.isSelectAll} ref={el => el && (el.indeterminate = !this.state.isSelectAll &&  this.state.selectedRows.length > 0)} />
+            <input type="checkbox" className="selection-input-4" checked={this.state.isSelectAll}
+                   ref={el => el && (el.indeterminate = !this.state.isSelectAll && this.state.selectedRows.length > 0)}/>
         )
-    }
-
-    onMouseEnter = (e, row, rowIndex) => {
-        this.currentSelectedRowIndex = rowIndex;
     }
 
     handleOnSelect = (row: T, isSelected: boolean, rowIndex: number, e: SyntheticEvent) => {
@@ -168,12 +169,21 @@ class DataTable<T> extends Component<Props<T>, State<T>> {
                 operator: Operator.STARTS_WITH
             })
         }
+        this.setState({
+            currentSearch: {
+                offset,
+                limit: sizePerPage,
+                sortField,
+                sortOrder,
+                searchFilter: searchFilters
+            }
+        })
         this.props.onRequestData(offset, sizePerPage, sortField, sortOrder, searchFilters)
     }
 
     checkSelection = () => {
-        for(let data of this.state.selectedRows) {
-            if(this.props.data.filter(x => x===data).length === 0) {
+        for (let data of this.state.selectedRows) {
+            if (this.props.data.filter(x => x === data).length === 0) {
                 this.setState({
                     selectedRows: this.state.selectedRows.filter(x => x !== data)
                 })
@@ -181,8 +191,13 @@ class DataTable<T> extends Component<Props<T>, State<T>> {
         }
     }
 
+    refresh = () => {
+        let {offset, limit, sortField, sortOrder, searchFilter} =  {... this.state.currentSearch}
+        this.props.onRequestData(offset, limit, sortField, sortOrder, searchFilter)
+    }
+
     componentDidMount() {
-        this.props.onRequestData(0, this.state.sizePerPage, this.props.keyField, 'ASC')
+       this.refresh()
     }
 
     render() {
@@ -191,7 +206,10 @@ class DataTable<T> extends Component<Props<T>, State<T>> {
             <React.Fragment>
                 <div className="d-flex bd-highlight">
                     <h6 className="mr-auto bd-highlight">Available: {this.props.totalSize}</h6>
-                    <div className="bd-highlight mb-2 mt-2">{this.props.tableActionComponent(this.state.selectedRows)}</div>
+                    <div className="bd-highlight mb-2 mt-2">
+                        {this.props.tableActionComponent && this.props.tableActionComponent(this.state.selectedRows)}
+                        <Button className="ml-1" variant="outline-secondary" size="sm" onClick={this.refresh}><FontAwesomeIcon icon={faSyncAlt} spin={this.props.isFetching} /></Button>
+                    </div>
                 </div>
                 <PaginationProvider
                     pagination={
@@ -215,6 +233,7 @@ class DataTable<T> extends Component<Props<T>, State<T>> {
                                         <React.Fragment>
                                             <BootstrapTable remote bootstrap4
                                                             filter={filterFactory()}
+                                                            bordered={false}
                                                             selectRow={
                                                                 this.props.multiSelect ? {
                                                                     mode: 'checkbox',
@@ -225,9 +244,6 @@ class DataTable<T> extends Component<Props<T>, State<T>> {
                                                                     // selectionHeaderRenderer: this.selectionHeaderRenderer
                                                                 } : undefined
                                                             }
-                                                            rowEvents={{
-                                                                onMouseEnter: this.onMouseEnter
-                                                            }}
                                                             noDataIndication={() => <div><FontAwesomeIcon
                                                                 icon={faFrown}/> No Data</div>}
                                                             onTableChange={this.handleTableChange}

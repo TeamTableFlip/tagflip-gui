@@ -5,9 +5,10 @@ import { PersistGate } from 'redux-persist/integration/react'
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-toastify/dist/ReactToastify.css';
-import './css/app.scss'
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
+import 'react-bootstrap-typeahead/css/Typeahead.css';
+import './css/app.scss'
 
 import App from "./js/react/App";
 import { store, persistor } from "./js/redux/Store";

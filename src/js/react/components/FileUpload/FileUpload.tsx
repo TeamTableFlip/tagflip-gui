@@ -164,25 +164,25 @@ class FileUpload extends Component<Props, State> {
                                 )}
                             </Dropzone>
                             {(this.state.files.length > 0 && this.state.files.length <= this.props.maxCount) && (
-                                <React.Fragment>
+                                <>
                                     <Card.Title className="mt-3">
                                         Selected Files
                                     </Card.Title>
                                     {this._renderFileList()}
-                                    <Button variant="success" className="mt-3"
-                                            onClick={() => {
-                                                this.props.onUpload(this.state.files);
-                                            }}
-                                            disabled={this.props.isUploading}>
-                                        {!this.props.isUploading ? "Upload" : (
-                                            <Spinner as="span" aria-hidden="true" role="status" animation="border"
-                                                     variant="light" size="sm"/>)}
-                                    </Button>
-
-                                </React.Fragment>
+                                </>
 
                             )}
                         </Card.Body>
+                        <Card.Footer>
+                            <Button variant="success" className={`float-right ${this.state.files.length === 0 ? 'invisible' : 'visible'}`}
+                                    onClick={() => (this.props.onUpload(this.state.files))}
+                                    disabled={this.props.isUploading}
+                            >
+                                {!this.props.isUploading ? "Upload" : (
+                                    <Spinner as="span" aria-hidden="true" role="status" animation="border"
+                                             variant="light" size="sm"/>)}
+                            </Button>
+                        </Card.Footer>
                     </Card>
                 </div>
             </div>

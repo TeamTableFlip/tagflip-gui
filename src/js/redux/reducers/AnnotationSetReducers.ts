@@ -10,21 +10,18 @@ import {BaseAction, PayloadAction, PayloadStatusAction} from "../actions/types";
 
 const initialState: AnnotationSetState = {
     values: AnnotationSet.create(),
-    didInvalidate: false,
     isFetching: false,
     lastUpdated: undefined,
     status: FetchStatusType.success,
     error: null,
     annotations: {
         isFetching: false,
-        didInvalidate: false,
         items: [],
         lastUpdated: undefined,
         status: FetchStatusType.success,
         error: null,
         editableAnnotation: {
             values: Annotation.create(),
-            didInvalidate: false,
             isFetching: false,
             lastUpdated: undefined,
             status: FetchStatusType.success,
@@ -42,8 +39,6 @@ const initialState: AnnotationSetState = {
 export const activeAnnotationSet = createReducer(initialState, {
     [AnnotationSetEditActions.SET_ACTIVE_ANNOTATION_SET](draft: AnnotationSetState, action: PayloadAction<AnnotationSet>) {
         draft.values = action.payload;
-        draft.didInvalidate = true;
-        draft.annotations.didInvalidate = true;
         draft.status = FetchStatusType.success;
         draft.error = null;
     },
@@ -58,7 +53,6 @@ export const activeAnnotationSet = createReducer(initialState, {
     },
     [AnnotationSetEditActions.RECEIVE_UPDATE_ACTIVE_ANNOTATION_SET](draft: AnnotationSetState, action: PayloadStatusAction<AnnotationSet>) {
         draft.isFetching = false;
-        draft.didInvalidate = false;
         if (action.payload.status === FetchStatusType.success) {
             draft.values = action.payload.data;
             draft.lastUpdated = action.payload.receivedAt;
@@ -71,11 +65,9 @@ export const activeAnnotationSet = createReducer(initialState, {
     },
     [AnnotationEditActions.FETCH_ACTIVE_ANNOTATIONSET_ANNOTATIONS](draft: AnnotationSetState, action: BaseAction) {
         draft.annotations.isFetching = true;
-        draft.annotations.didInvalidate = true;
     },
     [AnnotationEditActions.RECEIVE_ACTIVE_ANNOTATIONSET_ANNOTATIONS](draft: AnnotationSetState, action: PayloadStatusAction<Annotation[]>) {
         draft.annotations.isFetching = false;
-        draft.annotations.didInvalidate = false;
         if (action.payload.status === FetchStatusType.success) {
             draft.annotations.items = action.payload.data;
             draft.annotations.lastUpdated = action.payload.receivedAt;

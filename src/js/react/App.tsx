@@ -1,21 +1,23 @@
-import React, { Component } from "react";
+import React, {Component} from "react";
 import Navigation from "./views/Navigation";
 import Footer from "./views/Footer";
 
-import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
 
 import Settings from "./views/settings/Settings";
-import Editor from "./views/editor/Editor";
-import { ActionCreators } from "../redux/actions/ActionCreators";
-import { connect, ConnectedProps } from "react-redux";
-import { bindActionCreators } from "redux";
+import {ActionCreators} from "../redux/actions/ActionCreators";
+import {connect, ConnectedProps} from "react-redux";
+import {bindActionCreators} from "redux";
 
 import config from '../config/config';
-import ServerNotAvailableInfo from "./components/dialogs/ServerNotAvailableInfo";
-import { Auth0Provider } from "@auth0/auth0-react";
-import { OidcSettings } from "../../../.oidcsettings";
-import { ToastContainer } from "react-toastify";
+import ServerNotAvailableInfo from "./components/Dialog/ServerNotAvailableInfo";
+import {Auth0Provider} from "@auth0/auth0-react";
+import {OidcSettings} from "../../../.oidcsettings";
+import {ToastContainer} from "react-toastify";
 import Home from "./views/Home";
+import AnnotationProjectSettings from "./views/annotationproject/AnnotationProjectSettings";
+import CorpusSettings from "./views/corpus/CorpusSettings";
+import AnnotationSetSettings from "./views/annotationset/AnnotationSetSettings";
 
 
 const __webpack_public_path__ = process.env.ASSET_PATH;
@@ -88,9 +90,6 @@ class App extends Component<PropsFromRedux> {
                         redirectUri={OidcSettings.redirect_uri}
                         audience={OidcSettings.audience}
                     >
-
-
-                        <Navigation />
                         <ServerNotAvailableInfo serverAvailable={this.props.serverStatus.available} />
                         <ToastContainer
                             position="bottom-right"
@@ -101,10 +100,22 @@ class App extends Component<PropsFromRedux> {
                             pauseOnFocusLoss
                             draggable
                         />
+                        <header>
+                            <Navigation />
+                        </header>
                         <main>
                             <Switch>
+                                <Route path="/annotationprojects">
+                                    <AnnotationProjectSettings />
+                                </Route>
+                                <Route path="/corpora">
+                                    <CorpusSettings />
+                                </Route>
+                                <Route path="/annotationsets">
+                                    <AnnotationSetSettings />
+                                </Route>
                                 <Route path="/editor">
-                                    <Editor />
+                                    {/*<Editor /> // todo reactive when ready*/}
                                 </Route>
                                 <Route path="/settings">
                                     <Settings />

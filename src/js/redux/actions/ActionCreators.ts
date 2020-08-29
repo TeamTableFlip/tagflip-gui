@@ -1,9 +1,7 @@
 import { fetchCorpora, deleteCorpus } from "./corpus/CorpusListActions";
 import {
     setActiveCorpus,
-    updateCorpusField,
-    toggleActiveCorpusAnnotationSet,
-    saveActiveCorpus,
+    saveCorpus,
     fetchActiveCorpus
 } from './corpus/CorpusActions';
 import {
@@ -21,7 +19,7 @@ import { fetchServerStatus } from './ServerStatusFetchActions';
 import { fetchAnnotationSets, deleteAnnotationSet } from "./annotationset/AnnotationSetListActions";
 import {
     setActiveAnnotationSet,
-    saveActiveAnnotationSet,
+    saveAnnotationSet,
     updateActiveAnnotationSetField,
     fetchActiveAnnotationSet
 } from "./annotationset/AnnotationSetActions";
@@ -41,9 +39,7 @@ export const ActionCreators = Object.assign({},
         fetchCorpora,
         deleteCorpus,
         setActiveCorpus,
-        updateCorpusField,
-        toggleActiveCorpusAnnotationSet,
-        saveActiveCorpus,
+        saveCorpus,
         fetchActiveCorpus,
         fetchActiveCorpusDocument,
         fetchActiveCorpusDocuments,
@@ -52,7 +48,7 @@ export const ActionCreators = Object.assign({},
         fetchServerStatus,
         fetchAnnotationSets,
         deleteAnnotationSet,
-        saveActiveAnnotationSet,
+        saveAnnotationSet,
         updateActiveAnnotationSetField,
         fetchActiveAnnotationSet,
         fetchActiveAnnotationSetAnnotations,

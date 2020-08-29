@@ -1,10 +1,13 @@
-import {CorpusAttributes} from "@fhswf/tagflip-common";
+import {CorpusAttributes, DocumentAttributes} from "@fhswf/tagflip-common";
 
 export default class Corpus implements CorpusAttributes {
 
-    static create = (): Corpus => {
-        return Object.assign({}, new Corpus());
-    };
+    static create = (attributes?: CorpusAttributes): Corpus => {
+        let object = Object.assign({}, new Corpus());
+        if (attributes)
+            Object.assign(object, attributes)
+        return object;
+    }
 
     corpusId: number = 0;
     name: string = "";

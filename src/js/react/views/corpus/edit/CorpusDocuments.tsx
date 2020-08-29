@@ -3,20 +3,20 @@ import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faSearch, faTrash} from "@fortawesome/free-solid-svg-icons";
-import FileUpload from "../../../../components/fileUpload/FileUpload";
+import FileUpload from "../../../components/FileUpload/FileUpload";
 import {connect, ConnectedProps} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import {ActionCreators} from '../../../../../redux/actions/ActionCreators';
-import fetchStatusType from "../../../../../redux/actions/FetchStatusTypes";
-import FetchPending from "../../../../components/FetchPending";
+import {ActionCreators} from '../../../../redux/actions/ActionCreators';
+import fetchStatusType from "../../../../redux/actions/FetchStatusTypes";
+import FetchPending from "../../../components/FetchPending/FetchPending";
 import {Alert} from "react-bootstrap";
 import ShowMoreText from 'react-show-more-text';
-import ConfirmationDialog from "../../../../components/dialogs/ConfirmationDialog";
-import ShowDocument from "../../../../components/dialogs/ShowDocument";
+import ConfirmationDialog from "../../../components/Dialog/ConfirmationDialog";
+import ShowDocument from "../../../components/Dialog/ShowDocument";
 import {toast} from "react-toastify";
-import DataTable, {tagFlipTextFilter} from "../../../../components/DataTable";
-import {OffsetLimitParam, SimpleQueryParam} from "../../../../../backend/RequestBuilder";
-import Document from "../../../../../backend/model/Document";
+import DataTable, {tagFlipTextFilter} from "../../../components/DataTable/DataTable";
+import {OffsetLimitParam, SimpleQueryParam} from "../../../../backend/RequestBuilder";
+import Document from "../../../../backend/model/Document";
 
 /**
  * Maps redux state to component's props.
@@ -94,20 +94,14 @@ class CorpusDocuments extends Component<Props, State> {
 
         return (
             <div className="position-relative">
-                <FetchPending isPending={this.props.corpus.documents.isFetching}
-                              success={this.props.corpus.documents.status !== fetchStatusType.error}
-                              subtle={true}
-                              retryCallback={() => this.props.fetchActiveCorpus(this.props.corpus.values.corpusId)}
-                >
-                    <ShowDocument
-                        show={this.state.documentToBeShown && this.state.documentToBeShown.documentId > 0}
-                        onHide={() => this.setState({documentToBeShown: undefined})}
-                        isLoading={this.props.corpus.activeDocument.isFetching}
-                        success={this.props.corpus.activeDocument.status === fetchStatusType.success}
-                        title={this.props.corpus.activeDocument.item ? this.props.corpus.activeDocument.item.filename : ""}
-                        text={this.props.corpus.activeDocument.item ? this.props.corpus.activeDocument.item.content : ""}
-                    />
-                </FetchPending>
+                <ShowDocument
+                    show={this.state.documentToBeShown && this.state.documentToBeShown.documentId > 0}
+                    onHide={() => this.setState({documentToBeShown: undefined})}
+                    isLoading={this.props.corpus.activeDocument.isFetching}
+                    success={this.props.corpus.activeDocument.status === fetchStatusType.success}
+                    title={this.props.corpus.activeDocument.item ? this.props.corpus.activeDocument.item.filename : ""}
+                    text={this.props.corpus.activeDocument.item ? this.props.corpus.activeDocument.item.content : ""}
+                />
                 <ConfirmationDialog
                     acceptVariant="danger"
                     show={this.state.documentToBeDeleted && this.state.documentToBeDeleted.documentId > 0}
@@ -124,7 +118,7 @@ class CorpusDocuments extends Component<Props, State> {
                 <ConfirmationDialog
                     acceptVariant="danger"
                     show={this.state.documentsToBeDeleted && this.state.documentsToBeDeleted.length > 0}
-                    message={"Are you sure you want to delete selected documents'?"}
+                    message={"Are you sure you want to delete selected Documents'?"}
                     onAccept={() => {
                         this.state.documentsToBeDeleted.map(doc => this.props.deleteActiveCorpusDocument(doc.documentId));
                         this.setState({documentsToBeDeleted: undefined});
@@ -158,6 +152,7 @@ class CorpusDocuments extends Component<Props, State> {
                             queryParams.push(SimpleQueryParam.of("searchFilter", JSON.stringify(searchFilter)))
                         this.props.fetchActiveCorpusDocuments(queryParams)
                     }}
+                    isFetching={this.props.corpus.documents.isFetching}
                 />
             </div>
         )
@@ -170,10 +165,9 @@ class CorpusDocuments extends Component<Props, State> {
     render() {
         return (
             <React.Fragment>
-                <h3>Documents</h3>
                 <Card className="mt-3">
                     <Card.Body>
-                        <Card.Title>Upload</Card.Title>
+                        <Card.Title>Document Upload</Card.Title>
                         {
                             this.props.corpus.documents.status === fetchStatusType.warning &&
                             <Alert variant="warning" style={{whiteSpace: "pre-wrap"}}>

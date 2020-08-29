@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { withAuth0, Auth0ContextInterface } from "@auth0/auth0-react";
 import "./LoginButton.scss"
 import { faUser } from "@fortawesome/free-solid-svg-icons";
+import {Nav, NavDropdown, NavItem} from "react-bootstrap";
 
 interface Props {
     auth0: Auth0ContextInterface
@@ -20,7 +21,7 @@ class LoginButton extends Component<Props> {
 
         console.log('user: %o, isAuthenticated: %s', user, isAuthenticated);
         let info = <span></span>;
-        let icon = <FontAwesomeIcon icon={faUser} color="white" size="2x" />;
+        let icon = <FontAwesomeIcon icon={faUser} color="white" size="1x" />;
         if (user) {
             info = <div className="user-info">
                 <img src={user.picture} className="user-icon" />
@@ -35,7 +36,7 @@ class LoginButton extends Component<Props> {
             <React.Fragment>
 
                 <Dropdown alignRight>
-                    <Dropdown.Toggle id="loginToggle" bsPrefix="my-dropdown" as="a">
+                    <Dropdown.Toggle id="loginToggle" as={Nav.Link} className="user-toggle">
                         {icon}
                     </Dropdown.Toggle>
                     <Dropdown.Menu>
