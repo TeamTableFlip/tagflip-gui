@@ -3,7 +3,6 @@
 @import "~bootstrap/scss/mixins";
 @import "~codemirror/lib/codemirror.css";
 @import "bootstrap-overload";
-@import "wizzard";
 
 $lightGray: #414141;
 $borderGray: #d7d7d7;
@@ -15,8 +14,24 @@ html, body {
   width: 100%;
 }
 
-.w-60 {
-  width: 60%;
+*::-webkit-scrollbar-track
+{
+  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+  border-radius: 0;
+  background-color: #F5F5F5;
+}
+
+*::-webkit-scrollbar
+{
+  width: 12px;
+  background-color: #F5F5F5;
+}
+
+*::-webkit-scrollbar-thumb
+{
+  border-radius: 0;
+  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+  background-color: #6c757d;
 }
 
 #page {
@@ -54,14 +69,14 @@ html, body {
   }
 
   div.dropdown {
-    a.nav-link::after {
-      margin-left: 15px;
-    }
-
     .show {
       > a.nav-link {
         border: 1px white solid;
       }
+    }
+
+    .dropdown-item svg, i {
+      width: 20px;
     }
 
     svg, i {
@@ -87,8 +102,11 @@ section#content {
   width: 100%;
   display: flex;
   justify-content: center;
-  padding: 50px;
   overflow-y: auto;
+
+  h2, h4 {
+    padding-top: 20px;
+  }
 
   form {
     width: 100%;
@@ -121,6 +139,52 @@ button.login {
   border-radius: 50%;
   width: 40px;
   height: 40px;
+}
+
+.annotation-editor {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  .row {
+    height: 100%;
+  }
+  .col {
+    padding: 0;
+  }
+
+  .content {
+    margin-top: -20px;
+    flex-grow: 1;
+
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+
+    .editor-area {
+      height: 100%;
+      width: auto;
+    }
+
+  }
+
+  .side-toolbar {
+    background: #f1f1f1;
+    box-sizing: content-box;
+    -moz-box-sizing: content-box;
+    -webkit-box-sizing: content-box;
+    border-left: 1px solid #d7d7d7;
+    z-index: 1500;
+    padding: 0;
+  }
+
+  .side-toolbar a:hover {
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+
 }
 
 

@@ -17,7 +17,7 @@ import {BaseAction, PayloadAction} from "../types";
 export const FETCH_ANNOTATION_SET_COUNT = "FETCH_ANNOTATION_SET_COUNT";
 export const RECEIVE_ANNOTATION_SET_COUNT = "RECEIVE_ANNOTATION_SET_COUNT";
 export const fetchAnnotationSetCount = createPayloadAction<QueryParam[]>(FETCH_ANNOTATION_SET_COUNT);
-export const fetchCorporaCountEpic = (action$, state$) => action$.pipe(
+export const fetchAnnotationSetCountEpic = (action$, state$) => action$.pipe(
     ofType(FETCH_ANNOTATION_SET_COUNT),
     mergeMap((action: PayloadAction<QueryParam[]>) =>
         fromFetch(RequestBuilder.GET(`/annotationset`, [SimpleQueryParam.of("count", true), ...(action.payload || [])])).pipe(

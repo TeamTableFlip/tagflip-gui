@@ -51,7 +51,6 @@ export const fetchCorporaEpic = action$ => action$.pipe(
 
 export const DELETE_CORPUS = "DELETE_CORPUS";
 export const RECEIVE_DELETE_CORPUS = "RECEIVE_DELETE_CORPUS";
-
 export const deleteCorpus = createPayloadAction<number>(DELETE_CORPUS)
 export const receiveDeleteCorpus = createPayloadAction<number>(RECEIVE_DELETE_CORPUS);
 export const deleteCorpusEpic = action$ => action$.pipe(

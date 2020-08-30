@@ -4,9 +4,6 @@ import {Alert, Spinner} from "react-bootstrap";
 interface Props {
     isPending: boolean;               // Determine whether the data is still being fetched or not
     silent?: boolean;                             // If silent, the Spinner won't be shown
-    success: boolean;                 // When not pending anymore: Determine whether the fetch process
-    noSuccessMessage?: string,
-    // was successful or not. If it was, render all the child nodes
     subtle: boolean
     inheritChildrenHeight?: boolean;   // The height of the inherited child components
     retryCallback?: () => void;                      // Is called by onClick, when trying to refetch data - No params
@@ -55,28 +52,17 @@ class FetchPending extends Component<Props, State> {
         if (this.props.subtle && !this.props.silent) {
             return (
                 <div ref={this.childNode}>
-                    <div className="d-flex justify-content-end">
-                        <Spinner size="sm" animation="border" variant="primary" className={!this.props.isPending ? "invisible" : ""}/>
+                    <div className="d-flex justify-content-end p-1">
+                        <Spinner size="sm" animation="border" variant="primary" className={`${!this.props.isPending ? "invisible" : ""}`}/>
                     </div>
                     {this.props.children}
                 </div>
             );
         }
-        if (!this.props.success && this.props.noSuccessMessage)
-            return (
-                <div ref={this.childNode}>
-                    {this.props.noSuccessMessage && (
-                        <Alert variant="danger">
-                            {this.props.noSuccessMessage}
-                        </Alert>)
-                    }
-                    {this.props.children}
-                </div>
-            );
         return (
-            <div ref={this.childNode}>
+            <>
                 {this.props.children}
-            </div>
+            </>
         );
     }
 
@@ -85,7 +71,6 @@ class FetchPending extends Component<Props, State> {
 
 FetchPending.defaultProps = {
     isPending: false,
-    success: false,
     silent: false,
     subtle: true,
     inheritChildrenHeight: true

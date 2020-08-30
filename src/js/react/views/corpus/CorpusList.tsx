@@ -7,8 +7,6 @@ import {RouteComponentProps, withRouter} from "react-router-dom";
 import {connect, ConnectedProps} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {ActionCreators} from '../../../redux/actions/ActionCreators';
-import fetchStatusType from "../../../redux/actions/FetchStatusTypes";
-import FetchPending from "../../components/FetchPending/FetchPending";
 import ConfirmationDialog from "../../components/Dialog/ConfirmationDialog";
 import {RootState} from "../../../redux/reducers/Reducers";
 import Corpus from "../../../backend/model/Corpus";
@@ -45,11 +43,13 @@ type Props = PropsFromRedux & RouteComponentProps & {
 interface State {
     corpusToBeDeleted: Corpus;
     corporaToBeDeleted: Corpus[];
+    forceRefresh: boolean
 }
 
 const initialState = {
     corpusToBeDeleted: undefined,
-    corporaToBeDeleted: undefined
+    corporaToBeDeleted: undefined,
+    forceRefresh: false
 };
 
 /**
@@ -87,87 +87,89 @@ class CorpusList extends Component<Props, State> {
         return this.props.history.push(`${this.props.match.path}/import`)
     }
 
+    componentDidMount() {
+        this.setState({
+            forceRefresh: !this.state.forceRefresh
+        })
+    }
+
     /**
      * Render the CorpusList view.
      * @returns {*} The component to be rendered.
      */
     render() {
         return (
-            <>
-                <Card className="w-75 border-0">
-                    <Card.Body>
-                        <Card.Title className="text-center"><h2 className="h4">Corpora - Overview</h2></Card.Title>
-
-                        <DataTable<Corpus>
-                            keyField="corpusId"
-                            columns={[{text: 'ID', dataField: 'corpusId', sort: true, filter: tagFlipTextFilter()},
-                                {text: 'Name', dataField: 'name', sort: true, filter: tagFlipTextFilter()}]}
-                            totalSize={this.props.corpora.totalCount}
-                            data={this.props.corpora.items}
-                            multiSelect={true}
-                            rowActionComponent={(rowObject: Corpus) =>
-                                (<div className="float-right">
-                                    <Button size="sm" onClick={() => {
-                                        this.props.setActiveCorpus(rowObject);
-                                        return this.props.history.push(`${this.props.match.path}/edit`)
-                                    }}><FontAwesomeIcon icon={faPen}/></Button>
-                                    <Button size="sm" variant="danger"
-                                            onClick={() => this.setState({corpusToBeDeleted: rowObject})}
-                                    ><FontAwesomeIcon icon={faTrash}/></Button>
-                                </div>)
-                            }
-                            tableActionComponent={(selectedObjects: Corpus[]) => (
-                                <>
-                                    <Button size="sm" variant="outline-primary" onClick={this.addNewCorpus}>
-                                        <FontAwesomeIcon icon={faPlus}/> Add
-                                    </Button>
-                                    <Button size="sm" variant="outline-danger" className="ml-1"
-                                            disabled={selectedObjects.length === 0}
-                                            onClick={() => this.setState({corporaToBeDeleted: selectedObjects})}>
-                                        <FontAwesomeIcon icon={faTrash}/> Delete
-                                    </Button>
-                                </>
-                            )}
-                            onRequestData={(offset, limit, sortField, sortOrder, searchFilter) => {
-                                let queryParams = OffsetLimitParam.of(offset, limit)
-                                if (sortField)
-                                    queryParams.push(SimpleQueryParam.of("sortField", sortField))
-                                if (sortOrder)
-                                    queryParams.push(SimpleQueryParam.of("sortOrder", sortOrder))
-                                if (searchFilter && searchFilter.length > 0)
-                                    queryParams.push(SimpleQueryParam.of("searchFilter", JSON.stringify(searchFilter)))
-                                this.props.fetchCorpora(queryParams)
-                            }}
-                            isFetching={this.props.corpora.isFetching}
-                        />
-                        <ConfirmationDialog acceptVariant="danger"
-                                            show={this.state.corpusToBeDeleted && this.state.corpusToBeDeleted.corpusId > 0}
-                                            message={"Are you sure you want to delete the Corpus '" + (this.state.corpusToBeDeleted ? this.state.corpusToBeDeleted.name : "") + "'?"}
-                                            acceptText="Delete"
-                                            onAccept={() => {
-                                                this.props.deleteCorpus(this.state.corpusToBeDeleted.corpusId);
-                                                this.setState({corpusToBeDeleted: undefined});
-                                                if (this.props.selectedCorpus.values.corpusId === this.state.corpusToBeDeleted.corpusId) {
-                                                    this.props.setActiveCorpus(Corpus.create());
-                                                }
-                                            }}
-                                            onCancel={() => {
-                                                this.setState({corpusToBeDeleted: undefined});
-                                            }}/>
-                        <ConfirmationDialog acceptVariant="danger"
-                                            show={this.state.corporaToBeDeleted && this.state.corporaToBeDeleted.length > 0}
-                                            message={"Are you sure you want to delete selected Corpora'?"}
-                                            acceptText="Delete"
-                                            onAccept={() => {
-                                                this.state.corporaToBeDeleted.map(crop => this.props.deleteCorpus(crop.corpusId));
-                                                this.setState({corporaToBeDeleted: undefined});
-                                            }}
-                                            onCancel={() => {
-                                                this.setState({corporaToBeDeleted: undefined});
-                                            }}/>
-                    </Card.Body>
-                </Card>
-            </>
+                <div className="w-75">
+                    <h4 className="mb-5">Corpora</h4>
+                    <DataTable<Corpus>
+                        keyField="corpusId"
+                        columns={[{text: 'ID', dataField: 'corpusId', sort: true, filter: tagFlipTextFilter()},
+                            {text: 'Name', dataField: 'name', sort: true, filter: tagFlipTextFilter()}]}
+                        totalSize={this.props.corpora.totalCount}
+                        data={this.props.corpora.items}
+                        multiSelect={true}
+                        forceRefresh={this.state.forceRefresh}
+                        rowActionComponent={(cell, rowObject: Corpus) =>
+                            (<div className="float-right">
+                                <Button size="sm" onClick={() => {
+                                    this.props.setActiveCorpus(rowObject);
+                                    return this.props.history.push(`${this.props.match.path}/edit`)
+                                }}><FontAwesomeIcon icon={faPen}/></Button>
+                                <Button size="sm" variant="danger"
+                                        onClick={() => this.setState({corpusToBeDeleted: rowObject})}
+                                ><FontAwesomeIcon icon={faTrash}/></Button>
+                            </div>)
+                        }
+                        tableActionComponent={(selectedObjects: Corpus[]) => (
+                            <>
+                                <Button size="sm" variant="outline-primary" onClick={this.addNewCorpus}>
+                                    <FontAwesomeIcon icon={faPlus}/> Add
+                                </Button>
+                                <Button size="sm" variant="outline-danger" className="ml-1"
+                                        disabled={selectedObjects.length === 0}
+                                        onClick={() => this.setState({corporaToBeDeleted: selectedObjects})}>
+                                    <FontAwesomeIcon icon={faTrash}/> Delete
+                                </Button>
+                            </>
+                        )}
+                        onRequestData={(offset, limit, sortField, sortOrder, searchFilter) => {
+                            let queryParams = OffsetLimitParam.of(offset, limit)
+                            if (sortField)
+                                queryParams.push(SimpleQueryParam.of("sortField", sortField))
+                            if (sortOrder)
+                                queryParams.push(SimpleQueryParam.of("sortOrder", sortOrder))
+                            if (searchFilter && searchFilter.length > 0)
+                                queryParams.push(SimpleQueryParam.of("searchFilter", JSON.stringify(searchFilter)))
+                            this.props.fetchCorpora(queryParams)
+                        }}
+                        isFetching={this.props.corpora.isFetching}
+                    />
+                    <ConfirmationDialog acceptVariant="danger"
+                                        show={this.state.corpusToBeDeleted && this.state.corpusToBeDeleted.corpusId > 0}
+                                        message={"Are you sure you want to delete the Corpus '" + (this.state.corpusToBeDeleted ? this.state.corpusToBeDeleted.name : "") + "'?"}
+                                        acceptText="Delete"
+                                        onAccept={() => {
+                                            this.props.deleteCorpus(this.state.corpusToBeDeleted.corpusId);
+                                            this.setState({corpusToBeDeleted: undefined});
+                                            if (this.props.selectedCorpus.values.corpusId === this.state.corpusToBeDeleted.corpusId) {
+                                                this.props.setActiveCorpus(Corpus.create());
+                                            }
+                                        }}
+                                        onCancel={() => {
+                                            this.setState({corpusToBeDeleted: undefined});
+                                        }}/>
+                    <ConfirmationDialog acceptVariant="danger"
+                                        show={this.state.corporaToBeDeleted && this.state.corporaToBeDeleted.length > 0}
+                                        message={"Are you sure you want to delete selected Corpora'?"}
+                                        acceptText="Delete"
+                                        onAccept={() => {
+                                            this.state.corporaToBeDeleted.map(crop => this.props.deleteCorpus(crop.corpusId));
+                                            this.setState({corporaToBeDeleted: undefined});
+                                        }}
+                                        onCancel={() => {
+                                            this.setState({corporaToBeDeleted: undefined});
+                                        }}/>
+                </div>
         );
     }
 }

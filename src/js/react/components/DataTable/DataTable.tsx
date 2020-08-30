@@ -8,6 +8,7 @@ import ToolkitProvider from 'react-bootstrap-table2-toolkit';
 import filterFactory, {textFilter} from 'react-bootstrap-table2-filter';
 import {Operator, SearchFilter} from "@fhswf/tagflip-common";
 import {Button, Form} from "react-bootstrap";
+import * as _ from "lodash";
 
 type Props<T> = {
     keyField: string,
@@ -16,9 +17,11 @@ type Props<T> = {
     onRequestData: (offset: number, limit: number, sortField?: string, sortOrder?: string, searchFilter?: SearchFilter[]) => void,
     isFetching: boolean
     columns: object[]
-    rowActionComponent?: (rowObject: T) => JSX.Element,
+    rowActionComponent?: (cell, rowObject: T, rowIndex) => JSX.Element,
     tableActionComponent?: (selectedObjects: T[]) => JSX.Element,
-    multiSelect?: boolean
+    multiSelect?: boolean,
+    forceRefresh?: boolean
+    onSelectionChange?: (selectedObjects: T[]) => any
 }
 
 interface State<T> {
@@ -44,8 +47,6 @@ export const tagFlipTextFilter = () => {
 }
 
 class DataTable<T> extends Component<Props<T>, State<T>> {
-
-    private currentSelectedRowIndex: number
 
     private columns: object[]
 
@@ -112,9 +113,9 @@ class DataTable<T> extends Component<Props<T>, State<T>> {
     }
 
 
-    actionCellFormatter = (cell, row: T) => {
+    actionCellFormatter = (cell, row: T, rowIndex) => {
         if (this.props.rowActionComponent)
-            return this.props.rowActionComponent(row)
+            return this.props.rowActionComponent(cell, row, rowIndex)
         return null;
     }
 
@@ -129,11 +130,11 @@ class DataTable<T> extends Component<Props<T>, State<T>> {
         if (isSelected) {
             this.setState(() => ({
                 selectedRows: [...this.state.selectedRows, row]
-            }));
+            }), () => this.props.onSelectionChange && this.props.onSelectionChange(this.state.selectedRows));
         } else {
             this.setState(() => ({
-                selectedRows: this.state.selectedRows.filter(x => x !== row)
-            }));
+                selectedRows: this.state.selectedRows.filter(x => !_.isEqual(x,row))
+            }), () => this.props.onSelectionChange && this.props.onSelectionChange(this.state.selectedRows));
         }
 
     }
@@ -142,12 +143,12 @@ class DataTable<T> extends Component<Props<T>, State<T>> {
     handleOnSelectAll = (isSelect: boolean, rows: T[], e: React.SyntheticEvent) => {
         if (isSelect) {
             this.setState(() => ({
-                selectedRows: rows
-            }));
+                selectedRows: _.uniqWith(_.union([...this.state.selectedRows], rows), (l,r) => l === r)
+            }),() => this.props.onSelectionChange && this.props.onSelectionChange(this.state.selectedRows));
         } else {
             this.setState(() => ({
-                selectedRows: []
-            }));
+                selectedRows: _.differenceWith([...this.state.selectedRows], rows, (l,r) => _.isEqual(l,r))
+            }),() => this.props.onSelectionChange && this.props.onSelectionChange(this.state.selectedRows));
         }
     }
 
@@ -193,11 +194,16 @@ class DataTable<T> extends Component<Props<T>, State<T>> {
 
     refresh = () => {
         let {offset, limit, sortField, sortOrder, searchFilter} =  {... this.state.currentSearch}
+        this.setState({
+            selectedRows: []
+        }, this.props.onSelectionChange && this.props.onSelectionChange(this.state.selectedRows))
         this.props.onRequestData(offset, limit, sortField, sortOrder, searchFilter)
     }
 
-    componentDidMount() {
-       this.refresh()
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (prevProps.forceRefresh !== this.props.forceRefresh) {
+            this.refresh()
+        }
     }
 
     render() {

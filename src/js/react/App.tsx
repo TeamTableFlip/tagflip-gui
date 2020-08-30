@@ -15,9 +15,9 @@ import {Auth0Provider} from "@auth0/auth0-react";
 import {OidcSettings} from "../../../.oidcsettings";
 import {ToastContainer} from "react-toastify";
 import Home from "./views/Home";
-import AnnotationProjectSettings from "./views/annotationproject/AnnotationProjectSettings";
-import CorpusSettings from "./views/corpus/CorpusSettings";
-import AnnotationSetSettings from "./views/annotationset/AnnotationSetSettings";
+import CorpusSettings from "./views/corpus/CorpusSection";
+import AnnotationSetSection from "./views/annotationset/AnnotationSetSection";
+import AnnotationTaskSection from "./views/annotationtasks/AnnotationTaskSection";
 
 
 const __webpack_public_path__ = process.env.ASSET_PATH;
@@ -90,7 +90,7 @@ class App extends Component<PropsFromRedux> {
                         redirectUri={OidcSettings.redirect_uri}
                         audience={OidcSettings.audience}
                     >
-                        <ServerNotAvailableInfo serverAvailable={this.props.serverStatus.available} />
+                        <ServerNotAvailableInfo serverAvailable={this.props.serverStatus.available}/>
                         <ToastContainer
                             position="bottom-right"
                             hideProgressBar={false}
@@ -101,31 +101,28 @@ class App extends Component<PropsFromRedux> {
                             draggable
                         />
                         <header>
-                            <Navigation />
+                            <Navigation/>
                         </header>
                         <main>
                             <Switch>
-                                <Route path="/annotationprojects">
-                                    <AnnotationProjectSettings />
+                                <Route path="/annotationtasks">
+                                    <AnnotationTaskSection/>
                                 </Route>
                                 <Route path="/corpora">
-                                    <CorpusSettings />
+                                    <CorpusSettings/>
                                 </Route>
                                 <Route path="/annotationsets">
-                                    <AnnotationSetSettings />
-                                </Route>
-                                <Route path="/editor">
-                                    {/*<Editor /> // todo reactive when ready*/}
+                                    <AnnotationSetSection/>
                                 </Route>
                                 <Route path="/settings">
-                                    <Settings />
+                                    <Settings/>
                                 </Route>
                                 <Route path="/">
-                                    <Home />
+                                    <Home/>
                                 </Route>
                             </Switch>
                         </main>
-                        <Footer />
+                        <Footer/>
                     </Auth0Provider>
                 </Router>
             </div>);

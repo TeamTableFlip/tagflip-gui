@@ -1,4 +1,5 @@
-import {CorpusAttributes, DocumentAttributes} from "@fhswf/tagflip-common";
+import {AnnotationSetAttributes, CorpusAttributes, DocumentAttributes} from "@fhswf/tagflip-common";
+import AnnotationSet from "./AnnotationSet";
 
 export default class Corpus implements CorpusAttributes {
 
@@ -14,11 +15,11 @@ export default class Corpus implements CorpusAttributes {
     description: string = "";
     createdAt: Date = null;
     updatedAt: Date = null;
-
-    // Additional properties
-    numDocuments: number = 0;
+    annotationSets: AnnotationSet[] = [];
 
     private constructor() {
 
     }
+
+
 }

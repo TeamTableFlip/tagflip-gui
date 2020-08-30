@@ -23,8 +23,8 @@ export const annotationSets = createReducer(initialState,
         [AnnotationSetFetchActions.FETCH_ANNOTATION_SETS](draft : AnnotationSetListState, action : BaseAction) {
             draft.isFetching = true;
         },
-        [AnnotationSetFetchActions.RECEIVE_ANNOTATION_SET_COUNT](draft : AnnotationSetListState, action : PayloadAction<number>) {
-            draft.totalCount = action.payload;
+        [AnnotationSetFetchActions.RECEIVE_ANNOTATION_SET_COUNT](draft : AnnotationSetListState, action : PayloadStatusAction<number>) {
+            draft.totalCount = action.payload.data;
         },
         [AnnotationSetFetchActions.RECEIVE_ANNOTATION_SETS](draft : AnnotationSetListState, action : PayloadStatusAction<AnnotationSet[]>) {
             draft.isFetching = false;

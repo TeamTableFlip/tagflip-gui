@@ -2,6 +2,7 @@ import React, {Component} from "react";
 import Badge from "react-bootstrap/Badge";
 import {SketchPicker} from 'react-color';
 import PropTypes from "prop-types";
+import chroma from "chroma-js";
 
 
 const propTypes = {
@@ -56,7 +57,7 @@ class ColorPickerBadge extends Component<Props, State> {
     render() {
         return (
             <React.Fragment>
-                <Badge variant="primary" style={{backgroundColor: this.state.color}}>{this.state.color}</Badge>
+                <Badge variant="primary" style={{backgroundColor: this.state.color, color: chroma(this.state.color).luminance() < 0.35 ? '#fff' : '#000'}}>{this.state.color}</Badge>
                 <SketchPicker
                     color={this.state.color}
                     onChange={(color) => this.handleChangeComplete(color)}/>

@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import FetchPending from "../FetchPending/FetchPending";
 import Modal from "react-bootstrap/Modal";
 import PropTypes from "prop-types";
+import DocumentAnnotationViewer from "../../views/corpus/data/edit/DocumentAnnotationViewer";
 
 interface Props {
     show: boolean;        // Determine whether the dialog is visible or not
@@ -11,7 +12,7 @@ interface Props {
     text: string;                 // The text of the Document to be displayed
     retryCallback?: () => void;          // The retryCallback function for FetchPending
     onHide: () => void;       // Is called when hiding the dialog - No params
-};
+}
 
 
 /**
@@ -40,11 +41,12 @@ class ShowDocument extends Component<Props> {
                 <Modal.Body style={{ whiteSpace: "pre-wrap" }}>
                     <FetchPending
                         isPending={this.props.isLoading}
-                        success={this.props.success}>
-                        {this.props.text}
+                    >
+                        <DocumentAnnotationViewer />
                     </FetchPending>
                 </Modal.Body>
             </Modal>
+
         );
     }
 }

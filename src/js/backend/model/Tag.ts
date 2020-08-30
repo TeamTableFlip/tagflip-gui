@@ -6,9 +6,9 @@ export default class Tag implements TagAttributes {
 
     annotationId: number = 0;
 
-    annotationTaskDocumentId: number;
+    documentId: number = 0;
 
-    documentId: number = 0; // todo: delete
+    annotationTaskId: number = 0;
 
     endIndex: number = 0;
 

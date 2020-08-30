@@ -1,7 +1,9 @@
-import React, { Component } from "react";
+import React, {Component} from "react";
 import Modal from "react-bootstrap/Modal";
 import PropTypes from "prop-types";
 import ListGroup from "react-bootstrap/ListGroup";
+import Alert from "react-bootstrap/Alert";
+import chroma from "chroma-js";
 
 const propTypes = {
     show: PropTypes.bool,   // If true, this component will be visible; otherwise not
@@ -53,14 +55,24 @@ class AnnotationPicker extends Component<Props> {
      * @private
      */
     _renderAnnotationsList() {
-        if (!this.props.annotations)
-            return null;
-        return this.props.annotations.map((annotation, idx) => {
-            return <ListGroup horizontal={"sm"} key={idx}>
-                <ListGroup.Item action onClick={() => { this.props.onPicked(annotation) }} style={{ backgroundColor: annotation.color }}>{annotation.name}</ListGroup.Item>
-            </ListGroup>
-
-        })
+        if (!this.props.annotations || this.props.annotations.length === 0)
+            return <Alert variant="info">No Annotations. Please select an Annotation Set with Annotations.</Alert>;
+        return (<ListGroup>
+            {
+                this.props.annotations.map((annotation, idx) => {
+                        return (
+                            <ListGroup.Item action key={idx} onClick={() => {
+                                this.props.onPicked(annotation)
+                            }}
+                                            style={{
+                                                backgroundColor: annotation.color,
+                                                color: chroma(annotation.color).luminance() < 0.35 ? '#fff' : '#000'
+                                            }}
+                            >{annotation.name}</ListGroup.Item>
+                        )
+                    }
+                )}
+        </ListGroup>)
     };
 
 

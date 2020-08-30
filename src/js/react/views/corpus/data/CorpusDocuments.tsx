@@ -8,15 +8,14 @@ import {connect, ConnectedProps} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {ActionCreators} from '../../../../redux/actions/ActionCreators';
 import fetchStatusType from "../../../../redux/actions/FetchStatusTypes";
-import FetchPending from "../../../components/FetchPending/FetchPending";
 import {Alert} from "react-bootstrap";
 import ShowMoreText from 'react-show-more-text';
 import ConfirmationDialog from "../../../components/Dialog/ConfirmationDialog";
-import ShowDocument from "../../../components/Dialog/ShowDocument";
 import {toast} from "react-toastify";
 import DataTable, {tagFlipTextFilter} from "../../../components/DataTable/DataTable";
 import {OffsetLimitParam, SimpleQueryParam} from "../../../../backend/RequestBuilder";
 import Document from "../../../../backend/model/Document";
+import {withRouter,RouteComponentProps} from "react-router-dom";
 
 /**
  * Maps redux state to component's props.
@@ -47,19 +46,21 @@ interface State {
     documentToBeDeleted: Document;
     documentsToBeDeleted: Document[];
     documentToBeShown: Document;
+    refreshTable: boolean;
 }
 
 const initialState = {
     uploadWarningShowMore: false,
     documentToBeDeleted: undefined,
     documentsToBeDeleted: undefined,
-    documentToBeShown: undefined
+    documentToBeShown: undefined,
+    refreshTable: false
 }
 
 /**
  * A React view for displaying all Documents of the Corpus. Provides the functionality to upload and remove Documents.
  */
-class CorpusDocuments extends Component<Props, State> {
+class CorpusDocuments extends Component<Props & RouteComponentProps, State> {
     /**
      * Create a new CorpusDocuments component.
      * @param props The properties of the component.
@@ -69,12 +70,19 @@ class CorpusDocuments extends Component<Props, State> {
         this.state = initialState;
     }
 
+    componentDidMount() {
+        this.setState({
+            refreshTable: !this.state.refreshTable
+        })
+    }
+
     /**
      * Get a Table containing all Documents assigned to the current Corpus.
      * @returns {*} The HTML-Table to be rendered, containing a list of all Documents of the Corpus.
      * @private
      */
     _renderDocuments() {
+        const {match} = this.props;
         let rowActions = (document: Document) => (
             <div className="float-right">
                 <Button size="sm" onClick={() => {
@@ -82,6 +90,7 @@ class CorpusDocuments extends Component<Props, State> {
                         documentId: document.documentId,
                         withTags: false
                     });
+                    this.props.history.push(`${match.path}/document`)
                     this.setState({documentToBeShown: document});
                 }}>
                     <FontAwesomeIcon icon={faSearch}/>
@@ -94,14 +103,14 @@ class CorpusDocuments extends Component<Props, State> {
 
         return (
             <div className="position-relative">
-                <ShowDocument
-                    show={this.state.documentToBeShown && this.state.documentToBeShown.documentId > 0}
-                    onHide={() => this.setState({documentToBeShown: undefined})}
-                    isLoading={this.props.corpus.activeDocument.isFetching}
-                    success={this.props.corpus.activeDocument.status === fetchStatusType.success}
-                    title={this.props.corpus.activeDocument.item ? this.props.corpus.activeDocument.item.filename : ""}
-                    text={this.props.corpus.activeDocument.item ? this.props.corpus.activeDocument.item.content : ""}
-                />
+                {/*<ShowDocument*/}
+                {/*    show={this.state.documentToBeShown && this.state.documentToBeShown.documentId > 0}*/}
+                {/*    onHide={() => this.setState({documentToBeShown: undefined})}*/}
+                {/*    isLoading={this.props.corpus.activeDocument.isFetching}*/}
+                {/*    success={this.props.corpus.activeDocument.status === fetchStatusType.success}*/}
+                {/*    title={this.props.corpus.activeDocument.item ? this.props.corpus.activeDocument.item.filename : ""}*/}
+                {/*    text={this.props.corpus.activeDocument.item ? this.props.corpus.activeDocument.item.content : ""}*/}
+                {/*/>*/}
                 <ConfirmationDialog
                     acceptVariant="danger"
                     show={this.state.documentToBeDeleted && this.state.documentToBeDeleted.documentId > 0}
@@ -132,7 +141,7 @@ class CorpusDocuments extends Component<Props, State> {
                     keyField="documentId"
                     columns={[{text: 'ID', dataField: 'documentId', sort: true, filter: tagFlipTextFilter()},
                         {text: 'Filename', dataField: 'filename', sort: true, filter: tagFlipTextFilter()}]}
-                    rowActionComponent={(rowObject: Document) => rowActions(rowObject)}
+                    rowActionComponent={(cell, rowObject: Document) => rowActions(rowObject)}
                     tableActionComponent={(selectedObjects: Document[]) => (
                         <Button size="sm" variant="outline-danger" disabled={selectedObjects.length === 0}
                                 onClick={() => this.setState({documentsToBeDeleted: selectedObjects})}>
@@ -142,6 +151,7 @@ class CorpusDocuments extends Component<Props, State> {
                     totalSize={this.props.corpus.documents.totalCount}
                     data={this.props.corpus.documents.items}
                     multiSelect={true}
+                    forceRefresh={this.state.refreshTable}
                     onRequestData={(offset, limit, sortField, sortOrder, searchFilter) => {
                         let queryParams = OffsetLimitParam.of(offset, limit)
                         if (sortField)
@@ -165,7 +175,7 @@ class CorpusDocuments extends Component<Props, State> {
     render() {
         return (
             <React.Fragment>
-                <Card className="mt-3">
+                <Card>
                     <Card.Body>
                         <Card.Title>Document Upload</Card.Title>
                         {
@@ -204,4 +214,4 @@ class CorpusDocuments extends Component<Props, State> {
     }
 }
 
-export default connector(CorpusDocuments);
+export default withRouter(connector(CorpusDocuments));

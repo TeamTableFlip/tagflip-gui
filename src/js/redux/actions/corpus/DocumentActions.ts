@@ -13,10 +13,10 @@ import {
 import {fromFetch} from "rxjs/fetch";
 import {OffsetLimitParam, QueryParam, RequestBuilder, SimpleQueryParam} from "../../../backend/RequestBuilder";
 import {toast} from "react-toastify";
-import {fetchTagsForActiveDocument} from "./TaggingActions";
 import Document from "../../../backend/model/Document";
 import {BaseAction, PayloadAction} from "../types";
 import {createAction} from "@reduxjs/toolkit";
+import Tag from "../../../backend/model/Tag";
 
 
 export const FETCH_ACTIVE_CORPUS_DOCUMENT_COUNT = "FETCH_ACTIVE_CORPUS_DOCUMENT_COUNT";
@@ -43,7 +43,7 @@ export const RECEIVE_ACTIVE_CORPUS_DOCUMENTS = "RECEIVE_ACTIVE_CORPUS_DOCUMENTS"
 export const fetchActiveCorpusDocuments = createPayloadAction<QueryParam[]>(FETCH_ACTIVE_CORPUS_DOCUMENTS);
 export const fetchActiveCorpusDocumentsEpic = (action$, state$) => action$.pipe(
     ofType(FETCH_ACTIVE_CORPUS_DOCUMENTS),
-    filter(() => state$.value.activeCorpus.values.corpusId > 0),
+    filter(() => state$.value.activeCorpus.values && state$.value.activeCorpus.values.corpusId > 0),
     mergeMap((action: PayloadAction<QueryParam[]>) =>
         fromFetch(RequestBuilder.GET(`/corpus/${state$.value.activeCorpus.values.corpusId}/document`, action.payload)).pipe(
             toJson(
@@ -199,3 +199,23 @@ export function uploadCorpus(files) {
             .catch(error => dispatch(receiveCorpusUpload(null, FetchStatusType.error, error)))
     }
 }
+
+
+export const FETCH_TAGS_FOR_ACTIVE_DOCUMENT = "FETCH_TAGS_FOR_ACTIVE_DOCUMENT"
+export const RECEIVE_TAGS_FOR_ACTIVE_DOCUMENT = "RECEIVE_TAGS_FOR_ACTIVE_DOCUMENT";
+export const fetchTagsForActiveDocument = createAction(FETCH_TAGS_FOR_ACTIVE_DOCUMENT);
+export const fetchTagsForActiveDocumentEpic = (action$, state$) => action$.pipe(
+    ofType(FETCH_TAGS_FOR_ACTIVE_DOCUMENT),
+    mergeMap((action: PayloadAction<Tag>) => {
+            let documentId = state$.value.activeCorpus.activeDocument.item.documentId
+            return fromFetch(RequestBuilder.GET(`/document/${documentId}/tag`)).pipe(
+                toJson(
+                    map((res: Tag[]) => {
+                        return createFetchSuccessAction<Tag[]>(RECEIVE_TAGS_FOR_ACTIVE_DOCUMENT)(res)
+                    }),
+                    onTagFlipError(createFetchErrorAction(RECEIVE_TAGS_FOR_ACTIVE_DOCUMENT))
+                )
+            )
+        }
+    )
+)

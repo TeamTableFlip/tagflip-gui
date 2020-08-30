@@ -1,11 +1,12 @@
 import React, {Component} from "react";
 import Nav from "react-bootstrap/Nav";
 import CorporaList from "../corpus/CorpusList";
-import EditCorpus from "../corpus/edit/EditCorpus";
+import EditCorpus from "../corpus/data/edit/EditCorpus";
 // import CorpusImport from "../corpus/CorpusImport";
 import {Redirect, Route, RouteComponentProps, withRouter} from "react-router-dom";
 import AnnotationSetList from "../annotationset/AnnotationSetList";
-import EditAnnotationSet from "../annotationset/edit/EditAnnotationSet";
+import EditAnnotationSet from "../annotationset/data/EditAnnotationSet";
+import NewAnnotationSet from "../annotationset/data/NewAnnotationSet";
 
 interface State {
     activeLink: string

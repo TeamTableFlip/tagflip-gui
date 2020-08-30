@@ -1,21 +1,21 @@
-import React, {Component, useEffect, useState} from "react";
+import React, {FunctionComponent, useEffect, useState} from "react";
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
 import {AsyncTypeahead, Highlighter} from 'react-bootstrap-typeahead';
 import {connect, ConnectedProps} from 'react-redux';
-import {RootState} from "../../../../redux/reducers/Reducers";
+import {RootState} from "../../../../../redux/reducers/Reducers";
 import {bindActionCreators, Dispatch} from "redux";
-import {ActionCreators} from "../../../../redux/actions/ActionCreators";
-import {AnnotationSetListState} from "../../../../redux/types";
+import {ActionCreators} from "../../../../../redux/actions/ActionCreators";
+import {AnnotationSetListState} from "../../../../../redux/types";
 import {Button, InputGroup} from "react-bootstrap";
-import AnnotationSet from "../../../../backend/model/AnnotationSet";
+import AnnotationSet from "../../../../../backend/model/AnnotationSet";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {faPlus} from '@fortawesome/free-solid-svg-icons'
-import Corpus from "../../../../backend/model/Corpus";
 import {Controller, useFormContext} from "react-hook-form";
 import {ErrorMessage} from "@hookform/error-message";
-import FormErrorMessage from "../../../components/FormErrorMessage/FormErrorMessage";
-import {usePrevious} from "../../../../hooks";
+import FormErrorMessage from "../../../../components/FormErrorMessage/FormErrorMessage";
+import {OffsetLimitParam, SimpleQueryParam} from "../../../../../backend/RequestBuilder";
+import {Operator} from "@fhswf/tagflip-common";
 
 
 const connector = connect(
@@ -23,25 +23,47 @@ const connector = connect(
     (dispatch: Dispatch) => (bindActionCreators(ActionCreators, dispatch))
 );
 
-interface State {
-
-}
-
 type Props = ConnectedProps<typeof connector> & {
-    annotationSets: AnnotationSetListState,
     onClickNew: () => any
 };
 
-function StepAnnotationSetSelection(props: Props) {
+const PAGE_SIZE = 10
+
+export const AnnotationSetSelection: FunctionComponent<Props> = (props) => {
     const {control, errors} = useFormContext(); // retrieve all hook methods
+    const [limit, setLimit] = useState(PAGE_SIZE)
+    const [searchString, setSearchString] = useState("");
 
     useEffect(() => {
-        props.fetchAnnotationSets()
+        props.fetchAnnotationSets([])
     }, [])
 
-    const onSearch = (query: string) => {
-        props.fetchAnnotationSets()
+    const onPaginate = (event: Event, shownResults: number) => {
+        let limit = shownResults + PAGE_SIZE
+        setLimit(limit)
     }
+
+    const onInputChange = (text: string) => {
+        if(text.length < searchString.length)
+            setSearchString(text)
+    }
+
+    const onSearch = () => {
+        const newSearchFilters = []
+        if (searchString) {
+            newSearchFilters.push({
+                field: "name",
+                filterValue: searchString,
+                operator: Operator.STARTS_WITH
+            })
+        }
+
+        let queryParams = OffsetLimitParam.of(0, limit)
+        queryParams.push(SimpleQueryParam.of("searchFilter", JSON.stringify(newSearchFilters)))
+        props.fetchAnnotationSets(queryParams)
+    }
+
+    useEffect(() => onSearch(),[limit,searchString])
 
     return (
         <React.Fragment>
@@ -53,16 +75,19 @@ function StepAnnotationSetSelection(props: Props) {
                         <InputGroup>
                             <Controller
                                 as={AsyncTypeahead}
-                                name="annotationsets"
+                                name="annotationSets"
                                 control={control}
                                 defaultValue={null}
-                                rules={{required:true, validate: (sel : AnnotationSet[]) => (sel.length > 0)}}
-
+                                rules={{required: false, validate: (sel: AnnotationSet[]) => (sel && sel.length > 0)}}
                                 id="annotationsets"
+                                maxResults={PAGE_SIZE - 1}
                                 minLength={0}
-                                isLoading={props.annotationSets.isFetching}
                                 options={props.annotationSets.items}
-                                onSearch={(q) => onSearch(q)}
+                                useCache={false}
+                                isLoading={props.annotationSets.isFetching}
+                                onInputChange={(q, _) => setSearchString(q)}
+                                onSearch={setSearchString}
+                                onPaginate={onPaginate}
                                 highlightOnlyResult={true}
                                 labelKey={(option: AnnotationSet) => `${option.name}`}
                                 placeholder="Search for Annotation Sets..."
@@ -80,7 +105,9 @@ function StepAnnotationSetSelection(props: Props) {
                                 <Button onClick={props.onClickNew}><FontAwesomeIcon icon={faPlus}/> New</Button>
                             </InputGroup.Append>
                         </InputGroup>
-                        <ErrorMessage errors={errors} name="annotationsets" message="At least one Annotation Set is required." as={FormErrorMessage}/>
+                        <ErrorMessage errors={errors} name="annotationSets"
+                                      message="At least one Annotation Set is required."
+                                      as={FormErrorMessage}/>
                     </Form.Group>
                 </Card.Body>
             </Card>
@@ -88,4 +115,4 @@ function StepAnnotationSetSelection(props: Props) {
     )
 }
 
-export default connector(StepAnnotationSetSelection);
+export default connector(AnnotationSetSelection);

@@ -3,11 +3,9 @@ import Navbar from "react-bootstrap/Navbar";
 import Nav from "react-bootstrap/Nav";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import LoginButton from "../components/LoginButton/LoginButton";
-import {Button} from "react-bootstrap";
-import {toast, ToastContainer} from "react-toastify";
 import {Auth0Provider} from "@auth0/auth0-react";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
-import {faPlus, faFlagCheckered} from '@fortawesome/free-solid-svg-icons'
+import {faPlus, faFlagCheckered, faTags, faBook} from '@fortawesome/free-solid-svg-icons'
 import Dropdown from "react-bootstrap/Dropdown";
 
 interface State {
@@ -45,10 +43,9 @@ class Navigation extends Component<Props, State> {
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="mr-auto" activeKey={this.state.activeLink} onSelect={k => this.setState({ activeLink: k })}>
-                        <Nav.Link onSelect={() => this.props.history.push("/annotationprojects")} eventKey="1">Annotation Projects</Nav.Link>
-                        <Nav.Link onSelect={() => this.props.history.push("/corpora")} eventKey="2">Corpora</Nav.Link>
-                        <Nav.Link onSelect={() => this.props.history.push("/annotationsets")} eventKey="3">Annotation Sets</Nav.Link>
-                        <Nav.Link onSelect={() => this.props.history.push("/editor")} eventKey="4">Editor</Nav.Link>
+                        <Nav.Link onSelect={() => this.props.history.push("/annotationtasks")} eventKey="annotationtasks">Annotation Task</Nav.Link>
+                        <Nav.Link onSelect={() => this.props.history.push("/corpora")} eventKey="corpora">Corpora</Nav.Link>
+                        <Nav.Link onSelect={() => this.props.history.push("/annotationsets")} eventKey="annotationsets">Annotation Sets</Nav.Link>
                     </Nav>
                 </Navbar.Collapse>
                 <Dropdown alignRight>
@@ -57,9 +54,18 @@ class Navigation extends Component<Props, State> {
                     </Dropdown.Toggle>
                     <Dropdown.Menu>
                         <Dropdown.Item onSelect={() => {
-                            this.setState({ activeLink: "0" })
-                            this.props.history.push("/annotationprojects/new")
-                        }}><FontAwesomeIcon icon={faFlagCheckered} />New Annotation Project</Dropdown.Item>
+                            this.setState({ activeLink: "annotationtasks" })
+                            this.props.history.push("/annotationtasks/new")
+                        }}><FontAwesomeIcon icon={faFlagCheckered} /><span className="ml-2">New Annotation Task</span></Dropdown.Item>
+                        <Dropdown.Item onSelect={() => {
+                            this.setState({ activeLink: "corpora" })
+                            this.props.history.push("/corpora/new")
+                        }}><FontAwesomeIcon icon={faBook} /><span className="ml-2">New Corpus</span></Dropdown.Item>
+
+                        <Dropdown.Item onSelect={() => {
+                            this.setState({ activeLink: "annotationsets" })
+                            this.props.history.push("/annotationsets/new")
+                        }}><FontAwesomeIcon icon={faTags} /><span className="ml-2">New Annotation Set</span></Dropdown.Item>
                     </Dropdown.Menu>
                 </Dropdown>
                 <LoginButton />

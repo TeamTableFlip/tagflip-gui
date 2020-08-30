@@ -9,13 +9,14 @@ import {faTrash} from "@fortawesome/free-solid-svg-icons";
 import {Spinner} from "react-bootstrap";
 
 const propTypes = {
-    onUpload: PropTypes.func.isRequired,            // Is called when uploading the files - 1 param: files
+    onUpload: PropTypes.func,            // Is called when uploading the files - 1 param: files
+    onChange: PropTypes.func,                       // Is called when selection changes- 1 param: files
     acceptMimeTypes: PropTypes.string.isRequired,   // The accepted mime types for upload
     uploadText: PropTypes.string.isRequired,        // The text to display in the Dropzone
-    isUploading: PropTypes.bool.isRequired,         // If true, the Upload-Button will be disabled
+    isUploading: PropTypes.bool,         // If true, the Upload-Button will be disabled
     onTooManyFiles: PropTypes.func,                 // Called if maxCount is exceeded.
     onTypeMismatch: PropTypes.func,                 // Called if file not in acceptMimeTypes.
-    maxCount: PropTypes.number.isRequired           // Determine the maximum amount of files to upload
+    maxCount: PropTypes.number.isRequired,           // Determine the maximum amount of files to upload
 };
 
 const initialState = {
@@ -39,6 +40,10 @@ class FileUpload extends Component<Props, State> {
     constructor(props) {
         super(props);
         this.state = initialState;
+    }
+
+    static defaultProps : Props = {
+        onChange: () => {return;},
     }
 
     componentDidUpdate(prevProps: Readonly<Props>, prevState: Readonly<State>, snapshot?: any) {
@@ -79,7 +84,7 @@ class FileUpload extends Component<Props, State> {
         let filtered_files = files.filter(x => this.state.files.filter(y => x.name === y.name).length === 0);
         this.setState({
             files: [...this.state.files, ...filtered_files]
-        })
+        }, () => this.props.onChange(this.state.files))
     }
 
     /**
@@ -91,7 +96,7 @@ class FileUpload extends Component<Props, State> {
             files: new Array<File>(),
             dragOver: false,
             rejected: false
-        })
+        }, () => this.props.onChange(this.state.files))
     }
 
     /**
@@ -104,7 +109,7 @@ class FileUpload extends Component<Props, State> {
                 <thead>
                 <tr>
                     <th scope="col">File</th>
-                    <th scope="col"></th>
+                    <th scope="col"/>
                 </tr>
                 </thead>
                 <tbody>
@@ -116,7 +121,7 @@ class FileUpload extends Component<Props, State> {
                                     className="float-right"
                                     disabled={this.props.isUploading}
                                     onClick={() => {
-                                        this.setState({files: this.state.files.filter(f => f !== file)})
+                                        this.setState({files: this.state.files.filter(f => f !== file)}, ()=> this.props.onChange(this.state.files))
                                     }}
                             ><FontAwesomeIcon icon={faTrash}/></Button>
                         </td>
@@ -173,16 +178,18 @@ class FileUpload extends Component<Props, State> {
 
                             )}
                         </Card.Body>
-                        <Card.Footer>
-                            <Button variant="success" className={`float-right ${this.state.files.length === 0 ? 'invisible' : 'visible'}`}
-                                    onClick={() => (this.props.onUpload(this.state.files))}
-                                    disabled={this.props.isUploading}
-                            >
-                                {!this.props.isUploading ? "Upload" : (
-                                    <Spinner as="span" aria-hidden="true" role="status" animation="border"
-                                             variant="light" size="sm"/>)}
-                            </Button>
-                        </Card.Footer>
+                        {this.props.onUpload && (
+                            <Card.Footer>
+                                <Button variant="success" className={`float-right ${this.state.files.length === 0 ? 'invisible' : 'visible'}`}
+                                        onClick={() => (this.props.onUpload(this.state.files))}
+                                        disabled={this.props.isUploading}
+                                >
+                                    {!this.props.isUploading ? "Upload" : (
+                                        <Spinner as="span" aria-hidden="true" role="status" animation="border"
+                                                 variant="light" size="sm"/>)}
+                                </Button>
+                            </Card.Footer>
+                        )}
                     </Card>
                 </div>
             </div>

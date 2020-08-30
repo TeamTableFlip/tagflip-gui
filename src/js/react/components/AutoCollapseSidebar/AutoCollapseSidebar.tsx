@@ -20,11 +20,11 @@ export const AutoCollapseSidebar: FunctionComponent<Props> = (props) => {
     const {children, className} = {...props};
     return (
 
-        <CSSTransition in={fadeStart} classNames={props.animateTransition ? "bar" : ""} unmountOnExit>
+        // <CSSTransition in={fadeStart} classNames={props.animateTransition ? "bar" : ""} unmountOnExit>
             <ProSidebar ref={ref} className={className}>
                 {children}
             </ProSidebar>
-        </CSSTransition>
+        // </CSSTransition>
     )
 }
 

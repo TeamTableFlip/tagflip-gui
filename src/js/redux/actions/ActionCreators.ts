@@ -2,34 +2,57 @@ import { fetchCorpora, deleteCorpus } from "./corpus/CorpusListActions";
 import {
     setActiveCorpus,
     saveCorpus,
-    fetchActiveCorpus
+    fetchActiveCorpus,
+    saveCorpusAndUploadDocuments,
+    toggleActiveCorpusAnnotationSet,
+    fetchActiveCorpusAnnotationSets
 } from './corpus/CorpusActions';
 import {
     uploadActiveCorpusDocuments,
     deleteActiveCorpusDocument,
     fetchActiveCorpusDocument,
     fetchActiveCorpusDocuments,
+    fetchTagsForActiveDocument,
     uploadCorpus
 } from './corpus/DocumentActions';
 import {
-    saveTagForActiveDocument,
-    deleteTagForActiveDocument,
-} from './corpus/TaggingActions';
+    deleteTag
+} from './corpus/CommonTagActions';
 import { fetchServerStatus } from './ServerStatusFetchActions';
 import { fetchAnnotationSets, deleteAnnotationSet } from "./annotationset/AnnotationSetListActions";
 import {
     setActiveAnnotationSet,
     saveAnnotationSet,
-    updateActiveAnnotationSetField,
     fetchActiveAnnotationSet
 } from "./annotationset/AnnotationSetActions";
 import {
     fetchActiveAnnotationSetAnnotations,
     deleteActiveAnnotationSetAnnotation,
-    updateActiveAnnotationSetEditableAnnotationField,
     saveActiveAnnotationSetAnnotation,
     setActiveAnnotationSetEditableAnnotation,
 } from "./annotationset/AnnotationActions";
+
+import {
+    generateAnnotationTasks,
+    fetchAnnotationTasks,
+    deleteAnnotationTask
+} from "./annotationtask/AnnotationTaskListActions"
+
+import {
+    fetchActiveAnnotationTask,
+    setActiveAnnotationTask,
+    saveAnnotationTask,
+    saveAnnotationTaskWithDocuments,
+    fetchActiveAnnotationTaskDocuments,
+    fetchActiveAnnotationTaskDocument,
+    saveAnnotationTaskDocument,
+    saveTagForActiveAnnotationTaskDocument,
+    fetchTagsForActiveAnnotationTaskDocument
+} from "./annotationtask/AnnotationTaskActions"
+
+import {
+    fetchAnnotationTaskStates
+} from "./annotationtask/AnnotationTaskStateActions"
 
 /**
  * Grouping up all possible actions.
@@ -40,25 +63,46 @@ export const ActionCreators = Object.assign({},
         deleteCorpus,
         setActiveCorpus,
         saveCorpus,
+        uploadCorpus,
         fetchActiveCorpus,
+
+        saveCorpusAndUploadDocuments,
         fetchActiveCorpusDocument,
         fetchActiveCorpusDocuments,
         deleteActiveCorpusDocument,
         uploadActiveCorpusDocuments,
+
         fetchServerStatus,
+
         fetchAnnotationSets,
         deleteAnnotationSet,
         saveAnnotationSet,
-        updateActiveAnnotationSetField,
         fetchActiveAnnotationSet,
+        toggleActiveCorpusAnnotationSet,
+        fetchActiveCorpusAnnotationSets,
+        fetchTagsForActiveDocument,
+
         fetchActiveAnnotationSetAnnotations,
         saveActiveAnnotationSetAnnotation,
-        updateActiveAnnotationSetEditableAnnotationField,
         setActiveAnnotationSetEditableAnnotation,
         deleteActiveAnnotationSetAnnotation,
-        saveTagForActiveDocument,
-        deleteTagForActiveDocument,
+
+        deleteTag,
         setActiveAnnotationSet,
-        uploadCorpus
+
+        generateAnnotationTasks,
+        fetchAnnotationTasks,
+        setActiveAnnotationTask,
+        fetchActiveAnnotationTask,
+        saveAnnotationTask,
+        deleteAnnotationTask,
+        saveAnnotationTaskWithDocuments,
+        fetchActiveAnnotationTaskDocuments,
+        fetchActiveAnnotationTaskDocument,
+        saveAnnotationTaskDocument,
+        saveTagForActiveAnnotationTaskDocument,
+        fetchTagsForActiveAnnotationTaskDocument,
+
+        fetchAnnotationTaskStates
     }
 );

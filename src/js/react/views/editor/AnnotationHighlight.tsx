@@ -112,12 +112,12 @@ class AnnotationHighlight extends React.Component<Props, State> {
                 <Overlay
                     show={this.state.showPopup}
                     target={this.popupTargetRef.current}
-                    placement="top"
+                    placement="bottom"
                     containerPadding={20}
                 >
                     <Tooltip id={`tooltip-${this.props.tag.tagId}`}>
                         <Container className="mb-2">
-                            <Row><Col className="text-left">Text:</Col><Col className="text-left">{this.props.text}</Col></Row>
+                            <Row><Col className="text-left">Text:</Col><Col className="text-left text-truncate">{this.props.text}</Col></Row>
                             <Row><Col className="text-left">ID:</Col><Col className="text-right">{this.props.tag.tagId}</Col></Row>
                             <Row><Col className="text-left">From:</Col><Col className="text-right">{this.props.tag.startIndex}</Col></Row>
                             <Row><Col className="text-left">To:</Col><Col className="text-right">{this.props.tag.endIndex}</Col></Row>
