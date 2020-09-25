@@ -1,3 +1,16 @@
+# [2.0.0](https://github.com/fhswf/tagflip-gui/compare/v1.2.1...v2.0.0) (2020-09-25)
+
+
+### Features
+
+* Support for Annotation Tasks ([42ae7d6](https://github.com/fhswf/tagflip-gui/commit/42ae7d6f05ac33daf576ea030699b911b9742f81))
+
+
+### BREAKING CHANGES
+
+* Release loses any compatibility to prior releases due
+to heavy changes on domain model.
+
 ## [1.2.1](https://github.com/fhswf/tagflip-gui/compare/v1.2.0...v1.2.1) (2020-08-25)
 
 
