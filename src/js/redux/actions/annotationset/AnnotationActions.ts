@@ -48,7 +48,7 @@ export const deleteActiveAnnotationSetAnnotationEpic = (action$, state$) => acti
                 handleResponse(
                     map(
                         (_: Response) => {
-                            toast.info("DELETED!");
+                            toast.info("Deleted!");
                             return createPayloadAction<number>(RECEIVE_DELETE_ACTIVE_ANNOTATIONSET_ANNOTATION)(action.payload)
                         }
                     ),
@@ -61,19 +61,6 @@ export const deleteActiveAnnotationSetAnnotationEpic = (action$, state$) => acti
 
 export const SET_ACTIVE_ANNOTATIONSET_EDITABLE_ANNOTATION = "SET_ACTIVE_ANNOTATIONSET_EDITABLE_ANNOTATION";
 export const setActiveAnnotationSetEditableAnnotation = createPayloadAction<Annotation>(SET_ACTIVE_ANNOTATIONSET_EDITABLE_ANNOTATION)
-
-
-export const UPDATE_ACTIVE_ANNOTATIONSET_EDITABLE_ANNOTATION = "UPDATE_ACTIVE_ANNOTATIONSET_EDITABLE_ANNOTATION";
-export const updateActiveAnnotationSetEditableAnnotationField = (field, value) => {
-    return {
-        type: UPDATE_ACTIVE_ANNOTATIONSET_EDITABLE_ANNOTATION,
-        payload: {
-            field,
-            value
-        }
-    }
-}
-
 
 export const SAVE_ANNOTATION = "SAVE_ANNOTATION";
 export const RECEIVE_SAVE_ANNOTATION = "RECEIVE_SAVE_ANNOTATION";

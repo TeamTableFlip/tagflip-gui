@@ -1,4 +1,5 @@
-import {DocumentAttributes, TagAttributes} from "@fhswf/tagflip-common";
+import {DocumentAttributes, AnnotationTaskDocumentAttributes} from "@fhswf/tagflip-common";
+import AnnotationTaskDocument from "./AnnotationTaskDocument";
 
 export default class Document implements DocumentAttributes {
 
@@ -20,4 +21,5 @@ export default class Document implements DocumentAttributes {
     filename: string = "";
     createdAt: Date = null;
     updatedAt: Date = null;
+    annotationTaskDocuments: AnnotationTaskDocumentAttributes[] = [];
 }

@@ -1,51 +1,79 @@
 import {combineEpics} from "redux-observable";
-import {deleteCorpusEpic, fetchCorporaEpic} from "./corpus/CorpusListActions";
+import {deleteCorpusEpic, fetchCorporaCountEpic, fetchCorporaEpic} from "./corpus/CorpusListActions";
 import {fetchServerStatusEpic} from "./ServerStatusFetchActions";
-import {deleteAnnotationSetEpic, fetchAnnotationSetsEpic} from "./annotationset/AnnotationSetListActions";
+import {
+    deleteAnnotationSetEpic,
+    fetchAnnotationSetCountEpic,
+    fetchAnnotationSetsEpic
+} from "./annotationset/AnnotationSetListActions";
 import {
     fetchActiveAnnotationSetEpic,
     saveActiveAnnotationSetEpic,
     setActiveAnnotationSetEpic
 } from "./annotationset/AnnotationSetActions";
 import {
-    fetchActiveCorpusAnnotationSetsEpic,
+    fetchActiveCorpusAnnotationSets, fetchActiveCorpusAnnotationSetsEpic,
     fetchActiveCorpusEpic,
-    saveActiveCorpusEpic,
+    saveCorpusAndUploadDocumentsEpic,
+    saveCorpusEpic,
     setActiveCorpusEpic,
-    toggleActiveCorpusAnnotationSetEpic
+    toggleActiveCorpusAnnotationSetEpic,
 } from "./corpus/CorpusActions";
 import {
     deleteActiveCorpusDocumentEpic, fetchActiveCorpusDocumentCountEpic,
     fetchActiveCorpusDocumentEpic,
     fetchActiveCorpusDocumentsEpic,
-    uploadActiveCorpusDocumentsEpic
+    uploadActiveCorpusDocumentsEpic,
+    fetchTagsForActiveDocumentEpic
 } from "./corpus/DocumentActions";
 import {
     deleteActiveAnnotationSetAnnotationEpic,
     fetchActiveAnnotationSetAnnotationsEpic, saveActiveAnnotationSetAnnotationEpic
 } from "./annotationset/AnnotationActions";
 import {
-    deleteTagForActiveDocumentEpic,
-    fetchTagsForActiveDocumentEpic,
-    saveTagForActiveDocumentEpic
-} from "./corpus/TaggingActions";
+    deleteTagEpic,
+} from "./corpus/CommonTagActions";
+import {
+    deleteAnnotationTaskEpic,
+    fetchAnnotationTasksEpic,
+    generateAnnotationTasksEpic
+} from "./annotationtask/AnnotationTaskListActions";
+import {fetchAnnotationTasksStatesEpic} from "./annotationtask/AnnotationTaskStateActions";
+import {
+    fetchActiveAnnotationTaskDocumentCountEpic,
+    fetchActiveAnnotationTaskDocuments,
+    fetchActiveAnnotationTaskDocumentsEpic,
+    fetchActiveAnnotationTaskEpic,
+    fetchActiveAnnotationTaskDocumentEpic,
+    saveAnnotationTaskDocumentEpic,
+    saveAnnotationTaskEpic,
+    saveAnnotationTaskWithDocumentsEpic,
+    setActiveAnnotationTaskEpic,
+    assignDocumentToAnnotationTaskEpic,
+    saveTagForActiveAnnotationTaskDocumentEpic,
+    fetchTagsForActiveAnnotationTaskDocumentEpic
+} from "./annotationtask/AnnotationTaskActions";
 
 const rootEpic = combineEpics(
     setActiveCorpusEpic,
-    saveActiveCorpusEpic,
+    saveCorpusEpic,
+    saveCorpusAndUploadDocumentsEpic,
     fetchActiveCorpusEpic,
-    fetchActiveCorpusAnnotationSetsEpic,
-    toggleActiveCorpusAnnotationSetEpic,
     fetchActiveCorpusDocumentEpic,
     fetchActiveCorpusDocumentsEpic,
     fetchActiveCorpusDocumentCountEpic,
     uploadActiveCorpusDocumentsEpic,
     deleteActiveCorpusDocumentEpic,
+    fetchCorporaCountEpic,
     fetchCorporaEpic,
     deleteCorpusEpic,
+    toggleActiveCorpusAnnotationSetEpic,
+    fetchActiveCorpusAnnotationSetsEpic,
+
     fetchServerStatusEpic,
 
     fetchAnnotationSetsEpic,
+    fetchAnnotationSetCountEpic,
     deleteAnnotationSetEpic,
     setActiveAnnotationSetEpic,
     fetchActiveAnnotationSetEpic,
@@ -54,11 +82,27 @@ const rootEpic = combineEpics(
     deleteActiveAnnotationSetAnnotationEpic,
     saveActiveAnnotationSetAnnotationEpic,
 
-    saveTagForActiveDocumentEpic,
     fetchTagsForActiveDocumentEpic,
-    deleteTagForActiveDocumentEpic
-)
+    deleteTagEpic,
 
+    generateAnnotationTasksEpic,
+    fetchAnnotationTasksEpic,
+    fetchActiveAnnotationTaskEpic,
+    setActiveAnnotationTaskEpic,
+    saveAnnotationTaskEpic,
+    deleteAnnotationTaskEpic,
+    saveAnnotationTaskWithDocumentsEpic,
+    saveAnnotationTaskDocumentEpic,
+    assignDocumentToAnnotationTaskEpic,
+    fetchActiveAnnotationTaskDocumentsEpic,
+    fetchActiveAnnotationTaskDocumentCountEpic,
+    fetchActiveAnnotationTaskDocumentEpic,
+    saveTagForActiveAnnotationTaskDocumentEpic,
+    fetchTagsForActiveAnnotationTaskDocumentEpic,
+
+    fetchAnnotationTasksStatesEpic
+
+)
 
 
 export default rootEpic;

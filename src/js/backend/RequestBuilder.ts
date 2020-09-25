@@ -7,7 +7,7 @@ export enum HttpMethod {
     DELETE = "DELETE"
 }
 
-const defaultHeaders = {
+export const defaultHeaders = {
     'Accept': 'application/json',
     'Content-Type': 'application/json',
     'Cache': 'no-cache'
@@ -17,6 +17,8 @@ const convertBody = (body) => {
     if (!body)
         return null;
     if (body instanceof FormData)
+        return body;
+    if (body instanceof URLSearchParams)
         return body;
     return JSON.stringify(body)
 }
@@ -62,16 +64,28 @@ export class RequestBuilder {
     }
 
     public static POST(path: string, body = null, headers: HeadersInit = defaultHeaders, ...queryParams: QueryParam[]) {
-        return this.REQUEST(path, HttpMethod.POST, body, headers);
+        return this.REQUEST(path, HttpMethod.POST, body, headers, ...queryParams);
     }
 
     public static PUT(path: string, body = null, headers: HeadersInit = defaultHeaders, ...queryParams: QueryParam[]) {
-        return this.REQUEST(path, HttpMethod.PUT, body, headers);
+        return this.REQUEST(path, HttpMethod.PUT, body, headers, ...queryParams);
     }
 
     public static DELETE(path: string, body = null, headers: HeadersInit = defaultHeaders, ...queryParams: QueryParam[]) {
-        return this.REQUEST(path, HttpMethod.DELETE, body, headers);
+        return this.REQUEST(path, HttpMethod.DELETE, body, headers, ...queryParams);
     }
+
+    public static POST_URL_ENCODED_FORM(path: string, body: QueryParam[] = [], ...queryParams: QueryParam[]) {
+        let data = new URLSearchParams();
+        if (body) {
+            for (const param of body) {
+                data.append(param.key, param.value)
+            }
+        }
+
+        return this.REQUEST(path, HttpMethod.POST, data, {}, ...queryParams);
+    }
+
 
     public static REQUEST(path: string, method: HttpMethod = HttpMethod.GET, body = null, headers: HeadersInit = defaultHeaders, ...queryParams: QueryParam[]): Request {
         let endpoint = config.backend.endpoint;

@@ -1,0 +1,24 @@
+.task-dragged {
+  -webkit-box-shadow: 1px 1px 7px 0px rgba(110,110,110,1);
+  -moz-box-shadow: 1px 1px 7px 0px rgba(110,110,110,1);
+  box-shadow: 1px 1px 7px 0px rgba(110,110,110,1);
+}
+
+.column {
+  padding: 5px 0px 10px 0px;
+  min-height: 50px;
+  max-height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.task {
+  a:hover {
+    text-decoration: underline;
+    cursor: pointer;
+  }
+  a.dropdown-item:hover {
+    text-decoration: none;
+  }
+
+}

@@ -10,21 +10,18 @@ import {BaseAction, PayloadAction, PayloadStatusAction} from "../actions/types";
 
 const initialState: AnnotationSetState = {
     values: AnnotationSet.create(),
-    didInvalidate: false,
     isFetching: false,
     lastUpdated: undefined,
     status: FetchStatusType.success,
     error: null,
     annotations: {
         isFetching: false,
-        didInvalidate: false,
         items: [],
         lastUpdated: undefined,
         status: FetchStatusType.success,
         error: null,
         editableAnnotation: {
             values: Annotation.create(),
-            didInvalidate: false,
             isFetching: false,
             lastUpdated: undefined,
             status: FetchStatusType.success,
@@ -41,14 +38,14 @@ const initialState: AnnotationSetState = {
  */
 export const activeAnnotationSet = createReducer(initialState, {
     [AnnotationSetEditActions.SET_ACTIVE_ANNOTATION_SET](draft: AnnotationSetState, action: PayloadAction<AnnotationSet>) {
-        draft.values = action.payload;
-        draft.didInvalidate = true;
-        draft.annotations.didInvalidate = true;
+        if(!action.payload) {
+            draft.values = initialState.values;
+        } else {
+            draft.values = action.payload;
+        }
+        draft.annotations = initialState.annotations;
         draft.status = FetchStatusType.success;
         draft.error = null;
-    },
-    [AnnotationSetEditActions.UPDATE_ANNOTATION_SET_FIELD](draft: AnnotationSetState, action) {
-        draft.values[action.payload.field] = action.payload.value;
     },
     [AnnotationSetEditActions.FETCH_ACTIVE_ANNOTATION_SET](draft: AnnotationSetState, action: BaseAction) {
         draft.isFetching = true;
@@ -58,7 +55,6 @@ export const activeAnnotationSet = createReducer(initialState, {
     },
     [AnnotationSetEditActions.RECEIVE_UPDATE_ACTIVE_ANNOTATION_SET](draft: AnnotationSetState, action: PayloadStatusAction<AnnotationSet>) {
         draft.isFetching = false;
-        draft.didInvalidate = false;
         if (action.payload.status === FetchStatusType.success) {
             draft.values = action.payload.data;
             draft.lastUpdated = action.payload.receivedAt;
@@ -71,11 +67,9 @@ export const activeAnnotationSet = createReducer(initialState, {
     },
     [AnnotationEditActions.FETCH_ACTIVE_ANNOTATIONSET_ANNOTATIONS](draft: AnnotationSetState, action: BaseAction) {
         draft.annotations.isFetching = true;
-        draft.annotations.didInvalidate = true;
     },
     [AnnotationEditActions.RECEIVE_ACTIVE_ANNOTATIONSET_ANNOTATIONS](draft: AnnotationSetState, action: PayloadStatusAction<Annotation[]>) {
         draft.annotations.isFetching = false;
-        draft.annotations.didInvalidate = false;
         if (action.payload.status === FetchStatusType.success) {
             draft.annotations.items = action.payload.data;
             draft.annotations.lastUpdated = action.payload.receivedAt;
@@ -97,9 +91,6 @@ export const activeAnnotationSet = createReducer(initialState, {
         draft.annotations.editableAnnotation.error = null
         draft.annotations.editableAnnotation.lastUpdated = Date.now();
         draft.annotations.editableAnnotation.status = FetchStatusType.success;
-    },
-    [AnnotationEditActions.UPDATE_ACTIVE_ANNOTATIONSET_EDITABLE_ANNOTATION](draft: AnnotationSetState, action) {
-        draft.annotations.editableAnnotation.values[action.payload.field] = action.payload.value;
     },
     [AnnotationEditActions.SAVE_ANNOTATION](draft: AnnotationSetState, action : PayloadAction<Annotation>) {
         draft.annotations.editableAnnotation.isFetching = true;
