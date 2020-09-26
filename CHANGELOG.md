@@ -1,3 +1,10 @@
+## [2.0.1](https://github.com/fhswf/tagflip-gui/compare/v2.0.0...v2.0.1) (2020-09-26)
+
+
+### Bug Fixes
+
+* make backend paths relative to allow context root ([a0a0f80](https://github.com/fhswf/tagflip-gui/commit/a0a0f80cd0100d185876add111c1643bddd72bcc))
+
 # [2.0.0](https://github.com/fhswf/tagflip-gui/compare/v1.2.1...v2.0.0) (2020-09-25)
 
 
