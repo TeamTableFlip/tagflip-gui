@@ -7,16 +7,16 @@ import {
     toJson, toText
 } from "../Common";
 import Document from "../../../backend/model/Document";
-import {ofType} from "redux-observable";
-import {filter, map, mergeMap, switchMap} from "rxjs/operators";
-import {BaseAction, PayloadAction} from "../types";
-import {fromFetch} from "rxjs/fetch";
-import {HttpMethod, QueryParam, RequestBuilder, SimpleQueryParam} from "../../../backend/RequestBuilder";
+import { ofType } from "redux-observable";
+import { filter, map, mergeMap, switchMap } from "rxjs/operators";
+import { BaseAction, PayloadAction } from "../types";
+import { fromFetch } from "rxjs/fetch";
+import { HttpMethod, QueryParam, RequestBuilder, SimpleQueryParam } from "../../../backend/RequestBuilder";
 import AnnotationTask from "../../../backend/model/AnnotationTask";
-import {toast} from "react-toastify";
-import {fetchActiveCorpus, setActiveCorpus} from "../corpus/CorpusActions";
+import { toast } from "react-toastify";
+import { fetchActiveCorpus, setActiveCorpus } from "../corpus/CorpusActions";
 import AnnotationTaskDocument from "../../../backend/model/AnnotationTaskDocument";
-import {createAction} from "@reduxjs/toolkit";
+import { createAction } from "@reduxjs/toolkit";
 import Tag from "../../../backend/model/Tag";
 
 
@@ -28,39 +28,39 @@ export const saveAnnotationTask = createPayloadAction<AnnotationTask>(SAVE_ANNOT
 export const saveAnnotationTaskEpic = (action$, state$) => action$.pipe(
     ofType(SAVE_ANNOTATION_TASK),
     mergeMap((action: PayloadAction<AnnotationTask>) => (
-            fromFetch(RequestBuilder.REQUEST(`/annotationtask`,
-                action.payload.annotationTaskId && action.payload.annotationTaskId > 0 ?
-                    HttpMethod.PUT : HttpMethod.POST, action.payload)).pipe(
-                toJson(mergeMap((res: AnnotationTask) => {
+        fromFetch(RequestBuilder.REQUEST(`annotationtask`,
+            action.payload.annotationTaskId && action.payload.annotationTaskId > 0 ?
+                HttpMethod.PUT : HttpMethod.POST, action.payload)).pipe(
+                    toJson(mergeMap((res: AnnotationTask) => {
                         return [fetchActiveAnnotationTask(res.annotationTaskId)]
                     }),
-                    onTagFlipError(createFetchErrorAction(RECEIVE_UPDATE_ACTIVE_ANNOTATION_TASK))
+                        onTagFlipError(createFetchErrorAction(RECEIVE_UPDATE_ACTIVE_ANNOTATION_TASK))
+                    )
                 )
-            )
-        )
+    )
     )
 )
 
 export const SAVE_ANNOTATION_TASK_WITH_DOCUMENTS = "SAVE_ANNOTATION_TASK_WITH_DOCUMENTS";
-export const saveAnnotationTaskWithDocuments = createPayloadAction<{annotationTask : AnnotationTask, documents: Document[]}>(SAVE_ANNOTATION_TASK_WITH_DOCUMENTS);
+export const saveAnnotationTaskWithDocuments = createPayloadAction<{ annotationTask: AnnotationTask, documents: Document[] }>(SAVE_ANNOTATION_TASK_WITH_DOCUMENTS);
 export const saveAnnotationTaskWithDocumentsEpic = (action$, state$) => action$.pipe(
     ofType(SAVE_ANNOTATION_TASK_WITH_DOCUMENTS),
-    mergeMap((action: PayloadAction<{annotationTask : AnnotationTask, documents: Document[]}>) => (
-            fromFetch(RequestBuilder.REQUEST(`/annotationtask`,
-                action.payload.annotationTask.annotationTaskId && action.payload.annotationTask.annotationTaskId > 0 ?
-                    HttpMethod.PUT : HttpMethod.POST, action.payload.annotationTask)).pipe(
-                toJson(mergeMap((res: AnnotationTask) => {
+    mergeMap((action: PayloadAction<{ annotationTask: AnnotationTask, documents: Document[] }>) => (
+        fromFetch(RequestBuilder.REQUEST(`annotationtask`,
+            action.payload.annotationTask.annotationTaskId && action.payload.annotationTask.annotationTaskId > 0 ?
+                HttpMethod.PUT : HttpMethod.POST, action.payload.annotationTask)).pipe(
+                    toJson(mergeMap((res: AnnotationTask) => {
                         toast.success("Saved!");
-                        let documentSaveActions = action.payload.documents.map((doc : Document) => assignDocumentToAnnotationTask(doc.documentId))
+                        let documentSaveActions = action.payload.documents.map((doc: Document) => assignDocumentToAnnotationTask(doc.documentId))
                         return [
                             createFetchSuccessAction<AnnotationTask>(RECEIVE_UPDATE_ACTIVE_ANNOTATION_TASK)(res),
-                            ... documentSaveActions
+                            ...documentSaveActions
                         ]
                     }),
-                    onTagFlipError(createFetchErrorAction(RECEIVE_UPDATE_ACTIVE_ANNOTATION_TASK))
+                        onTagFlipError(createFetchErrorAction(RECEIVE_UPDATE_ACTIVE_ANNOTATION_TASK))
+                    )
                 )
-            )
-        )
+    )
     )
 )
 
@@ -72,7 +72,7 @@ export const setActiveAnnotationTaskEpic = action$ => action$.pipe(
     filter((action: PayloadAction<AnnotationTask>) => (action.payload.annotationTaskId > 0)),
     mergeMap((action: PayloadAction<AnnotationTask>) => {
         let actions = [fetchActiveAnnotationTask(action.payload.annotationTaskId)]
-        if(action.payload.corpusId > 0) {
+        if (action.payload.corpusId > 0) {
             actions.push(fetchActiveCorpus(action.payload.corpusId))
         }
         return actions;
@@ -84,8 +84,8 @@ export const fetchActiveAnnotationTask = createPayloadAction<number>(FETCH_ACTIV
 export const fetchActiveAnnotationTaskEpic = action$ => action$.pipe(
     ofType(FETCH_ACTIVE_ANNOTATION_TASK),
     filter((action: PayloadAction<number>) => action.payload && action.payload > 0),
-    mergeMap((action:  PayloadAction<number>) =>
-        fromFetch(RequestBuilder.GET(`/annotationtask/${action.payload}`)).pipe(
+    mergeMap((action: PayloadAction<number>) =>
+        fromFetch(RequestBuilder.GET(`annotationtask/${action.payload}`)).pipe(
             toJson(
                 mergeMap((res: AnnotationTask) => (
                     [createFetchSuccessAction<AnnotationTask>(RECEIVE_UPDATE_ACTIVE_ANNOTATION_TASK)(res), setActiveCorpus(res.corpus)]
@@ -102,8 +102,8 @@ export const assignDocumentToAnnotationTask = createPayloadAction<number>(ASSIGN
 export const assignDocumentToAnnotationTaskEpic = (action$, state$) => action$.pipe(
     ofType(ASSIGN_DOCUMENT_TO_ANNOTATION_TASK),
     filter((action: PayloadAction<number>) => action.payload && action.payload > 0),
-    mergeMap((action:  PayloadAction<AnnotationTaskDocument>) =>
-        fromFetch(RequestBuilder.PUT(`/annotationtask/${state$.value.activeAnnotationTask.values.annotationTaskId}/document/${action.payload}`)).pipe(
+    mergeMap((action: PayloadAction<AnnotationTaskDocument>) =>
+        fromFetch(RequestBuilder.PUT(`annotationtask/${state$.value.activeAnnotationTask.values.annotationTaskId}/document/${action.payload}`)).pipe(
             toJson(
                 mergeMap((res: AnnotationTaskDocument[]) => (
                     [createFetchSuccessAction<AnnotationTaskDocument[]>(RECEIVE_ASSIGN_DOCUMENT_TO_ANNOTATION_TASK)(res)]
@@ -119,19 +119,19 @@ export const saveAnnotationTaskDocument = createPayloadAction<AnnotationTaskDocu
 export const saveAnnotationTaskDocumentEpic = (action$, state$) => action$.pipe(
     ofType(SAVE_ANNOTATION_TASK_DOCUMENT),
     filter((action: PayloadAction<AnnotationTaskDocument>) => action.payload && action.payload.annotationTaskDocumentId > 0),
-    mergeMap((action:  PayloadAction<AnnotationTaskDocument>) =>
-        fromFetch(RequestBuilder.REQUEST(`/annotationtaskdocument`, action.payload.annotationTaskDocumentId && action.payload.annotationTaskDocumentId > 0 ?
+    mergeMap((action: PayloadAction<AnnotationTaskDocument>) =>
+        fromFetch(RequestBuilder.REQUEST(`annotationtaskdocument`, action.payload.annotationTaskDocumentId && action.payload.annotationTaskDocumentId > 0 ?
             HttpMethod.PUT : HttpMethod.POST, action.payload)).pipe(
-            toJson(
-                mergeMap((res: AnnotationTaskDocument) => (
-                    [
-                        createFetchSuccessAction<AnnotationTaskDocument>(RECEIVE_ACTIVE_ANNOTATION_TASK_DOCUMENT)(res),
-                        fetchActiveAnnotationTask(res.annotationTaskId)
-                    ]
-                )),
-                onTagFlipError(createFetchErrorAction(RECEIVE_ACTIVE_ANNOTATION_TASK_DOCUMENT))
+                toJson(
+                    mergeMap((res: AnnotationTaskDocument) => (
+                        [
+                            createFetchSuccessAction<AnnotationTaskDocument>(RECEIVE_ACTIVE_ANNOTATION_TASK_DOCUMENT)(res),
+                            fetchActiveAnnotationTask(res.annotationTaskId)
+                        ]
+                    )),
+                    onTagFlipError(createFetchErrorAction(RECEIVE_ACTIVE_ANNOTATION_TASK_DOCUMENT))
+                )
             )
-        )
     ),
 )
 
@@ -144,12 +144,12 @@ export const fetchActiveAnnotationTaskDocumentsEpic = (action$, state$) => actio
     ofType(FETCH_ACTIVE_ANNOTATION_TASK_DOCUMENTS),
     filter(() => state$.value.activeAnnotationTask.values && state$.value.activeAnnotationTask.values.annotationTaskId > 0),
     mergeMap((action: PayloadAction<QueryParam[]>) =>
-        fromFetch(RequestBuilder.GET(`/annotationtask/${state$.value.activeAnnotationTask.values.annotationTaskId}/document`, action.payload)).pipe(
+        fromFetch(RequestBuilder.GET(`annotationtask/${state$.value.activeAnnotationTask.values.annotationTaskId}/document`, action.payload)).pipe(
             toJson(
                 mergeMap((res: AnnotationTaskDocument[]) => [
                     fetchActiveAnnotationTaskDocumentCount(action.payload),
                     createFetchSuccessAction<AnnotationTaskDocument[]>(RECEIVE_ACTIVE_ANNOTATION_TASK_DOCUMENTS)(res)
-                ] ),
+                ]),
                 createFetchErrorAction(RECEIVE_ACTIVE_ANNOTATION_TASK_DOCUMENTS)
             )
         )
@@ -163,7 +163,7 @@ export const fetchActiveAnnotationTaskDocumentCountEpic = (action$, state$) => a
     ofType(FETCH_ACTIVE_ANNOTATION_TASK_DOCUMENT_COUNT),
     filter(() => state$.value.activeAnnotationTask.values.annotationTaskId > 0),
     mergeMap((action: PayloadAction<QueryParam[]>) =>
-        fromFetch(RequestBuilder.GET(`/annotationtask/${state$.value.activeAnnotationTask.values.annotationTaskId}/document`, [SimpleQueryParam.of("count", true), ... (action.payload || [])])).pipe(
+        fromFetch(RequestBuilder.GET(`annotationtask/${state$.value.activeAnnotationTask.values.annotationTaskId}/document`, [SimpleQueryParam.of("count", true), ... (action.payload || [])])).pipe(
             handleResponse(
                 toText(
                     map((res: string) => createFetchSuccessAction<number>(RECEIVE_ACTIVE_ANNOTATION_TASK_DOCUMENT_COUNT)(Number.parseInt(res)))
@@ -181,10 +181,10 @@ export const fetchActiveAnnotationTaskDocumentEpic = (action$, state$) => action
     filter((action: PayloadAction<number>) => action.payload > 0),
     filter(() => state$.value.activeAnnotationTask.values.annotationTaskId > 0),
     switchMap((action: PayloadAction<number>) =>
-        fromFetch(RequestBuilder.GET(`/annotationtaskdocument/${action.payload}`)).pipe(
+        fromFetch(RequestBuilder.GET(`annotationtaskdocument/${action.payload}`)).pipe(
             toJson(
                 mergeMap((res: AnnotationTaskDocument) => [
-                        createFetchSuccessAction<AnnotationTaskDocument>(RECEIVE_ACTIVE_ANNOTATION_TASK_DOCUMENT)(res)
+                    createFetchSuccessAction<AnnotationTaskDocument>(RECEIVE_ACTIVE_ANNOTATION_TASK_DOCUMENT)(res)
                 ]),
                 createFetchErrorAction(RECEIVE_ACTIVE_ANNOTATION_TASK_DOCUMENT)
             )
@@ -199,17 +199,17 @@ export const saveTagForActiveAnnotationTaskDocument = createPayloadAction<Tag>(S
 export const saveTagForActiveAnnotationTaskDocumentEpic = (action$, state$) => action$.pipe(
     ofType(SAVE_TAG_FOR_ACTIVE_ANNOTATION_TASK_DOCUMENT),
     mergeMap((action: PayloadAction<Tag>) => {
-            let documentId = state$.value.activeAnnotationTask.activeDocument.values.documentId
-            action.payload.annotationTaskId = state$.value.activeAnnotationTask.values.annotationTaskId
+        let documentId = state$.value.activeAnnotationTask.activeDocument.values.documentId
+        action.payload.annotationTaskId = state$.value.activeAnnotationTask.values.annotationTaskId
 
-            return fromFetch(RequestBuilder.REQUEST(`/document/${documentId}/tag`,
-                action.payload.tagId && action.payload.tagId > 0 ?
-                    HttpMethod.PUT : HttpMethod.POST, action.payload)).pipe(
-                toJson(map((res: Tag) => createFetchSuccessAction(RECEIVE_SAVE_TAG_FOR_ACTIVE_ANNOTATION_TASK_DOCUMENT)(res)),
-                    onTagFlipError(createFetchErrorAction(RECEIVE_SAVE_TAG_FOR_ACTIVE_ANNOTATION_TASK_DOCUMENT))
+        return fromFetch(RequestBuilder.REQUEST(`document/${documentId}/tag`,
+            action.payload.tagId && action.payload.tagId > 0 ?
+                HttpMethod.PUT : HttpMethod.POST, action.payload)).pipe(
+                    toJson(map((res: Tag) => createFetchSuccessAction(RECEIVE_SAVE_TAG_FOR_ACTIVE_ANNOTATION_TASK_DOCUMENT)(res)),
+                        onTagFlipError(createFetchErrorAction(RECEIVE_SAVE_TAG_FOR_ACTIVE_ANNOTATION_TASK_DOCUMENT))
+                    )
                 )
-            )
-        }
+    }
     )
 )
 
@@ -219,16 +219,16 @@ export const fetchTagsForActiveAnnotationTaskDocument = createAction(FETCH_TAGS_
 export const fetchTagsForActiveAnnotationTaskDocumentEpic = (action$, state$) => action$.pipe(
     ofType(FETCH_TAGS_FOR_ACTIVE_ANNOTATION_TASK_DOCUMENT),
     mergeMap((action: PayloadAction<Tag>) => {
-            let corpusId = state$.value.activeAnnotationTask.values.corpusId
-            let documentId = state$.value.activeAnnotationTask.activeDocument.values.documentId
-            return fromFetch(RequestBuilder.GET(`/document/${documentId}/tag`, [SimpleQueryParam.of("annotationTaskId", state$.value.activeAnnotationTask.values.annotationTaskId)])).pipe(
-                toJson(
-                    map((res: Tag[]) => {
-                        return createFetchSuccessAction<Tag[]>(RECEIVE_TAGS_FOR_ACTIVE_ANNOTATION_TASK_DOCUMENT)(res)
-                    }),
-                    onTagFlipError(createFetchErrorAction(RECEIVE_TAGS_FOR_ACTIVE_ANNOTATION_TASK_DOCUMENT))
-                )
+        let corpusId = state$.value.activeAnnotationTask.values.corpusId
+        let documentId = state$.value.activeAnnotationTask.activeDocument.values.documentId
+        return fromFetch(RequestBuilder.GET(`document/${documentId}/tag`, [SimpleQueryParam.of("annotationTaskId", state$.value.activeAnnotationTask.values.annotationTaskId)])).pipe(
+            toJson(
+                map((res: Tag[]) => {
+                    return createFetchSuccessAction<Tag[]>(RECEIVE_TAGS_FOR_ACTIVE_ANNOTATION_TASK_DOCUMENT)(res)
+                }),
+                onTagFlipError(createFetchErrorAction(RECEIVE_TAGS_FOR_ACTIVE_ANNOTATION_TASK_DOCUMENT))
             )
-        }
+        )
+    }
     )
 )

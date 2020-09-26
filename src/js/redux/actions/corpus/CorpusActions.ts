@@ -1,10 +1,10 @@
 import Corpus from "../../../backend/model/Corpus";
-import {ofType} from "redux-observable";
-import {filter, map, mergeMap, switchMap} from "rxjs/operators";
+import { ofType } from "redux-observable";
+import { filter, map, mergeMap, switchMap } from "rxjs/operators";
 
-import {createAction} from "@reduxjs/toolkit";
-import {fromFetch} from "rxjs/fetch";
-import {HttpMethod, RequestBuilder} from "../../../backend/RequestBuilder";
+import { createAction } from "@reduxjs/toolkit";
+import { fromFetch } from "rxjs/fetch";
+import { HttpMethod, RequestBuilder } from "../../../backend/RequestBuilder";
 import {
     createFetchErrorAction,
     createFetchSuccessAction,
@@ -13,9 +13,9 @@ import {
     onTagFlipError,
     toJson
 } from "../Common";
-import {toast} from "react-toastify";
-import {BaseAction, PayloadAction} from "../types";
-import {uploadActiveCorpusDocuments} from "./DocumentActions";
+import { toast } from "react-toastify";
+import { BaseAction, PayloadAction } from "../types";
+import { uploadActiveCorpusDocuments } from "./DocumentActions";
 import AnnotationSet from "../../../backend/model/AnnotationSet";
 
 
@@ -38,7 +38,7 @@ export const fetchActiveCorpusEpic = action$ => action$.pipe(
     ofType(FETCH_ACTIVE_CORPUS),
     filter((action: BaseAction) => action.payload && action.payload > 0),
     mergeMap((action: BaseAction) =>
-        fromFetch(RequestBuilder.GET(`/corpus/${action.payload}`)).pipe(
+        fromFetch(RequestBuilder.GET(`corpus/${action.payload}`)).pipe(
             toJson(
                 mergeMap((res: Corpus) => (
                     [createFetchSuccessAction<Corpus>(RECEIVE_UPDATE_ACTIVE_CORPUS)(res)]
@@ -54,17 +54,17 @@ export const saveCorpus = createPayloadAction<Corpus>(SAVE_CORPUS);
 export const saveCorpusEpic = (action$, state$) => action$.pipe(
     ofType(SAVE_CORPUS),
     mergeMap((action: PayloadAction<Corpus>) => (
-            fromFetch(RequestBuilder.REQUEST(`/corpus`,
-                action.payload.corpusId && action.payload.corpusId > 0 ?
-                    HttpMethod.PUT : HttpMethod.POST, action.payload)).pipe(
-                toJson(mergeMap((res: Corpus) => {
+        fromFetch(RequestBuilder.REQUEST(`corpus`,
+            action.payload.corpusId && action.payload.corpusId > 0 ?
+                HttpMethod.PUT : HttpMethod.POST, action.payload)).pipe(
+                    toJson(mergeMap((res: Corpus) => {
                         toast.success("Saved!");
                         return [createFetchSuccessAction<Corpus>(RECEIVE_UPDATE_ACTIVE_CORPUS)(res)]
                     }),
-                    onTagFlipError(createFetchErrorAction(RECEIVE_UPDATE_ACTIVE_CORPUS))
+                        onTagFlipError(createFetchErrorAction(RECEIVE_UPDATE_ACTIVE_CORPUS))
+                    )
                 )
-            )
-        )
+    )
     )
 )
 
@@ -73,10 +73,10 @@ export const saveCorpusAndUploadDocuments = createPayloadAction<Corpus & { files
 export const saveCorpusAndUploadDocumentsEpic = (action$, state$) => action$.pipe(
     ofType(SAVE_CORPUS_AND_UPLOAD_DOCUMENTS),
     mergeMap((action: PayloadAction<Corpus & { files: File[] }>) => (
-            fromFetch(RequestBuilder.REQUEST(`/corpus`,
-                action.payload.corpusId && action.payload.corpusId > 0 ?
-                    HttpMethod.PUT : HttpMethod.POST, action.payload)).pipe(
-                toJson(mergeMap((res: Corpus) => {
+        fromFetch(RequestBuilder.REQUEST(`corpus`,
+            action.payload.corpusId && action.payload.corpusId > 0 ?
+                HttpMethod.PUT : HttpMethod.POST, action.payload)).pipe(
+                    toJson(mergeMap((res: Corpus) => {
                         toast.success("Corpus saved!");
                         if (action.payload.files && action.payload.files.length > 0) {
                             toast.info("Uploading Documents now...");
@@ -90,10 +90,10 @@ export const saveCorpusAndUploadDocumentsEpic = (action$, state$) => action$.pip
                             ]
                         }
                     }),
-                    onTagFlipError(createFetchErrorAction(RECEIVE_UPDATE_ACTIVE_CORPUS))
+                        onTagFlipError(createFetchErrorAction(RECEIVE_UPDATE_ACTIVE_CORPUS))
+                    )
                 )
-            )
-        )
+    )
     )
 )
 
@@ -116,7 +116,7 @@ export const toggleActiveCorpusAnnotationSetEpic = (action$, state$) => action$.
             method = HttpMethod.DELETE;
             toggleAction = REMOVE_CORPUS_ANNOTATION_SET;
         }
-        return fromFetch(RequestBuilder.REQUEST(`/corpus/${corpusId}/annotationset/${action.payload.annotationSetId}`, method)).pipe(
+        return fromFetch(RequestBuilder.REQUEST(`corpus/${corpusId}/annotationset/${action.payload.annotationSetId}`, method)).pipe(
             handleResponse(
                 map((res) => {
                     toast.success("Saved!");
@@ -136,7 +136,7 @@ export const fetchActiveCorpusAnnotationSetsEpic = (action$, state$) => action$.
     ofType(FETCH_ACTIVE_CORPUS_ANNOTATION_SETS),
     filter(() => state$.value.activeCorpus.values.corpusId > 0),
     mergeMap((action: BaseAction) =>
-        fromFetch(RequestBuilder.GET(`/corpus/${state$.value.activeCorpus.values.corpusId}/annotationset`)).pipe(
+        fromFetch(RequestBuilder.GET(`corpus/${state$.value.activeCorpus.values.corpusId}/annotationset`)).pipe(
             toJson(
                 map((res: AnnotationSet[]) => createFetchSuccessAction<AnnotationSet[]>(RECEIVE_ACTIVE_CORPUS_ANNOTATION_SETS)(res)),
                 onTagFlipError(createFetchErrorAction(RECEIVE_ACTIVE_CORPUS_ANNOTATION_SETS))

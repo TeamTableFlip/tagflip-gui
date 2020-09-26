@@ -89,7 +89,7 @@ export class RequestBuilder {
 
     public static REQUEST(path: string, method: HttpMethod = HttpMethod.GET, body = null, headers: HeadersInit = defaultHeaders, ...queryParams: QueryParam[]): Request {
         let endpoint = config.backend.endpoint;
-        if (endpoint.endsWith('/')) {
+        if (!endpoint.endsWith('/')) {
             endpoint += '/';
         }
 
@@ -104,6 +104,8 @@ export class RequestBuilder {
         };
 
         const url = new URL(path, endpoint);
+        console.log("endpoint=%o", endpoint)
+        console.log("url=%o", url)
         if (queryParams) {
             for (const queryParam of queryParams) {
                 url.searchParams.append(queryParam.key, queryParam.value)

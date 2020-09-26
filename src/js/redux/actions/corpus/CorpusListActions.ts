@@ -1,8 +1,8 @@
-import {createAction} from "@reduxjs/toolkit";
-import {ofType} from "redux-observable";
-import {filter, map, mergeMap} from "rxjs/operators";
-import {fromFetch} from "rxjs/fetch";
-import {QueryParam, RequestBuilder, SimpleQueryParam} from "../../../backend/RequestBuilder";
+import { createAction } from "@reduxjs/toolkit";
+import { ofType } from "redux-observable";
+import { filter, map, mergeMap } from "rxjs/operators";
+import { fromFetch } from "rxjs/fetch";
+import { QueryParam, RequestBuilder, SimpleQueryParam } from "../../../backend/RequestBuilder";
 import {
     createFetchErrorAction,
     createFetchSuccessAction,
@@ -10,8 +10,8 @@ import {
     handleResponse, onTagFlipError,
     toJson, toText
 } from "../Common";
-import {toast} from "react-toastify";
-import {PayloadAction} from "../types";
+import { toast } from "react-toastify";
+import { PayloadAction } from "../types";
 import Corpus from "../../../backend/model/Corpus";
 
 export const FETCH_CORPORA_COUNT = "FETCH_CORPORA_COUNT";
@@ -20,7 +20,7 @@ export const fetchCorporaCount = createPayloadAction<QueryParam[]>(FETCH_CORPORA
 export const fetchCorporaCountEpic = (action$, state$) => action$.pipe(
     ofType(FETCH_CORPORA_COUNT),
     mergeMap((action: PayloadAction<QueryParam[]>) =>
-        fromFetch(RequestBuilder.GET(`/corpus`, [SimpleQueryParam.of("count", true), ... (action.payload || [])])).pipe(
+        fromFetch(RequestBuilder.GET(`corpus`, [SimpleQueryParam.of("count", true), ... (action.payload || [])])).pipe(
             handleResponse(
                 toText(
                     map((res: string) => createFetchSuccessAction<number>(RECEIVE_CORPORA_COUNT)(Number.parseInt(res)))
@@ -36,9 +36,9 @@ export const fetchCorpora = createPayloadAction<QueryParam[]>(FETCH_CORPORA)
 export const fetchCorporaEpic = action$ => action$.pipe(
     ofType(FETCH_CORPORA),
     mergeMap((action: PayloadAction<QueryParam[]>) =>
-        fromFetch(RequestBuilder.GET("/corpus", action.payload)).pipe(
+        fromFetch(RequestBuilder.GET("corpus", action.payload)).pipe(
             toJson(
-                mergeMap((res : Corpus[]) => [
+                mergeMap((res: Corpus[]) => [
                     fetchCorporaCount(action.payload),
                     createFetchSuccessAction(RECEIVE_CORPORA)(res)
                 ]),
@@ -56,7 +56,7 @@ export const receiveDeleteCorpus = createPayloadAction<number>(RECEIVE_DELETE_CO
 export const deleteCorpusEpic = action$ => action$.pipe(
     ofType(DELETE_CORPUS),
     mergeMap((action: PayloadAction<number>) =>
-        fromFetch(RequestBuilder.DELETE(`/corpus/${action.payload}`)).pipe(
+        fromFetch(RequestBuilder.DELETE(`corpus/${action.payload}`)).pipe(
             handleResponse(
                 mergeMap((res) => {
                     toast.info("Deleted!");

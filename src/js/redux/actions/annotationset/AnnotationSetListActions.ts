@@ -1,8 +1,8 @@
-import {createAction} from "@reduxjs/toolkit";
-import {ofType} from "redux-observable";
-import {map, mergeMap} from "rxjs/operators";
-import {fromFetch} from "rxjs/fetch";
-import {QueryParam, RequestBuilder, SimpleQueryParam} from "../../../backend/RequestBuilder";
+import { createAction } from "@reduxjs/toolkit";
+import { ofType } from "redux-observable";
+import { map, mergeMap } from "rxjs/operators";
+import { fromFetch } from "rxjs/fetch";
+import { QueryParam, RequestBuilder, SimpleQueryParam } from "../../../backend/RequestBuilder";
 import {
     createFetchErrorAction,
     createFetchSuccessAction,
@@ -10,9 +10,9 @@ import {
     handleResponse,
     onTagFlipError, toJson, toText,
 } from "../Common";
-import {toast} from "react-toastify";
+import { toast } from "react-toastify";
 import AnnotationSet from "../../../backend/model/AnnotationSet";
-import {BaseAction, PayloadAction} from "../types";
+import { BaseAction, PayloadAction } from "../types";
 
 export const FETCH_ANNOTATION_SET_COUNT = "FETCH_ANNOTATION_SET_COUNT";
 export const RECEIVE_ANNOTATION_SET_COUNT = "RECEIVE_ANNOTATION_SET_COUNT";
@@ -20,7 +20,7 @@ export const fetchAnnotationSetCount = createPayloadAction<QueryParam[]>(FETCH_A
 export const fetchAnnotationSetCountEpic = (action$, state$) => action$.pipe(
     ofType(FETCH_ANNOTATION_SET_COUNT),
     mergeMap((action: PayloadAction<QueryParam[]>) =>
-        fromFetch(RequestBuilder.GET(`/annotationset`, [SimpleQueryParam.of("count", true), ...(action.payload || [])])).pipe(
+        fromFetch(RequestBuilder.GET(`annotationset`, [SimpleQueryParam.of("count", true), ...(action.payload || [])])).pipe(
             handleResponse(
                 toText(
                     map((res: string) => createFetchSuccessAction<number>(RECEIVE_ANNOTATION_SET_COUNT)(Number.parseInt(res)))
@@ -36,7 +36,7 @@ export const fetchAnnotationSets = createPayloadAction<QueryParam[]>(FETCH_ANNOT
 export const fetchAnnotationSetsEpic = action$ => action$.pipe(
     ofType(FETCH_ANNOTATION_SETS),
     mergeMap((action: PayloadAction<QueryParam[]>) =>
-        fromFetch(RequestBuilder.GET("/annotationset", action.payload)).pipe(
+        fromFetch(RequestBuilder.GET("annotationset", action.payload)).pipe(
             toJson(
                 mergeMap((res: AnnotationSet[]) =>
                     [fetchAnnotationSetCount(action.payload), createFetchSuccessAction(RECEIVE_ANNOTATION_SETS)(res)]
@@ -56,7 +56,7 @@ export const deleteAnnotationSet = createPayloadAction<number>(DELETE_ANNOTATION
 export const deleteAnnotationSetEpic = action$ => action$.pipe(
     ofType(DELETE_ANNOTATION_SET),
     mergeMap((action: BaseAction) =>
-        fromFetch(RequestBuilder.DELETE(`/annotationset/${action.payload}`)).pipe(
+        fromFetch(RequestBuilder.DELETE(`annotationset/${action.payload}`)).pipe(
             handleResponse(
                 map((_) => {
                     toast.info("Deleted!")
