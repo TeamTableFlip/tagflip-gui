@@ -1,9 +1,12 @@
-import { AnnotationAttributes } from "@fhswf/tagflip-common";
+import {AnnotationAttributes, AnnotationSetAttributes} from "@fhswf/tagflip-common";
 
 export default class Annotation implements AnnotationAttributes {
 
-    static create = (): Annotation => {
-        return Object.assign({}, new Annotation());
+    static create = (attributes?: AnnotationAttributes): Annotation => {
+        let object = Object.assign({}, new Annotation());
+        if (attributes)
+            Object.assign(object, attributes)
+        return object;
     }
 
     annotationId: number = 0;

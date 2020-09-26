@@ -1,11 +1,37 @@
-## [1.1.5](https://github.com/fhswf/tagflip-gui/compare/v1.1.4...v1.1.5) (2020-08-23)
+# [2.0.0](https://github.com/fhswf/tagflip-gui/compare/v1.2.1...v2.0.0) (2020-09-25)
+
+
+### Features
+
+* Support for Annotation Tasks ([42ae7d6](https://github.com/fhswf/tagflip-gui/commit/42ae7d6f05ac33daf576ea030699b911b9742f81))
+
+
+### BREAKING CHANGES
+
+* Release loses any compatibility to prior releases due
+to heavy changes on domain model.
+
+## [1.2.1](https://github.com/fhswf/tagflip-gui/compare/v1.2.0...v1.2.1) (2020-08-25)
 
 
 ### Bug Fixes
 
-* Added missing scope-prefix for package @fhswf/tagflip-common ([0dffbbe](https://github.com/fhswf/tagflip-gui/commit/0dffbbe5487880244e2a3ec011961d71404ec669))
-* publish package tagflip-common on npm ([7b556b4](https://github.com/fhswf/tagflip-gui/commit/7b556b459a8887893eab47f612aca66b9c907fd2))
-* release script ([7c53121](https://github.com/fhswf/tagflip-gui/commit/7c53121ead1894d6ac6d248b609eba8abaf51f42))
+* Overflow scrolling for editor view ([66b5250](https://github.com/fhswf/tagflip-gui/commit/66b52509d07adbb53d36649ae115780e1ad856a9))
+
+# [1.2.0](https://github.com/fhswf/tagflip-gui/compare/v1.1.5...v1.2.0) (2020-08-25)
+
+
+### Bug Fixes
+
+* added missing parameter value ([529555e](https://github.com/fhswf/tagflip-gui/commit/529555ebbb40f20f79bb7b32bd8ff4dc94638413))
+* fix release.yml ([a8f0682](https://github.com/fhswf/tagflip-gui/commit/a8f068297c592ad5d4a69103eda3f2a25db2d13c))
+* npmjs is new registry ([12678ab](https://github.com/fhswf/tagflip-gui/commit/12678aba4e0a4faa75dccfd56d4b6fa02000f09e))
+
+
+### Features
+
+* Adding possibility to filter by field on search via DataTable ([f1e6992](https://github.com/fhswf/tagflip-gui/commit/f1e699203afaf18ba324bb0a8d7d8e2367301779))
+* Improving performance on document table in corpus settings ([9b583ab](https://github.com/fhswf/tagflip-gui/commit/9b583ab2bd754c12baa551021b7c75610573b266))
 
 ## [1.1.4](https://github.com/fhswf/tagflip-gui/compare/v1.1.3...v1.1.4) (2020-08-14)
 

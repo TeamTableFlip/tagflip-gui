@@ -1,36 +1,58 @@
 import { fetchCorpora, deleteCorpus } from "./corpus/CorpusListActions";
 import {
     setActiveCorpus,
-    updateCorpusField,
+    saveCorpus,
+    fetchActiveCorpus,
+    saveCorpusAndUploadDocuments,
     toggleActiveCorpusAnnotationSet,
-    saveActiveCorpus,
-    fetchActiveCorpus
+    fetchActiveCorpusAnnotationSets
 } from './corpus/CorpusActions';
 import {
     uploadActiveCorpusDocuments,
     deleteActiveCorpusDocument,
     fetchActiveCorpusDocument,
+    fetchActiveCorpusDocuments,
+    fetchTagsForActiveDocument,
     uploadCorpus
 } from './corpus/DocumentActions';
 import {
-    saveTagForActiveDocument,
-    deleteTagForActiveDocument,
-} from './corpus/TaggingActions';
+    deleteTag
+} from './corpus/CommonTagActions';
 import { fetchServerStatus } from './ServerStatusFetchActions';
 import { fetchAnnotationSets, deleteAnnotationSet } from "./annotationset/AnnotationSetListActions";
 import {
     setActiveAnnotationSet,
-    saveActiveAnnotationSet,
-    updateActiveAnnotationSetField,
+    saveAnnotationSet,
     fetchActiveAnnotationSet
 } from "./annotationset/AnnotationSetActions";
 import {
     fetchActiveAnnotationSetAnnotations,
     deleteActiveAnnotationSetAnnotation,
-    updateActiveAnnotationSetEditableAnnotationField,
     saveActiveAnnotationSetAnnotation,
     setActiveAnnotationSetEditableAnnotation,
 } from "./annotationset/AnnotationActions";
+
+import {
+    generateAnnotationTasks,
+    fetchAnnotationTasks,
+    deleteAnnotationTask
+} from "./annotationtask/AnnotationTaskListActions"
+
+import {
+    fetchActiveAnnotationTask,
+    setActiveAnnotationTask,
+    saveAnnotationTask,
+    saveAnnotationTaskWithDocuments,
+    fetchActiveAnnotationTaskDocuments,
+    fetchActiveAnnotationTaskDocument,
+    saveAnnotationTaskDocument,
+    saveTagForActiveAnnotationTaskDocument,
+    fetchTagsForActiveAnnotationTaskDocument
+} from "./annotationtask/AnnotationTaskActions"
+
+import {
+    fetchAnnotationTaskStates
+} from "./annotationtask/AnnotationTaskStateActions"
 
 /**
  * Grouping up all possible actions.
@@ -40,27 +62,47 @@ export const ActionCreators = Object.assign({},
         fetchCorpora,
         deleteCorpus,
         setActiveCorpus,
-        updateCorpusField,
-        toggleActiveCorpusAnnotationSet,
-        saveActiveCorpus,
+        saveCorpus,
+        uploadCorpus,
         fetchActiveCorpus,
+
+        saveCorpusAndUploadDocuments,
         fetchActiveCorpusDocument,
+        fetchActiveCorpusDocuments,
         deleteActiveCorpusDocument,
         uploadActiveCorpusDocuments,
+
         fetchServerStatus,
+
         fetchAnnotationSets,
         deleteAnnotationSet,
-        saveActiveAnnotationSet,
-        updateActiveAnnotationSetField,
+        saveAnnotationSet,
         fetchActiveAnnotationSet,
+        toggleActiveCorpusAnnotationSet,
+        fetchActiveCorpusAnnotationSets,
+        fetchTagsForActiveDocument,
+
         fetchActiveAnnotationSetAnnotations,
         saveActiveAnnotationSetAnnotation,
-        updateActiveAnnotationSetEditableAnnotationField,
         setActiveAnnotationSetEditableAnnotation,
         deleteActiveAnnotationSetAnnotation,
-        saveTagForActiveDocument,
-        deleteTagForActiveDocument,
+
+        deleteTag,
         setActiveAnnotationSet,
-        uploadCorpus
+
+        generateAnnotationTasks,
+        fetchAnnotationTasks,
+        setActiveAnnotationTask,
+        fetchActiveAnnotationTask,
+        saveAnnotationTask,
+        deleteAnnotationTask,
+        saveAnnotationTaskWithDocuments,
+        fetchActiveAnnotationTaskDocuments,
+        fetchActiveAnnotationTaskDocument,
+        saveAnnotationTaskDocument,
+        saveTagForActiveAnnotationTaskDocument,
+        fetchTagsForActiveAnnotationTaskDocument,
+
+        fetchAnnotationTaskStates
     }
 );

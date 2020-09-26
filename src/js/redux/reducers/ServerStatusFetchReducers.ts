@@ -2,10 +2,11 @@ import createReducer from './CreateReducer'
 import * as ServerStatusFetchActions from '../actions/ServerStatusFetchActions'
 import { ServerState } from "../types"
 import FetchStatusType from '../actions/FetchStatusTypes';
+import {BaseAction} from "../actions/types";
+import {ServerStatusAction} from "../actions/ServerStatusFetchActions";
 
 const initialState: ServerState = {
     isFetching: false,
-    didInvalidate: false,
     available: true,
     lastUpdated: undefined,
     status: FetchStatusType.success,
@@ -18,13 +19,11 @@ const initialState: ServerState = {
  */
 export const serverStatus = createReducer(initialState,
     {
-        [ServerStatusFetchActions.FETCH_SERVER_STATUS](draft, action) {
+        [ServerStatusFetchActions.FETCH_SERVER_STATUS](draft: ServerState, action : BaseAction) {
             draft.isFetching = true;
-            draft.didInvalidate = true;
         },
-        [ServerStatusFetchActions.RECEIVE_SERVER_STATUS](draft, action) {
+        [ServerStatusFetchActions.RECEIVE_SERVER_STATUS](draft: ServerState, action : ServerStatusAction) {
             draft.isFetching = false;
-            draft.didInvalidate = false;
             draft.available = action.payload.available;
             draft.lastUpdated = action.payload.receivedAt;
             draft.status = action.payload.status;

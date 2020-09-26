@@ -1,4 +1,4 @@
-import { TagFlipError, TagFlipErrorCode } from "@fhswf/tagflip-common";
+import {TagFlipError, TagFlipErrorCode} from "@fhswf/tagflip-common";
 
 class TagFlipServerError implements TagFlipError {
 
@@ -8,7 +8,7 @@ class TagFlipServerError implements TagFlipError {
     statusCode: number;
 
 
-    constructor(statusCode: number, name: string, internalErrorCode: TagFlipErrorCode = -1, message: string = null) {
+    constructor(statusCode: number, name: string, internalErrorCode:TagFlipErrorCode = -1, message: string = null ) {
         this.internalErrorCode = internalErrorCode;
         this.message = message;
         this.name = name;

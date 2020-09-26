@@ -4,11 +4,17 @@ import { Provider } from "react-redux";
 import { PersistGate } from 'redux-persist/integration/react'
 
 import 'bootstrap/dist/css/bootstrap.min.css';
+import 'react-toastify/dist/ReactToastify.css';
+import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
+import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
+import 'react-bootstrap-typeahead/css/Typeahead.css';
 import './css/app.scss'
+
 import App from "./js/react/App";
 import { store, persistor } from "./js/redux/Store";
 import { Auth0Provider } from '@auth0/auth0-react';
 import { OidcSettings } from '../.oidcsettings';
+
 
 /**
  * @file Root of the react application

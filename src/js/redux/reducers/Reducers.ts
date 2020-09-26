@@ -3,6 +3,10 @@ import { activeCorpus } from './CorpusReducers';
 import { serverStatus } from './ServerStatusFetchReducers';
 import { annotationSets } from './AnnotationSetListReducers';
 import { activeAnnotationSet } from './AnnotationSetReducers';
+import { annotationTasks } from './AnnotationTaskListReducers';
+import { annotationTaskStates } from './AnnotationTaskStateReducers';
+import { activeAnnotationTask } from './AnnotationTaskReducers';
+
 
 //import produce from 'immer';
 import { combineReducers } from "redux";
@@ -13,7 +17,10 @@ const rootReducer = combineReducers({
     activeCorpus,
     annotationSets,
     activeAnnotationSet,
-    serverStatus
+    serverStatus,
+    annotationTasks,
+    annotationTaskStates,
+    activeAnnotationTask
 });
 
 export type RootState = ReturnType<typeof rootReducer>;

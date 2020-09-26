@@ -1,9 +1,13 @@
-import { DocumentAttributes } from "@fhswf/tagflip-common";
+import {DocumentAttributes, AnnotationTaskDocumentAttributes} from "@fhswf/tagflip-common";
+import AnnotationTaskDocument from "./AnnotationTaskDocument";
 
 export default class Document implements DocumentAttributes {
 
-    static create = (): Document => {
-        return Object.assign({}, new Document());
+    static create = (attributes?: DocumentAttributes): Document => {
+        let object = Object.assign({}, new Document());
+        if (attributes)
+            Object.assign(object, attributes)
+        return object;
     }
 
     private constructor() {
@@ -17,4 +21,5 @@ export default class Document implements DocumentAttributes {
     filename: string = "";
     createdAt: Date = null;
     updatedAt: Date = null;
+    annotationTaskDocuments: AnnotationTaskDocumentAttributes[] = [];
 }

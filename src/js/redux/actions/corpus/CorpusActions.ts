@@ -1,22 +1,23 @@
-import Corpus from "../../../Corpus";
-import AnnotationSet from "../../../backend/model/AnnotationSet";
-import { ofType } from "redux-observable";
-import { filter, map, mergeMap, switchMap } from "rxjs/operators";
+import Corpus from "../../../backend/model/Corpus";
+import {ofType} from "redux-observable";
+import {filter, map, mergeMap, switchMap} from "rxjs/operators";
 
-import { createAction } from "@reduxjs/toolkit";
-import { fromFetch } from "rxjs/fetch";
-import { HttpMethod, RequestBuilder } from "../../../backend/RequestBuilder";
+import {createAction} from "@reduxjs/toolkit";
+import {fromFetch} from "rxjs/fetch";
+import {HttpMethod, RequestBuilder} from "../../../backend/RequestBuilder";
 import {
-    BaseAction,
     createFetchErrorAction,
     createFetchSuccessAction,
     createPayloadAction,
-    handleResponse, onTagFlipError,
-    PayloadAction,
+    handleResponse,
+    onTagFlipError,
     toJson
 } from "../Common";
-import { toast } from "react-toastify";
-import { fetchActiveCorpusDocument, fetchActiveCorpusDocuments, fetchActiveCorpusDocumentsEpic } from "./DocumentActions";
+import {toast} from "react-toastify";
+import {BaseAction, PayloadAction} from "../types";
+import {uploadActiveCorpusDocuments} from "./DocumentActions";
+import AnnotationSet from "../../../backend/model/AnnotationSet";
+
 
 // Actions for editing a corpus
 
@@ -25,18 +26,9 @@ export const SET_ACTIVE_CORPUS = "SET_ACTIVE_CORPUS";
 export const setActiveCorpus = createPayloadAction<Corpus>(SET_ACTIVE_CORPUS);
 export const setActiveCorpusEpic = action$ => action$.pipe(
     ofType(SET_ACTIVE_CORPUS),
-    filter((action: PayloadAction<Corpus>) => (action.payload.corpusId > 0)),
+    filter((action: PayloadAction<Corpus>) => (action.payload && action.payload.corpusId > 0)),
     map((action: PayloadAction<Corpus>) => fetchActiveCorpus(action.payload.corpusId))
 )
-
-export const UPDATE_CORPUS_FIELD = "UPDATE_CORPUS_FIELD";
-export const updateCorpusField = (field, value) => ({
-    type: UPDATE_CORPUS_FIELD,
-    payload: {
-        field,
-        value: value ? value : null
-    }
-})
 
 // Actions for saving edited corpus
 export const RECEIVE_UPDATE_ACTIVE_CORPUS = "RECEIVE_UPDATE_ACTIVE_CORPUS";
@@ -46,14 +38,10 @@ export const fetchActiveCorpusEpic = action$ => action$.pipe(
     ofType(FETCH_ACTIVE_CORPUS),
     filter((action: BaseAction) => action.payload && action.payload > 0),
     mergeMap((action: BaseAction) =>
-        fromFetch(RequestBuilder.GET(`corpus/${action.payload}`)).pipe(
+        fromFetch(RequestBuilder.GET(`/corpus/${action.payload}`)).pipe(
             toJson(
                 mergeMap((res: Corpus) => (
-                    [
-                        createFetchSuccessAction<Corpus>(RECEIVE_UPDATE_ACTIVE_CORPUS)(res),
-                        fetchActiveCorpusAnnotationSets(),
-                        fetchActiveCorpusDocuments()
-                    ]
+                    [createFetchSuccessAction<Corpus>(RECEIVE_UPDATE_ACTIVE_CORPUS)(res)]
                 )),
                 onTagFlipError(createFetchErrorAction(RECEIVE_UPDATE_ACTIVE_CORPUS))
             )
@@ -61,45 +49,54 @@ export const fetchActiveCorpusEpic = action$ => action$.pipe(
     ),
 )
 
-export const SAVE_ACTIVE_CORPUS = "SAVE_ACTIVE_CORPUS";
-export const saveActiveCorpus = createAction(SAVE_ACTIVE_CORPUS);
-export const saveActiveCorpusEpic = (action$, state$) => action$.pipe(
-    ofType(SAVE_ACTIVE_CORPUS),
-    mergeMap((action: BaseAction) => (
-        fromFetch(RequestBuilder.REQUEST(`corpus`,
-            state$.value.activeCorpus.values.corpusId && state$.value.activeCorpus.values.corpusId > 0 ?
-                HttpMethod.PUT : HttpMethod.POST, state$.value.activeCorpus.values)).pipe(
-                    toJson(mergeMap((res: Corpus) => {
+export const SAVE_CORPUS = "SAVE_CORPUS";
+export const saveCorpus = createPayloadAction<Corpus>(SAVE_CORPUS);
+export const saveCorpusEpic = (action$, state$) => action$.pipe(
+    ofType(SAVE_CORPUS),
+    mergeMap((action: PayloadAction<Corpus>) => (
+            fromFetch(RequestBuilder.REQUEST(`/corpus`,
+                action.payload.corpusId && action.payload.corpusId > 0 ?
+                    HttpMethod.PUT : HttpMethod.POST, action.payload)).pipe(
+                toJson(mergeMap((res: Corpus) => {
                         toast.success("Saved!");
-                        return [
-                            createFetchSuccessAction<Corpus>(RECEIVE_UPDATE_ACTIVE_CORPUS)(res),
-                            fetchActiveCorpusAnnotationSets(),
-                            fetchActiveCorpusDocuments()
-                        ]
+                        return [createFetchSuccessAction<Corpus>(RECEIVE_UPDATE_ACTIVE_CORPUS)(res)]
                     }),
-                        onTagFlipError(createFetchErrorAction(RECEIVE_UPDATE_ACTIVE_CORPUS))
-                    )
+                    onTagFlipError(createFetchErrorAction(RECEIVE_UPDATE_ACTIVE_CORPUS))
                 )
-    )
-    )
-)
-
-// Actions for getting AnnotationSets while editing a corpus
-export const FETCH_ACTIVE_CORPUS_ANNOTATION_SETS = "FETCH_ACTIVE_CORPUS_ANNOTATION_SETS";
-export const RECEIVE_ACTIVE_CORPUS_ANNOTATION_SETS = "RECEIVE_ACTIVE_CORPUS_ANNOTATION_SETS";
-export const fetchActiveCorpusAnnotationSets = createAction(FETCH_ACTIVE_CORPUS_ANNOTATION_SETS)
-export const fetchActiveCorpusAnnotationSetsEpic = (action$, state$) => action$.pipe(
-    ofType(FETCH_ACTIVE_CORPUS_ANNOTATION_SETS),
-    filter(() => state$.value.activeCorpus.values.corpusId > 0),
-    mergeMap((action: BaseAction) =>
-        fromFetch(RequestBuilder.GET(`corpus/${state$.value.activeCorpus.values.corpusId}/annotationset`)).pipe(
-            toJson(
-                map((res: AnnotationSet[]) => createFetchSuccessAction<AnnotationSet[]>(RECEIVE_ACTIVE_CORPUS_ANNOTATION_SETS)(res)),
-                onTagFlipError(createFetchErrorAction(RECEIVE_ACTIVE_CORPUS_ANNOTATION_SETS))
             )
         )
     )
 )
+
+export const SAVE_CORPUS_AND_UPLOAD_DOCUMENTS = "SAVE_CORPUS_AND_UPLOAD_DOCUMENTS";
+export const saveCorpusAndUploadDocuments = createPayloadAction<Corpus & { files: File[] }>(SAVE_CORPUS_AND_UPLOAD_DOCUMENTS);
+export const saveCorpusAndUploadDocumentsEpic = (action$, state$) => action$.pipe(
+    ofType(SAVE_CORPUS_AND_UPLOAD_DOCUMENTS),
+    mergeMap((action: PayloadAction<Corpus & { files: File[] }>) => (
+            fromFetch(RequestBuilder.REQUEST(`/corpus`,
+                action.payload.corpusId && action.payload.corpusId > 0 ?
+                    HttpMethod.PUT : HttpMethod.POST, action.payload)).pipe(
+                toJson(mergeMap((res: Corpus) => {
+                        toast.success("Corpus saved!");
+                        if (action.payload.files && action.payload.files.length > 0) {
+                            toast.info("Uploading Documents now...");
+                            return [
+                                createFetchSuccessAction<Corpus>(RECEIVE_UPDATE_ACTIVE_CORPUS)(res),
+                                uploadActiveCorpusDocuments(action.payload.files)
+                            ]
+                        } else {
+                            return [
+                                createFetchSuccessAction<Corpus>(RECEIVE_UPDATE_ACTIVE_CORPUS)(res)
+                            ]
+                        }
+                    }),
+                    onTagFlipError(createFetchErrorAction(RECEIVE_UPDATE_ACTIVE_CORPUS))
+                )
+            )
+        )
+    )
+)
+
 
 
 // Actions for selecting and unselecting AnnotationSets in active corpus.
@@ -119,7 +116,7 @@ export const toggleActiveCorpusAnnotationSetEpic = (action$, state$) => action$.
             method = HttpMethod.DELETE;
             toggleAction = REMOVE_CORPUS_ANNOTATION_SET;
         }
-        return fromFetch(RequestBuilder.REQUEST(`corpus/${corpusId}/annotationset/${action.payload.annotationSetId}`, method)).pipe(
+        return fromFetch(RequestBuilder.REQUEST(`/corpus/${corpusId}/annotationset/${action.payload.annotationSetId}`, method)).pipe(
             handleResponse(
                 map((res) => {
                     toast.success("Saved!");
@@ -131,5 +128,20 @@ export const toggleActiveCorpusAnnotationSetEpic = (action$, state$) => action$.
     })
 )
 
-
+// Actions for getting AnnotationSets while editing a corpus
+export const FETCH_ACTIVE_CORPUS_ANNOTATION_SETS = "FETCH_ACTIVE_CORPUS_ANNOTATION_SETS";
+export const RECEIVE_ACTIVE_CORPUS_ANNOTATION_SETS = "RECEIVE_ACTIVE_CORPUS_ANNOTATION_SETS";
+export const fetchActiveCorpusAnnotationSets = createAction(FETCH_ACTIVE_CORPUS_ANNOTATION_SETS)
+export const fetchActiveCorpusAnnotationSetsEpic = (action$, state$) => action$.pipe(
+    ofType(FETCH_ACTIVE_CORPUS_ANNOTATION_SETS),
+    filter(() => state$.value.activeCorpus.values.corpusId > 0),
+    mergeMap((action: BaseAction) =>
+        fromFetch(RequestBuilder.GET(`/corpus/${state$.value.activeCorpus.values.corpusId}/annotationset`)).pipe(
+            toJson(
+                map((res: AnnotationSet[]) => createFetchSuccessAction<AnnotationSet[]>(RECEIVE_ACTIVE_CORPUS_ANNOTATION_SETS)(res)),
+                onTagFlipError(createFetchErrorAction(RECEIVE_ACTIVE_CORPUS_ANNOTATION_SETS))
+            )
+        )
+    )
+)
 

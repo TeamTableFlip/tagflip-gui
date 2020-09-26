@@ -1,9 +1,12 @@
-import { AnnotationSetAttributes } from "@fhswf/tagflip-common";
+import {AnnotationSetAttributes, CorpusAttributes} from "@fhswf/tagflip-common";
 
 export default class AnnotationSet implements AnnotationSetAttributes {
 
-    static create = (): AnnotationSet => {
-        return Object.assign({}, new AnnotationSet());
+    static create = (attributes?: AnnotationSetAttributes): AnnotationSet => {
+        let object = Object.assign({}, new AnnotationSet());
+        if (attributes)
+            Object.assign(object, attributes)
+        return object;
     }
 
     annotationSetId: number = 0;
