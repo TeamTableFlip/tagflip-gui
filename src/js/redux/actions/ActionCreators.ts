@@ -5,7 +5,11 @@ import {
     fetchActiveCorpus,
     saveCorpusAndUploadDocuments,
     toggleActiveCorpusAnnotationSet,
-    fetchActiveCorpusAnnotationSets
+    fetchActiveCorpusAnnotationSets,
+    fetchImportTypes,
+    fetchExportTypes,
+    exportAnnotatedCorpus,
+    importAnnotatedCorpus
 } from './corpus/CorpusActions';
 import {
     uploadActiveCorpusDocuments,
@@ -13,7 +17,6 @@ import {
     fetchActiveCorpusDocument,
     fetchActiveCorpusDocuments,
     fetchTagsForActiveDocument,
-    uploadCorpus
 } from './corpus/DocumentActions';
 import {
     deleteTag
@@ -63,7 +66,7 @@ export const ActionCreators = Object.assign({},
         deleteCorpus,
         setActiveCorpus,
         saveCorpus,
-        uploadCorpus,
+        importAnnotatedCorpus,
         fetchActiveCorpus,
 
         saveCorpusAndUploadDocuments,
@@ -102,7 +105,9 @@ export const ActionCreators = Object.assign({},
         saveAnnotationTaskDocument,
         saveTagForActiveAnnotationTaskDocument,
         fetchTagsForActiveAnnotationTaskDocument,
-
-        fetchAnnotationTaskStates
+        fetchAnnotationTaskStates,
+        fetchImportTypes,
+        fetchExportTypes,
+        exportAnnotatedCorpus
     }
 );

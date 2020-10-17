@@ -180,7 +180,8 @@ class TagWidget extends WidgetType<TagDecoration> {
     }
 
     destroy() {
-        ReactDom.unmountComponentAtNode(this.element) // unmount manually rendered react elements
+        if(this.element)
+            ReactDom.unmountComponentAtNode(this.element) // unmount manually rendered react elements
     }
 
     toDOM(view: EditorView): HTMLElement {

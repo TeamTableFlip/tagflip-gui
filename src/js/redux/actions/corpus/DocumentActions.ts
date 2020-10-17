@@ -1,5 +1,3 @@
-import FetchStatusType from "../FetchStatusTypes";
-import client from "../../../backend/RestApi";
 import { ofType } from "redux-observable";
 import { filter, map, mergeMap, switchMap } from "rxjs/operators";
 import {
@@ -148,57 +146,7 @@ export const fetchActiveCorpusDocumentEpic = (action$, state$) => action$.pipe(
     )
 )
 
-//// ==============================
 
-//// SEE IMPORT BELOW
-
-
-export const REQUEST_CORPUS_IMPORT = "REQUEST_CORPUS_IMPORT";
-export const RECEIVE_CORPUS_IMPORT = "RECEIVE_CORPUS_IMPORT";
-
-function requestCorpusUpload() {
-    return {
-        type: REQUEST_CORPUS_IMPORT,
-    }
-}
-
-function receiveCorpusUpload(result, status = FetchStatusType.success, error = null) {
-    return {
-        type: RECEIVE_CORPUS_IMPORT,
-        corpus: result.corpus,
-        receivedAt: Date.now(),
-        status: status,
-        error: error
-    }
-}
-
-/**
- * Action creator for async uploading given files to given corpus.
- * @param corpusId the id of the corpus the file belong to
- * @param files the files
- * @returns {Function}
- */
-export function uploadCorpus(files) {
-    return (dispatch, getState) => {
-        dispatch(requestCorpusUpload())
-        let corpus = getState().activeCorpus.values;
-        let annotationSets = getState().activeCorpus.annotationSets.items;
-        let formData = new FormData()
-        for (let file of files) {
-            formData.append("file", file, file.name);
-            formData.append("name", corpus.name)
-            // TODO: allow multiple annotation sets
-            formData.append("annotationSet", annotationSets[0].name)
-        }
-
-        client.httpPost(`/import`, formData, {}, false)
-            .then(result => {
-                dispatch(receiveCorpusUpload(result))
-            }
-            )
-            .catch(error => dispatch(receiveCorpusUpload(null, FetchStatusType.error, error)))
-    }
-}
 
 
 export const FETCH_TAGS_FOR_ACTIVE_DOCUMENT = "FETCH_TAGS_FOR_ACTIVE_DOCUMENT"

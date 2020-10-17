@@ -18,6 +18,13 @@ const initialState: CorpusState = {
     lastUpdated: undefined,
     status: FetchStatusType.success,
     error: null,
+    importers: {
+        items: [],
+        isFetching: false,
+        lastUpdated: undefined,
+        status: FetchStatusType.success,
+        error: null
+    },
     annotationSets: {
         items: [],
         totalCount: 0,
@@ -145,9 +152,6 @@ export const activeCorpus = createReducer(initialState, {
         }
     },
 
-    [DocumentActions.REQUEST_CORPUS_IMPORT](draft: CorpusState, action) {
-        draft.isFetching = true;
-    },
     [DocumentActions.UPLOAD_ACTIVE_CORPUS_DOCUMENTS](draft: CorpusState, action: PayloadAction<File[]>) {
         draft.documents.isFetching = true;
     },

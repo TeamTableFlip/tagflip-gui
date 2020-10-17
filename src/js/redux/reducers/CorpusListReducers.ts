@@ -6,6 +6,7 @@ import {BaseAction, PayloadAction, PayloadStatusAction} from "../actions/types";
 import Corpus from "../../backend/model/Corpus";
 import * as DocumentActions from "../actions/corpus/DocumentActions";
 import CorpusList from "../../react/views/corpus/CorpusList";
+import * as CorpusActions from "../actions/corpus/CorpusActions";
 
 const initialState: CorpusListState = {
     isFetching: false,
@@ -43,4 +44,23 @@ export const corpora = createReducer(initialState,
         [CorpusListActions.RECEIVE_DELETE_CORPUS](draft: CorpusListState, action : PayloadAction<number>) {
             draft.items = draft.items.filter(x => x.corpusId !== action.payload)
         },
+
+        [CorpusActions.IMPORT_ANNOTATED_CORPUS](draft: CorpusState, action) {
+            draft.isFetching = true;
+        },
+        [CorpusActions.RECEIVE_IMPORT_ANNOTATED_CORPUS](draft: CorpusListState, action: PayloadStatusAction<Corpus>) {
+            draft.isFetching = false;
+            if (action.payload.status === FetchStatusType.success) {
+                draft.items = [action.payload.data, ...draft.items]
+                draft.totalCount += 1
+                draft.lastUpdated = action.payload.receivedAt;
+                draft.status = FetchStatusType.success;
+                draft.error = null;
+            } else {
+                draft.isFetching = false;
+                draft.status = FetchStatusType.error;
+                draft.error = action.payload.error;
+            }
+        },
+
     });

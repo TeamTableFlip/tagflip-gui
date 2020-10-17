@@ -1,5 +1,7 @@
 import { corpora } from './CorpusListReducers';
 import { activeCorpus } from './CorpusReducers';
+import { corpusImporters } from './CorpusImporterReducers';
+import { corpusExporters } from './CorpusExporterReducers';
 import { serverStatus } from './ServerStatusFetchReducers';
 import { annotationSets } from './AnnotationSetListReducers';
 import { activeAnnotationSet } from './AnnotationSetReducers';
@@ -15,6 +17,8 @@ import { combineReducers } from "redux";
 const rootReducer = combineReducers({
     corpora,
     activeCorpus,
+    corpusImporters,
+    corpusExporters,
     annotationSets,
     activeAnnotationSet,
     serverStatus,

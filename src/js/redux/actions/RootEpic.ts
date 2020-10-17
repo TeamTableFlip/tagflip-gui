@@ -12,12 +12,14 @@ import {
     setActiveAnnotationSetEpic
 } from "./annotationset/AnnotationSetActions";
 import {
-    fetchActiveCorpusAnnotationSets, fetchActiveCorpusAnnotationSetsEpic,
-    fetchActiveCorpusEpic,
+    fetchActiveCorpusAnnotationSetsEpic,
+    fetchActiveCorpusEpic, fetchImportTypesEpic, importAnnotatedCorpusEpic,
     saveCorpusAndUploadDocumentsEpic,
     saveCorpusEpic,
     setActiveCorpusEpic,
     toggleActiveCorpusAnnotationSetEpic,
+    fetchExportTypesEpic,
+    exportAnnotatedCorpusEpic
 } from "./corpus/CorpusActions";
 import {
     deleteActiveCorpusDocumentEpic, fetchActiveCorpusDocumentCountEpic,
@@ -100,8 +102,12 @@ const rootEpic = combineEpics(
     saveTagForActiveAnnotationTaskDocumentEpic,
     fetchTagsForActiveAnnotationTaskDocumentEpic,
 
-    fetchAnnotationTasksStatesEpic
+    fetchAnnotationTasksStatesEpic,
 
+    fetchImportTypesEpic,
+    importAnnotatedCorpusEpic,
+    fetchExportTypesEpic,
+    exportAnnotatedCorpusEpic
 )
 
 

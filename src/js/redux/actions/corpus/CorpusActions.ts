@@ -1,21 +1,26 @@
 import Corpus from "../../../backend/model/Corpus";
-import { ofType } from "redux-observable";
-import { filter, map, mergeMap, switchMap } from "rxjs/operators";
+import {ofType} from "redux-observable";
+import {filter, map, mergeMap, switchMap} from "rxjs/operators";
 
-import { createAction } from "@reduxjs/toolkit";
-import { fromFetch } from "rxjs/fetch";
-import { HttpMethod, RequestBuilder } from "../../../backend/RequestBuilder";
+import {createAction} from "@reduxjs/toolkit";
+import {fromFetch} from "rxjs/fetch";
+import {HttpMethod, OffsetLimitParam, RequestBuilder, SimpleQueryParam} from "../../../backend/RequestBuilder";
 import {
     createFetchErrorAction,
     createFetchSuccessAction,
-    createPayloadAction,
+    createPayloadAction, globalError,
     handleResponse,
     onTagFlipError,
     toJson
 } from "../Common";
-import { toast } from "react-toastify";
-import { BaseAction, PayloadAction } from "../types";
-import { uploadActiveCorpusDocuments } from "./DocumentActions";
+import {toast} from "react-toastify";
+import {BaseAction, PayloadAction} from "../types";
+import {
+    FETCH_ACTIVE_CORPUS_DOCUMENT,
+    fetchActiveCorpusDocuments,
+    FetchCorpusPayload,
+    uploadActiveCorpusDocuments
+} from "./DocumentActions";
 import AnnotationSet from "../../../backend/model/AnnotationSet";
 
 
@@ -54,17 +59,17 @@ export const saveCorpus = createPayloadAction<Corpus>(SAVE_CORPUS);
 export const saveCorpusEpic = (action$, state$) => action$.pipe(
     ofType(SAVE_CORPUS),
     mergeMap((action: PayloadAction<Corpus>) => (
-        fromFetch(RequestBuilder.REQUEST(`corpus`,
-            action.payload.corpusId && action.payload.corpusId > 0 ?
-                HttpMethod.PUT : HttpMethod.POST, action.payload)).pipe(
-                    toJson(mergeMap((res: Corpus) => {
+            fromFetch(RequestBuilder.REQUEST(`corpus`,
+                action.payload.corpusId && action.payload.corpusId > 0 ?
+                    HttpMethod.PUT : HttpMethod.POST, action.payload)).pipe(
+                toJson(mergeMap((res: Corpus) => {
                         toast.success("Saved!");
                         return [createFetchSuccessAction<Corpus>(RECEIVE_UPDATE_ACTIVE_CORPUS)(res)]
                     }),
-                        onTagFlipError(createFetchErrorAction(RECEIVE_UPDATE_ACTIVE_CORPUS))
-                    )
+                    onTagFlipError(createFetchErrorAction(RECEIVE_UPDATE_ACTIVE_CORPUS))
                 )
-    )
+            )
+        )
     )
 )
 
@@ -73,10 +78,10 @@ export const saveCorpusAndUploadDocuments = createPayloadAction<Corpus & { files
 export const saveCorpusAndUploadDocumentsEpic = (action$, state$) => action$.pipe(
     ofType(SAVE_CORPUS_AND_UPLOAD_DOCUMENTS),
     mergeMap((action: PayloadAction<Corpus & { files: File[] }>) => (
-        fromFetch(RequestBuilder.REQUEST(`corpus`,
-            action.payload.corpusId && action.payload.corpusId > 0 ?
-                HttpMethod.PUT : HttpMethod.POST, action.payload)).pipe(
-                    toJson(mergeMap((res: Corpus) => {
+            fromFetch(RequestBuilder.REQUEST(`corpus`,
+                action.payload.corpusId && action.payload.corpusId > 0 ?
+                    HttpMethod.PUT : HttpMethod.POST, action.payload)).pipe(
+                toJson(mergeMap((res: Corpus) => {
                         toast.success("Corpus saved!");
                         if (action.payload.files && action.payload.files.length > 0) {
                             toast.info("Uploading Documents now...");
@@ -90,13 +95,12 @@ export const saveCorpusAndUploadDocumentsEpic = (action$, state$) => action$.pip
                             ]
                         }
                     }),
-                        onTagFlipError(createFetchErrorAction(RECEIVE_UPDATE_ACTIVE_CORPUS))
-                    )
+                    onTagFlipError(createFetchErrorAction(RECEIVE_UPDATE_ACTIVE_CORPUS))
                 )
-    )
+            )
+        )
     )
 )
-
 
 
 // Actions for selecting and unselecting AnnotationSets in active corpus.
@@ -145,3 +149,158 @@ export const fetchActiveCorpusAnnotationSetsEpic = (action$, state$) => action$.
     )
 )
 
+
+export const FETCH_IMPORT_TYPES = "FETCH_IMPORT_TYPES";
+export const RECEIVE_IMPORT_TYPES = "RECEIVE_IMPORT_TYPES";
+
+export const fetchImportTypes = createAction(FETCH_IMPORT_TYPES);
+export const fetchImportTypesEpic = (action$, state$) => action$.pipe(
+    ofType(FETCH_IMPORT_TYPES),
+    switchMap((action: BaseAction) =>
+        fromFetch(RequestBuilder.GET(`corpus/import`)).pipe(
+            toJson(
+                map((types: string[]) => {
+                    return createFetchSuccessAction<string[]>(RECEIVE_IMPORT_TYPES)(types)
+                }),
+                createFetchErrorAction(RECEIVE_IMPORT_TYPES)
+            )
+        )
+    )
+)
+
+export const FETCH_EXPORT_TYPES = "FETCH_EXPORT_TYPES";
+export const RECEIVE_EXPORT_TYPES = "RECEIVE_EXPORT_TYPES";
+export const fetchExportTypes = createAction(FETCH_EXPORT_TYPES);
+export const fetchExportTypesEpic = (action$, state$) => action$.pipe(
+    ofType(FETCH_EXPORT_TYPES),
+    switchMap((action: BaseAction) =>
+        fromFetch(RequestBuilder.GET(`corpus/export`)).pipe(
+            toJson(
+                map((types: string[]) => {
+                    return createFetchSuccessAction<string[]>(RECEIVE_EXPORT_TYPES)(types)
+                }),
+                createFetchErrorAction(RECEIVE_EXPORT_TYPES)
+            )
+        )
+    )
+)
+
+export const EXPORT_CORPUS = "EXPORT_CORPUS";
+export const RECEIVE_EXPORT_CORPUS = "RECEIVE_EXPORT_TYPES";
+export type ExportCorpusRequest = {
+    corpusId: number;
+    exporter: string;
+};
+export const exportAnnotatedCorpus = createPayloadAction<ExportCorpusRequest>(EXPORT_CORPUS);
+export const exportAnnotatedCorpusEpic = (action$, state$) => action$.pipe(
+    ofType(EXPORT_CORPUS),
+    switchMap((action: PayloadAction<ExportCorpusRequest>) =>
+        fromFetch(RequestBuilder.GET(`corpus/${action.payload.corpusId}/export`, [SimpleQueryParam.of("exporterName", action.payload.exporter)], {})).pipe(
+            handleResponse(
+                map((response) => {
+                    response.blob().then(blob => {
+                            const filename =  response.headers.get('Content-Disposition').split('filename=')[1];
+                            let url = window.URL.createObjectURL(blob);
+                            let a = document.createElement('a');
+                            a.href = url;
+                            a.download = filename;
+                            document.body.appendChild(a); // we need to append the element to the dom -> otherwise it will not work in firefox
+                            a.click();
+                            a.remove();  //afterwards we remove the element again
+                        }
+                    )
+                    return createFetchSuccessAction(RECEIVE_EXPORT_CORPUS)
+                }),
+                globalError
+            )
+        )
+    )
+)
+
+
+// Actions for uploading Documents while editing a corpus
+
+export const IMPORT_ANNOTATED_CORPUS = "IMPORT_ANNOTATED_CORPUS";
+export const RECEIVE_IMPORT_ANNOTATED_CORPUS = "RECEIVE_IMPORT_ANNOTATED_CORPUS";
+export type ImportAnnotatedCorpusForm = {
+    corpusName: string;
+    importer: string;
+    annotationSetName: string;
+    files: File[];
+};
+export const importAnnotatedCorpus = createPayloadAction<ImportAnnotatedCorpusForm>(IMPORT_ANNOTATED_CORPUS)
+export const importAnnotatedCorpusEpic = (action$, state$) => action$.pipe(
+    ofType(IMPORT_ANNOTATED_CORPUS),
+    map((action: PayloadAction<ImportAnnotatedCorpusForm>) => {
+        let formData = new FormData()
+        formData.append("importer", action.payload.importer)
+        formData.append("corpusName", action.payload.corpusName);
+        formData.append("annotationSetName", action.payload.annotationSetName);
+        for (let file of action.payload.files) {
+            formData.append("files", file, file.name)
+        }
+        return formData
+    }),
+    mergeMap((formData: FormData) => {
+            return fromFetch(RequestBuilder.POST(`corpus/import`, formData, {})).pipe(
+                toJson(
+                    mergeMap(res => {
+                        toast.success("Uploaded!")
+                        return [
+                            createFetchSuccessAction(RECEIVE_IMPORT_ANNOTATED_CORPUS)(res),
+                        ]
+                    }),
+                    onTagFlipError(createFetchErrorAction(RECEIVE_IMPORT_ANNOTATED_CORPUS))
+                )
+            )
+        }
+    )
+)
+
+
+// export const REQUEST_CORPUS_IMPORT = "REQUEST_CORPUS_IMPORT";
+// export const RECEIVE_CORPUS_IMPORT = "RECEIVE_CORPUS_IMPORT";
+//
+// function requestCorpusUpload() {
+//     return {
+//         type: REQUEST_CORPUS_IMPORT,
+//     }
+// }
+//
+// function receiveCorpusUpload(result, status = FetchStatusType.success, error = null) {
+//     return {
+//         type: RECEIVE_CORPUS_IMPORT,
+//         corpus: result.corpus,
+//         receivedAt: Date.now(),
+//         status: status,
+//         error: error
+//     }
+// }
+//
+// /**
+//  * Action creator for async uploading given files to given corpus.
+//  * @param corpusId the id of the corpus the file belong to
+//  * @param files the files
+//  * @returns {Function}
+//  */
+// export function uploadCorpus(files) {
+//     return (dispatch, getState) => {
+//         dispatch(requestCorpusUpload())
+//         let corpus = getState().activeCorpus.values;
+//         let annotationSets = getState().activeCorpus.annotationSets.items;
+//         let formData = new FormData()
+//         for (let file of files) {
+//             formData.append("file", file, file.name);
+//             formData.append("name", corpus.name)
+//             // TODO: allow multiple annotation sets
+//             formData.append("annotationSet", annotationSets[0].name)
+//         }
+//
+//         client.httpPost(`/import`, formData, {}, false)
+//             .then(result => {
+//                     dispatch(receiveCorpusUpload(result))
+//                 }
+//             )
+//             .catch(error => dispatch(receiveCorpusUpload(null, FetchStatusType.error, error)))
+//     }
+// }

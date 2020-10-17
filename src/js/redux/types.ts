@@ -45,6 +45,7 @@ export interface TagValue {
 
 export interface CorpusValue {
     values: Corpus;
+    importers: CorpusImportersState,
     documents: DocumentListState;
     annotationSets: AnnotationSetListState;
     activeDocument: DocumentState;
@@ -53,6 +54,14 @@ export interface CorpusValue {
 export interface CorpusListValue {
     items: Corpus[];
     totalCount: number;
+}
+
+export interface CorpusImportersValue {
+    items: string[];
+}
+
+export interface CorpusExportersValue {
+    items: string[];
 }
 
 export interface ServerValue {
@@ -100,5 +109,8 @@ export type TagState = TagValue & FetchState;
 
 export type CorpusState = CorpusValue & FetchState;
 export type CorpusListState = CorpusListValue & FetchState;
+
+export type CorpusImportersState = CorpusImportersValue & FetchState;
+export type CorpusExportersState = CorpusExportersValue & FetchState;
 
 export type ServerState = ServerValue & FetchState;

@@ -11,7 +11,7 @@ import {Spinner} from "react-bootstrap";
 const propTypes = {
     onUpload: PropTypes.func,            // Is called when uploading the files - 1 param: files
     onChange: PropTypes.func,                       // Is called when selection changes- 1 param: files
-    acceptMimeTypes: PropTypes.string.isRequired,   // The accepted mime types for upload
+    acceptMimeTypes: PropTypes.string,   // The accepted mime types for upload
     uploadText: PropTypes.string.isRequired,        // The text to display in the Dropzone
     isUploading: PropTypes.bool,         // If true, the Upload-Button will be disabled
     onTooManyFiles: PropTypes.func,                 // Called if maxCount is exceeded.
@@ -157,7 +157,7 @@ class FileUpload extends Component<Props, State> {
                                           this.setState({rejected: true})
                                       }}
                                       multiple={this.props.maxCount !== 1}
-                                      accept={this.props.acceptMimeTypes}
+                                      accept={this.props.acceptMimeTypes ? this.props.acceptMimeTypes : undefined}
                             >
                                 {({getRootProps, getInputProps}) => (
                                     <section>

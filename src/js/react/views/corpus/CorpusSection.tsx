@@ -3,6 +3,7 @@ import CorporaList from "../corpus/CorpusList";
 import {Route, RouteComponentProps, withRouter} from "react-router-dom";
 import FormCorpus from "./data/FormCorpus";
 import DocumentAnnotationViewer from "./data/edit/DocumentAnnotationViewer";
+import CorpusImport from "./CorpusImport";
 
 interface State {
     activeLink: string
@@ -49,6 +50,9 @@ class CorpusSection extends Component<Props, State> {
                 <section id="content">
                     <Route exact={true} path={`${match.path}`}>
                         <CorporaList/>
+                    </Route>
+                    <Route exact={true} path={`${match.path}/import`}>
+                        <CorpusImport/>
                     </Route>
                     <Route exact={true} path={`${match.path}/edit`}>
                         <FormCorpus/>
