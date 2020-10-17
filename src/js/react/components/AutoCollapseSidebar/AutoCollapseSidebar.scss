@@ -1,0 +1,25 @@
+$sidebar-bg-color: #6c757d !default;
+$sidebar-color: #d9d9d9 !default;
+$sidebar-width: 270px !default;
+$sidebar-collapsed-width: 80px !default;
+$highlight-color: #ffffff !default;
+$submenu-bg-color: #343a40  !default;
+$submenu-bg-color-collapsed: #343a40  !default;
+$icon-bg-color: #9ba3ab !default;
+@import '~react-pro-sidebar/dist/scss/styles.scss';
+
+
+.bar-enter {
+  opacity: 0;
+}
+.bar-enter-active {
+  opacity: 1;
+  transition: opacity 600ms, transform 300ms;
+}
+.bar-exit {
+  opacity: 1;
+}
+.bar-active {
+  opacity: 0;
+  transition: opacity 600ms, transform 300ms;
+}

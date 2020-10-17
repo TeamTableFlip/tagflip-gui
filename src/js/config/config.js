@@ -9,13 +9,13 @@ console.info("TODO: parsing system environment configuration");
 //TODO add support for Configuration via system environment aka command line arguments
 // so something like this: config.port = process.env.port || config.port;
 
-let localConfig = {}
+let localConfig = {};
 try {
-    let localConfig = require('./local.json');
+    localConfig = require('./local.json');
     console.info("local config found, merging configs (overwriting env vars!)");
 } catch (e) {
     if (e instanceof Error && e.code === "MODULE_NOT_FOUND") {
-        console.info("No local config.")
+        console.info("No local config.");
     }
 
 }

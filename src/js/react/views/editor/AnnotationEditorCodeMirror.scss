@@ -1,0 +1,82 @@
+.CodeMirror {
+    min-height: 100%;
+    font-size: 16px;
+    overflow: auto;
+}
+
+// Alternative 1
+
+/*
+.annotation {
+    cursor: pointer;
+    padding: 4px 4px 4px 4px;
+    outline: 1px solid #000;
+    background: #95e345;
+    z-index: 1;
+}
+
+.annotationType {
+    position:relative;
+    display: inline-block;
+    text-align: center;
+    background: #ffffff;
+    border: 3px #000000;
+    border-radius: 3px;
+    vertical-align: middle;
+    padding: 0px 3px 0px 3px;
+    margin-left: 3px;
+    margin-bottom: 2px;
+    line-height: 1.5em;
+    -webkit-box-shadow: 0px 0px 3px 0px rgba(0,0,0,0.75);
+    -moz-box-shadow: 0px 0px 3px 0px rgba(0,0,0,0.75);
+    box-shadow: 0px 0px 3px 0px rgba(0,0,0,0.75);
+    font-size: 60%;
+    text-shadow: 0px 0px 2px #C0C0C0;
+}
+
+.annotationText {
+    margin-left: 8px;
+}
+
+
+ */
+// Alternative 2
+
+.annotation {
+    cursor: pointer;
+    padding: 2px 0px 2px 0px;
+    background: #e300c5;
+    border-radius: 5px;
+    -webkit-box-shadow: 0px 0px 3px 0px rgba(0,0,0,0.6);
+    -moz-box-shadow: 0px 0px 3px 0px rgba(0,0,0,0.6);
+    box-shadow: 0px 0px 3px 0px rgba(0,0,0,0.6);
+    //line-height: 1.9em;
+
+    -webkit-box-decoration-break: slice;
+    -o-box-decoration-break: slice;
+    box-decoration-break: slice;
+}
+
+.annotationType {
+    position:relative;
+    display: inline-block;
+    text-align: center;
+    background: #ffffff;
+    border: 3px #000000;
+    border-radius: 3px;
+    vertical-align: middle;
+    padding: 0px 3px 0px 3px;
+    margin-left: 3px;
+    margin-bottom: 2px;
+    //line-height: 1.6em;
+    -webkit-box-shadow: 0px 0px 3px 0px rgba(0,0,0,0.75);
+    -moz-box-shadow: 0px 0px 3px 0px rgba(0,0,0,0.75);
+    box-shadow: 0px 0px 3px 0px rgba(0,0,0,0.75);
+    font-size: 60%;
+    text-shadow: 0px 0px 2px #C0C0C0;
+}
+
+.annotationText {
+    margin-left: 5px;
+}
+
